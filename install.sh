@@ -1,7 +1,7 @@
 #!/bin/bash
 
 installDotfiles () {
-	if [ "${1:0:2}" != "./." -a "$1" != "./install.sh" -a "$1" != "./README.md" -a "$1" != "./LICENSE" ]
+	if [ "${1:0:3}" != "./." -a "$1" != "./install.sh" -a "$1" != "./README.md" -a "$1" != "./LICENSE" ]
 	then
 		mkdir -p "`dirname \"$HOME/.${1:2}\"`"
 		rm -f "$HOME/.${1:2}"
