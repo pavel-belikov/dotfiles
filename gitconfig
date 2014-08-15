@@ -1,0 +1,19 @@
+[push]
+    default = current
+[color]
+    ui = auto
+[diff]
+	tool = vimdiff
+[alias]
+    aa = add --all
+    ap = add --patch
+    ca = commit -a
+    cam = commit --amend
+    caa = commit -a --amend
+    co = checkout
+    ru = remote update
+    st = status
+    dt = difftool
+    df = diff
+[include]
+    path = .gitconfig.local

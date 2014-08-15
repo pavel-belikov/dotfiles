@@ -1,0 +1,3 @@
+[[ -f ~/.autostart-pre.local ]] && source ~/.autostart-pre.local &
+lxpanel &
+[[ -f ~/.autostart-post.local ]] && source ~/.autostart-post.local

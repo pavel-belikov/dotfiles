@@ -1,0 +1,35 @@
+set nocompatible
+filetype off
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'gmarik/Vundle.vim'
+Plugin 'majutsushi/tagbar'
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'a.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-easytags'
+Plugin 'ifdef-highlighting'
+Plugin 'tpope/vim-surround'
+Plugin 'syntaxdosini.vim'
+Plugin 'elzr/vim-json'
+Plugin 'MarcWeber/vim-addon-mw-utils'
+Plugin 'tomtom/tlib_vim'
+Plugin 'garbas/vim-snipmate'
+Plugin 'honza/vim-snippets'
+Plugin 'vim-scripts/TaskList.vim'
+
+"To Find:
+"Refactoring - rename, function's signature sync, extract //ProtoDef
+"Auto replace . to ->
+"Syntastic - scrooloose/syntastic
+
+if filereadable(expand("~/.vimrc.bundles.local"))
+    source ~/.vimrc.bundles.local
+endif
+
+call vundle#end()
+filetype plugin indent on
