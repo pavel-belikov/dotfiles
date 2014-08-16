@@ -4,8 +4,8 @@ set format_current= %a > %l > %02n. %t%= %g | %y
 set format_playlist= %-25%a %-30l %n. %t%= %y %d 
 set format_title=%a - %t
 set format_trackwin=%4n. %t%= %d
-set format_trackwin_album= %{if y then %y%{if date!=maxdate then "-%{maxdate}"}" - "}%l 
-set format_treewin=  %{if y then %y%{if date!=maxdate then "-%{maxdate}"}" - "}%l 
+set format_trackwin_album= %{?y?%y%{?date!=maxdate?-%{maxdate}} - }%l 
+set format_treewin=  %{?y?%y%{?date!=maxdate?-%{maxdate}} - }%l 
 set format_treewin_artist=%a
 set mouse=true
 bind -f common mlb_click_selected win-activate
