@@ -1,7 +1,7 @@
 dotfiles
 ========
 
-vim, bash, git, tmux, cmus, openbox, mc, xorg configuration
+vim, bash, git, rtorrent, tmux, cmus, openbox, mc, xorg configuration
 
 Installation
 --------------
