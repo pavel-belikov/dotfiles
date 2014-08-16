@@ -1,4 +1,5 @@
-*faceName:          Inconsolata:size=14:antialias=true
+*faceName:          Inconsolata LGC:size=14:antialias=true
+*locale:            true
 Xft.dpi:            96
 Xft.antialias:      true
 *xftAntialias:      true
