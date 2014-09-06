@@ -7,8 +7,8 @@ if filereadable(expand("~/.vimrc.bundles"))
     source ~/.vimrc.bundles
 endif
 
-set exrc
-set secure
+""set exrc
+""set secure
 
 set tags=~/.tags
 
@@ -26,22 +26,51 @@ set laststatus=2
 set statusline=%!MyStatusLine()
 set tabline=%!MyTabLine()
 
-set shiftwidth=4
-set tabstop=4
-set expandtab
+set shiftwidth=8
+set tabstop=8
 set smarttab
 set autoindent
 set smartindent
+set noexpandtab
 let &cc=join(range(81,999),",")
 
-autocmd BufReadPost,FileReadPost,BufNewFile,BufWinEnter * call system("tmux rename-window 'vim " . expand("%") . "'")
-autocmd VimLeave * call system("tmux rename-window bash")
-
+if &term =~ '^screen' && exists('$TMUX')
+    set t_ku=OA
+    set t_kd=OB
+    set t_kr=OC
+    set t_kl=OD
+    set tenc=utf8
+    autocmd BufReadPost,FileReadPost,BufNewFile,BufWinEnter,BufEnter * call system("tmux rename-window 'vim " . expand("%") . "'")
+    autocmd VimLeave * call system("tmux rename-window bash")
+    set ttymouse=xterm2
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+    execute "set <xHome>=\e[1;*H"
+    execute "set <xEnd>=\e[1;*F"
+    execute "set <Insert>=\e[2;*~"
+    execute "set <Delete>=\e[3;*~"
+    execute "set <PageUp>=\e[5;*~"
+    execute "set <PageDown>=\e[6;*~"
+    execute "set <xF1>=\e[1;*P"
+    execute "set <xF2>=\e[1;*Q"
+    execute "set <xF3>=\e[1;*R"
+    execute "set <xF4>=\e[1;*S"
+    execute "set <F5>=\e[15;*~"
+    execute "set <F6>=\e[17;*~"
+    execute "set <F7>=\e[18;*~"
+    execute "set <F8>=\e[19;*~"
+    execute "set <F9>=\e[20;*~"
+    execute "set <F10>=\e[21;*~"
+    execute "set <F11>=\e[23;*~"
+    execute "set <F12>=\e[24;*~"
+endif
 set iskeyword=@,48-57,_,192-255
 
 filetype plugin indent on
 syntax on
-autocmd BufWinEnter * match ErrorMsg /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /^ \+\|[^\t]\zs\t\+\|\s\+$/
 autocmd BufWinLeave * call clearmatches()
 
 set linebreak
@@ -100,6 +129,7 @@ imap <C-Space> <C-X><C-U>
 
 inoremap <C-W> <Esc><C-W>a
 inoremap <C-H> <Left><Del>
+inoremap <C-L> <C-O><C-L>
 inoremap ( ()<Left>
 inoremap [ []<Left>
 inoremap { {}<Left><CR><CR><Up><Tab>
@@ -139,7 +169,6 @@ endfunction
 autocmd VimEnter * nested :call LoadSession()
 autocmd VimLeave * :call MakeSession()
 
-" git branch
 function MyStatusLine()
     let s = ""
     let m = mode()

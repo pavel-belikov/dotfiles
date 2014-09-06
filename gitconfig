@@ -3,7 +3,9 @@
 [color]
     ui = auto
 [diff]
-	tool = vimdiff
+    tool = vimdiff
+[core]
+    editor = vim
 [alias]
     aa = add --all
     ap = add --patch

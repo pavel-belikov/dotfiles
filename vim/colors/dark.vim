@@ -6,7 +6,8 @@ endif
 let g:colors_name = "dark"
 
 hi Normal               cterm=none            ctermfg=white            ctermbg=black             
-hi Scrollbar            cterm=none            ctermfg=cyan             ctermbg=darkcyan       
+hi Scrollbar            cterm=none            ctermfg=cyan             ctermbg=darkcyan
+hi VertSplit            cterm=none            ctermfg=lightgreen       ctermbg=lightgray
 hi Menu                 cterm=none            ctermfg=black            ctermbg=cyan      
 hi SpecialKey           cterm=none            ctermfg=red
 hi NonText              cterm=none            ctermfg=red
@@ -55,6 +56,8 @@ hi Folded               cterm=none            ctermfg=white            ctermbg=d
 hi StatusLineInsertMode cterm=underline       ctermfg=white            ctermbg=darkgreen
 hi StatusLineNormalMode cterm=underline       ctermfg=white            ctermbg=darkyellow
 hi StatusLineVisualMode cterm=underline       ctermfg=white            ctermbg=darkred
+
+hi ExtraWhitespace ctermbg=darkred
 
 "TODO: PMenuSbar PMenuThumb
 hi link IncSearch       Visual

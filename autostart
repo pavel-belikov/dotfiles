@@ -3,4 +3,5 @@ feh --bg-fill ~/.wallpapers/wallpaper &
 setxkbmap -layout us,ru -option grp:caps_toggle,compose:lwin,compose:rwin &
 lxpanel &
 xrdb ~/.Xresources &
-xterm +fullscreen -e bash -c "tmux new-session -s 0 'cmus' \; new-window"
+xterm +fullscreen -e bash -c "tmux new-session -s 0 'cmus' \; new-window" &
+amixer -c0 cset numid=2 100%

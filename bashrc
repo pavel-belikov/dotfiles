@@ -120,5 +120,6 @@ fi
 PS1='${debian_chroot:+($debian_chroot)}\e[01;32m\u@\h\e[1;34m:\e[01;33m\w\e[00m\e[0;36m$(__git_ps1)\e[1;34m\$\e[0m '
 GREP_OPTIONS="--color=auto"
 EDITOR="vim"
+VISUAL="vim"
 GIT_EDITOR="vim"
 eval "$(dircolors ~/.dirname)";

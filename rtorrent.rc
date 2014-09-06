@@ -1,6 +1,6 @@
-download_rate = 10240  
+download_rate = 10240
 upload_rate = 10240
 #set_max_file_size = 1099511628000
 session=~/.rtorrent.session
-directory=~/downloads
+directory=~/tmp
 schedule = watch_directory,5,5,load_start=~/downloads/*.torrent
