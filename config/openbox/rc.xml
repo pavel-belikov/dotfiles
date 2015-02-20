@@ -272,6 +272,11 @@
       <action name="ToggleShowDesktop"/>
     </keybind>
     <!-- Keybindings for windows -->
+    <keybind key="A-F2">
+      <action name="Execute">
+        <command>synapse</command>
+      </action>
+    </keybind>
     <keybind key="A-F4">
       <action name="Close"/>
     </keybind>

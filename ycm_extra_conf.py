@@ -5,7 +5,7 @@ flags = [
 '-Wall',
 '-Wextra',
 '-Werror',
-'-std=c99',
+#'-std=c99',
 '-x',
 'c',
 '-I',
@@ -13,7 +13,9 @@ flags = [
 '-I',
 '..',
 '-I',
-'/usr/include'
+'/usr/include',
+'-I',
+'~/include'
 ]
 
 compilation_database_folder = ''
