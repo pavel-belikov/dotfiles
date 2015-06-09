@@ -274,7 +274,7 @@
     <!-- Keybindings for windows -->
     <keybind key="A-F2">
       <action name="Execute">
-        <command>synapse</command>
+        <command>lxpanelctl run</command>
       </action>
     </keybind>
     <keybind key="A-F4">

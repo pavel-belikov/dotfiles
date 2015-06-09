@@ -6,7 +6,10 @@ call vundle#begin()
 
 Plugin 'gmarik/Vundle.vim'
 Plugin 'majutsushi/tagbar'
+if has("win32")
+else
 Plugin 'Valloric/YouCompleteMe'
+endif
 Plugin 'a.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
@@ -28,7 +31,7 @@ Plugin 'vim-scripts/TaskList.vim'
 "Syntastic - scrooloose/syntastic
 
 if filereadable(expand("~/.vimrc.bundles.local"))
-    source ~/.vimrc.bundles.local
+	source ~/.vimrc.bundles.local
 endif
 
 call vundle#end()

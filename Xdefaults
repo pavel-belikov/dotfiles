@@ -25,6 +25,8 @@ Xft.hintstyle:      hintslight
 *activeIcon:        true
 *inputMethod:       xim
 
+XTerm*utf8Title:    true
+
 *cursorColor: #60ff60
 *background: #0c0c0c
 *foreground: #f0f0f0

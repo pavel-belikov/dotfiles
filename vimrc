@@ -1,7 +1,10 @@
 colorscheme dark
 
 set nocompatible
+if has("win32")
+else
 set shell=/bin/sh
+endif
 
 if filereadable(expand("~/.vimrc.bundles"))
 	source ~/.vimrc.bundles
@@ -18,9 +21,17 @@ set sessionoptions=blank,buffers,curdir,folds,tabpages
 set fileencodings=utf8
 set encoding=utf8
 
-set guifont=Inconsolata\ 14
+if has("win32")
+	set guifont=InconsolataLGC\ 14
+else
+	set guifont=Consolas:h14
+endif
 set guioptions=ai
-set showtabline=0
+if has("gui_running")
+	set showtabline=2
+else
+	set showtabline=0
+endif
 
 set laststatus=2
 set statusline=%!MyStatusLine()

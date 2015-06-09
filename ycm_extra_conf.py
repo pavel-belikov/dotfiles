@@ -5,7 +5,7 @@ flags = [
 '-Wall',
 '-Wextra',
 '-Werror',
-#'-std=c99',
+'-std=c++11',
 '-x',
 'c',
 '-I',
