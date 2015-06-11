@@ -7,15 +7,15 @@ Global {
   margin=0
   widthtype=percent
   width=100
-  height=26
-  transparent=0
-  tintcolor=#000000
-  alpha=0
+  height=30
+  transparent=1
+  tintcolor=#121212
+  alpha=255
   autohide=0
   heightwhenhidden=2
   setdocktype=1
   setpartialstrut=1
-  usefontcolor=1
+  usefontcolor=0
   fontsize=10
   fontcolor=#ffffff
   usefontsize=0
@@ -40,12 +40,6 @@ Plugin {
   type=space
   Config {
     Size=4
-  }
-}
-Plugin {
-  type=space
-  Config {
-    Size=2
   }
 }
 Plugin {
@@ -94,12 +88,6 @@ Plugin {
 Plugin {
   type=space
   Config {
-    Size=4
-  }
-}
-Plugin {
-  type=space
-  Config {
     Size=2
   }
 }
@@ -114,8 +102,9 @@ Plugin {
     UseUrgencyHint=1
     FlatButton=0
     MaxTaskWidth=300
-    spacing=0
+    spacing=1
     GroupedTasks=1
+    SameMonitorOnly=1
   }
 }
 Plugin {
@@ -127,23 +116,35 @@ Plugin {
 Plugin {
   type=xkb
   Config {
-    DisplayType=0
+    DisplayType=1
     PerAppLayout=1
     DefaultGroup=0
     Model=pc105
     LayoutsList=us
     VariantsList=,
     ToggleOpt=grp:shift_caps_toggle
+    FlagSize=1
   }
 }
 Plugin {
-  type=dclock
+  type=batt
   Config {
-    ClockFmt=%b %d | %A | %H:%M
-    TooltipFmt=%A %x
-    BoldFont=0
-    IconOnly=0
-    CenterText=0
+    BackgroundColor=black
+    ChargingColor1=#28f200
+    ChargingColor2=#22cc00
+    DischargingColor1=#ffee00
+    DischargingColor2=#d9ca00
+    HideIfNoBattery=1
+    AlarmCommand=xmessage Battery low
+    AlarmTime=15
+    BorderWidth=1
+    Size=10
+    ShowExtendedInformation=0
+  }
+}
+Plugin {
+  type=netstat
+  Config {
   }
 }
 Plugin {
@@ -152,8 +153,18 @@ Plugin {
   }
 }
 Plugin {
-  type=netstat
+  type=volumealsa
   Config {
+  }
+}
+Plugin {
+  type=dclock
+  Config {
+    ClockFmt=%I:%M %p%n%x
+    TooltipFmt=%A %x
+    BoldFont=0
+    IconOnly=0
+    CenterText=1
   }
 }
 Plugin {
