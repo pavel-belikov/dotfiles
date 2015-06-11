@@ -22,9 +22,9 @@ set fileencodings=utf8
 set encoding=utf8
 
 if has("win32")
-	set guifont=InconsolataLGC\ 14
-else
 	set guifont=Consolas:h14
+else
+	set guifont=InconsolataLGC\ 14
 endif
 set guioptions=ai
 if has("gui_running")
@@ -118,7 +118,7 @@ let g:NERDTreeWinPos='left'
 let g:NERDTreeShowHidden=1
 
 let g:ycm_confirm_extra_conf=0
-let g:ycm_global_extra_conf='~/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
 let g:ycm_key_list_select_completion = ['<Down>']
 
 let g:easytags_file='~/.tags'
