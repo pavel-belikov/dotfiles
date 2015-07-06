@@ -12,7 +12,7 @@ Global {
   tintcolor=#121212
   alpha=255
   autohide=0
-  heightwhenhidden=2
+  heightwhenhidden=0
   setdocktype=1
   setpartialstrut=1
   usefontcolor=0
@@ -46,6 +46,9 @@ Plugin {
   type=launchbar
   Config {
     Button {
+      id=menu://applications/Accessories/org.gnome.Nautilus.desktop
+    }
+    Button {
       id=/usr/share/applications/debian-xterm.desktop
       image=/home/belikov/.icons/terminal
     }
@@ -54,7 +57,7 @@ Plugin {
       image=/opt/firefox/browser/icons/mozicon128.png
     }
     Button {
-      id=/usr/share/applications/kde4/ktorrent.desktop
+      id=menu://applications/Internet/deluge.desktop
     }
     Button {
       id=menu://applications/Accessories/gvim.desktop
@@ -73,12 +76,6 @@ Plugin {
     }
     Button {
       id=/usr/share/applications/goldendict.desktop
-    }
-    Button {
-      id=menu://applications/Internet/teamviewer-teamviewer10.desktop
-    }
-    Button {
-      id=/usr/share/applications/PlayOnLinux.desktop
     }
     Button {
       id=menu://applications/Games/steam.desktop

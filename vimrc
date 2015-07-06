@@ -26,7 +26,7 @@ if has("win32")
 else
 	set guifont=InconsolataLGC\ 14
 endif
-set guioptions=ai
+set guioptions=aie
 if has("gui_running")
 	set showtabline=2
 else
@@ -81,7 +81,7 @@ set iskeyword=@,48-57,_,192-255
 
 filetype plugin indent on
 syntax on
-autocmd BufWinEnter * match ExtraWhitespace /^ \+\|[^\t]\zs\t\+\|\s\+$/
+autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp match ExtraWhitespace /^ \+\|[^\t]\zs\t\+\|\s\+$/
 autocmd BufWinLeave * call clearmatches()
 
 set linebreak
