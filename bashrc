@@ -37,7 +37,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color) color_prompt=yes;;
+    xterm-color|*-256color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -84,6 +84,9 @@ if [ -x /usr/bin/dircolors ]; then
     #alias egrep='egrep --color=auto'
 fi
 
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
 # some more ls aliases
 #alias ll='ls -l'
 #alias la='ls -A'
@@ -117,9 +120,8 @@ if [ -f /etc/bash_completion ]; then
   . /etc/bash_completion
 fi
 
-PS1='${debian_chroot:+($debian_chroot)}\e[01;32m\u@\h\e[1;34m:\e[01;33m\w\e[00m\e[0;36m$(__git_ps1)\e[1;34m\$\e[0m '
+PS1='${debian_chroot:+($debian_chroot)}\[\e[01;32m\]\u@\h\[\e[1;34m\]:\[\e[01;33m\]\w\[\e[00m\e[0;36m\]$(__git_ps1)\[\e[1;34m\]\$\[\e[0m\] '
 GREP_OPTIONS="--color=auto"
 EDITOR="vim"
 VISUAL="vim"
 GIT_EDITOR="vim"
-eval "$(dircolors ~/.dirname)";

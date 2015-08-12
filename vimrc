@@ -27,22 +27,18 @@ else
 	set guifont=InconsolataLGC\ 14
 endif
 set guioptions=aie
-if has("gui_running")
-	set showtabline=2
-else
-	set showtabline=0
-endif
+set showtabline=0
 
 set laststatus=2
 set statusline=%!MyStatusLine()
 set tabline=%!MyTabLine()
 
-set shiftwidth=8
-set tabstop=8
+set expandtab
+set shiftwidth=4
+set tabstop=4
 set smarttab
 set autoindent
 set smartindent
-set noexpandtab
 let &cc=join(range(81,999),",")
 
 if &term =~ '^screen' && exists('$TMUX')
@@ -81,7 +77,7 @@ set iskeyword=@,48-57,_,192-255
 
 filetype plugin indent on
 syntax on
-autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp match ExtraWhitespace /^ \+\|[^\t]\zs\t\+\|\s\+$/
+autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
 
 set linebreak

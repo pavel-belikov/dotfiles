@@ -1,0 +1,65 @@
+xterm*faceName:          Inconsolata LGC:size=14:antialias=true
+!URxvt.font:         xft:Inconsolata LGC:size=14:antialias=true
+!URxvt.boldFont:
+!URxvt.letterSpace:  -1
+!URxvt.lineSpace:    -1
+!*locale:            true
+Xft.dpi:            96
+Xft.antialias:      true
+*xftAntialias:      true
+Xft.rgba:           rgb
+Xft.hinting:        true
+Xft.hintstyle:      hintslight
+
+!*pointerShape:      left_ptr
+
+*metaSendsEscape:   true
+
+!*scaleHeight:       1.00
+!*internalBorder:    0
+
+URxvt.scrollBar: false
+
+*boldMode:          false
+*allowBoldFonts:    false
+*boldColor:         false
+*intensityStyles:   false
+*visualBell:        true
+*saveLines:         0
+!*iconPixmap:        /usr/share/pixmaps/xterm_48x48.xbm
+!*iconFile:          /usr/share/icons/Faenza/apps/64/terminal.png
+!*activeIcon:        true
+*inputMethod:       xim
+
+XTerm*utf8Title:    true
+
+*cursorColor: #60ff60
+*background: #0c0c0c
+*foreground: #f0f0f0
+! Black, DarkGrey
+*color0:  #0c0c0c
+*color8:  #101010
+! DarkRed, Red
+*color1:  #550000
+*color9:  #ff3c3c
+! DarkGreen, Green
+*color2:  #086008
+*color10: #50ff50
+! DarkYellow, Yellow
+*color3:  #aa5500
+*color11: #ffff30
+! DarkBlue, Blue
+*color4:  #0045ff
+*color12: #5555ff
+! DarkMagenta, Magenta
+*color5:  #a000a0
+*color13: #e64ce6
+! DarkCyan, Cyan
+*color6:  #008cff
+*color14: #55ffff
+! Grey, White
+*color7:  #151515
+*color15: #f0f0f0
+
+
+
