@@ -18,7 +18,7 @@ Dependencies
 --------------
 - scrot
 - dbus
-- xkblayout-state
+- xkb-switch
 - kbdd
 - numlockx
 - Inconsolata LGC ttf font

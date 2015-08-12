@@ -142,7 +142,7 @@ kbdwidget.border_width = 1
 kbdwidget.border_color = beautiful.fg_normal
 
 function update_layout_indicator(...)
-    local fd = io.popen('xkblayout-state print "%s"')
+    local fd = io.popen('xkb-switch')
     local layout = fd:read()
     fd:close()
     if layout then
@@ -258,11 +258,10 @@ for s = 1, screen.count() do
     right_layout:add(kbdwidget)
     right_layout:add(separator)
     right_layout:add(volume_widget)
-    right_layout:add(separator)
     if s == 1 then
         right_layout:add(wibox.widget.systray())
-        right_layout:add(separator)
     end
+    right_layout:add(separator)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
 
