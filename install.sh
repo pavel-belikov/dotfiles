@@ -32,6 +32,8 @@ if [ ! -e "$HOME/.vim/bundle/Vundle.vim" ]; then
     vim -u "$HOME/.vimrc.bundles" +PluginInstall +qa
 fi
 
-touch "$HOME/.config/awesome/config.lua"
+if [ ! -e "$HOME/.config/awesome/config.lua" ]; then
+    echo "return {}" > "$HOME/.config/awesome/config.lua"
+fi
 
 echo "Ready"
