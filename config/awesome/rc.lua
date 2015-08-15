@@ -1,12 +1,8 @@
 -- TODO:
--- local rc (enable_music_widget, enable_battery_widget, etc)
+-- eth, wlan
 -- mem, cpu, drive, google drive
 -- mail, vk
 -- tasklist popup menu
--- editor=gvim
--- FIXME:
--- mouse doesn't work in non-english layout
--- extract icons to beautiful theme
 
 -- Standard awesome library
 local gears = require("gears")
@@ -25,6 +21,7 @@ local menubar = require("menubar")
 local calendar = require("calendar")
 local cmus = require("cmus")
 local volume = require("volume")
+local battery = require("battery")
 
 --Local settings
 local config = require("config")
@@ -134,7 +131,7 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- {{{ Wibox
 -- Create a textclock widget
 mytextclock = awful.widget.textclock(" %b %d, %I:%M %p ", 30)
-calendar.register(mytextclock, {})
+calendar.register(mytextclock, config.calendar or {})
 
 -- Keyboard layout widget
 kbdwidget = wibox.widget.textbox()
@@ -158,13 +155,18 @@ update_layout_indicator()
 
 --Music widget
 if config.enable_cmus_widget then
-    music_widget = cmus.widget({})
+    music_widget = cmus.widget(config.cmus or {})
 else
     music_widget = {update = function() end}
 end
 
 --Volume widget
-volume_widget = volume.widget({})
+volume_widget = volume.widget(config.volume or {})
+
+--Battery
+if config.enable_battery_widget then
+    battery_widget = battery.widget(config.battery or {})
+end
 
 separator = wibox.widget.textbox("|")
 spacer = wibox.widget.textbox(" ")
@@ -258,6 +260,9 @@ for s = 1, screen.count() do
     right_layout:add(kbdwidget)
     right_layout:add(separator)
     right_layout:add(volume_widget)
+    if config.enable_battery_widget then
+        right_layout:add(battery_widget)
+    end
     if s == 1 then
         right_layout:add(wibox.widget.systray())
     end

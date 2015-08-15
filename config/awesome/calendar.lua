@@ -3,6 +3,7 @@ local os = {date = os.date, time = os.time}
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local tooltip = require("tooltip")
 
 local calendar = {}
 local calendar_box
@@ -79,12 +80,12 @@ end
 local function set_geometry(self)
     local my_geo = self.wibox:geometry()
 
-    local cw, ch = self.calendar_text:fit(600, 600)
-    local mw, mh = self.month_layout:fit(600, 600)
-    local yw, yh = self.year_layout:fit(600, 600)
+    local cw, ch = self.data.calendar_text:fit(600, 600)
+    local mw, mh = self.data.month_layout:fit(600, 600)
+    local yw, yh = self.data.year_layout:fit(600, 600)
     local hw = mw + yw + 5
 
-    local n_w, n_h = self.main_layout:fit(hw > cw and hw or cw, 600)
+    local n_w, n_h = self.data.main_layout:fit(hw > cw and hw or cw, 600)
     n_w = n_w + 2 * self.margin
     n_h = n_h + 2 * self.margin
     if my_geo.width ~= n_w or my_geo.height ~= n_h then
@@ -95,8 +96,7 @@ end
 local function move_date(self, months)
     self.month = self.month + months
     fill_calendar(self)
-    set_geometry(self)
-    awful.placement.no_offscreen(self.wibox)
+    self.tooltip.geometry()
 end
 
 local function move_today(self)
@@ -105,21 +105,8 @@ local function move_today(self)
     move_date(self, 0)
 end
 
-local function toggle_visibility(self)
-    if self.wibox.visible then
-        self.wibox.visible = false
-    else
-        awful.placement.under_mouse(self.wibox)
-        move_today(self)
-        self.wibox.visible = true
-    end
-end
-
 local function create_calendar_box(args)
     local self = {
-        wibox = wibox({ }),
-
-        margin_layout = wibox.layout.margin(),
         main_layout = wibox.layout.fixed.vertical(),
 
         header_layout = wibox.layout.align.horizontal(),
@@ -134,7 +121,6 @@ local function create_calendar_box(args)
 
         calendar_text = wibox.widget.textbox(),
 
-        margin = args.margin or 4,
         show_week = args.show_week or true,
         show_wday = args.show_wday or true,
         start_wday = (args.start_wday or 1) + 1,
@@ -159,14 +145,6 @@ local function create_calendar_box(args)
         month = 0,
         year = 0
     }
-
-    self.wibox.visible = false
-    self.wibox.ontop = true
-    self.wibox.border_width = beautiful.calendar_border_width or beautiful.tooltip_border_width or beautiful.border_width or 5
-    self.wibox.border_color = beautiful.calendar_border_color or beautiful.tooltip_border_color or beautiful.border_normal or '#2D2D2D'
-    self.wibox.opacity = beautiful.calendar_opacity or beautiful.tooltip_opacity or 1
-    self.wibox:set_bg(beautiful.calendar_bg_color or beautiful.tooltip_bg_color or beautiful.bg_focus or '#1D1D1D')
-    self.wibox:set_fg(beautiful.calendar_fg_color or beautiful.tooltip_fg_color or beautiful.fg_focus or "#ffffff")
 
     self.month_layout:add(self.month_prev)
     self.month_layout:add(self.month_text)
@@ -194,24 +172,36 @@ local function create_calendar_box(args)
 
     self.main_layout:add(self.header_layout)
     self.main_layout:add(self.calendar_text)
-    self.margin_layout:set_top(self.margin)
-    self.margin_layout:set_bottom(self.margin)
-    self.margin_layout:set_left(self.margin)
-    self.margin_layout:set_right(self.margin)
-    self.margin_layout:set_widget(self.main_layout)
-    self.wibox:set_widget(self.margin_layout)
+
+    self.tooltip = tooltip.create({
+        widget = self.main_layout,
+        margin = args.margin or 4,
+        data = self,
+        geometry = function(tooltip)
+            set_geometry(tooltip)
+        end
+    })
+
     return self
 end
 
 function calendar.register(widget, args)
     if not calendar_box then
-        calendar_box = create_calendar_box(args or {})
+        calendar_box = create_calendar_box(args)
     end
 
     widget:buttons(awful.util.table.join(
-        awful.button({ }, 1, function() toggle_visibility(calendar_box) end),
-        awful.button({ }, 2, function() move_today(calendar_box) end),
-        awful.button({ }, 3, function() toggle_visibility(calendar_box) end)
+        awful.button({ }, 1, function()
+            move_today(calendar_box)
+            calendar_box.tooltip.toggle_visibility()
+        end),
+        awful.button({ }, 2, function()
+            move_today(calendar_box)
+        end),
+        awful.button({ }, 3, function()
+            move_today(calendar_box)
+            calendar_box.tooltip.toggle_visibility()
+        end)
     ))
 
 end

@@ -2,6 +2,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local naughty = require("naughty")
+local tooltip = require("tooltip")
 local mouse = mouse
 
 local volume = {}
@@ -39,15 +40,17 @@ local function set_volume_widget(self, volume, mute)
         self:set_image(data[self].img_high)
     end
 
-    if data[self].wibox.visible then
+    if data[self].tooltip.wibox.visible then
         data[self].progressbar:set_value(volume / 100)
     end
 end
 
 local function change_volume(self)
     local coords = mouse.coords()
-    local g = data[self].wibox:geometry()
-    local m = data[self].margin
+    local g = data[self].tooltip.wibox:geometry()
+    g.x = g.x + data[self].tooltip.wibox.border_width
+    g.y = g.y + data[self].tooltip.wibox.border_width
+    local m = data[self].tooltip.margin
     if coords.x >= g.x + m / 2 and coords.x < g.x + g.width - m / 2 and
        coords.y >= g.y + m / 2 and coords.y < g.y + g.height - m / 2 then
         local v = (coords.y - g.y - m) / (g.height - 2 * m)
@@ -68,20 +71,18 @@ local function update_volume_widget(self)
     set_volume_widget(self, volume, mute)
 end
 
-local function toggle_visibility(self)
-    if data[self].wibox.visible then
-        data[self].wibox.visible = false
-    else
-        awful.placement.under_mouse(data[self].wibox)
-        awful.placement.no_offscreen(data[self].wibox)
-        data[self].wibox.visible = true
-        update_volume_widget(self)
-    end
-end
-
 local function create_tooltip(self, args)
-    data[self].wibox.ontop = true
-    data[self].wibox.visible = false
+    data[self].tooltip = tooltip.create({
+        hide_timer = args.hide_timer or 2,
+        widget = data[self].layout,
+        geometry = function(tooltip)
+            tooltip.wibox:geometry({
+                width = tooltip.margin * 2 + data[self].width,
+                height = tooltip.margin * 2 + data[self].height
+            })
+        end,
+        margin = args.margin or 8
+    })
 
     data[self].progressbar:set_vertical(true)
     data[self].progressbar:set_background_color(args.background or beautiful.volume_background or "#0024ff")
@@ -92,19 +93,13 @@ local function create_tooltip(self, args)
     data[self].reversepb:set_direction("south")
     data[self].layout:add(data[self].reversepb)
 
-    data[self].margin_layout:set_top(data[self].margin)
-    data[self].margin_layout:set_bottom(data[self].margin)
-    data[self].margin_layout:set_left(data[self].margin)
-    data[self].margin_layout:set_right(data[self].margin)
-    data[self].margin_layout:set_widget(data[self].layout)
-    data[self].wibox:set_widget(data[self].margin_layout)
-
     self:buttons(awful.util.table.join(
-        awful.button({ }, 1, function() toggle_visibility(self) end),
+        awful.button({ }, 1, function()
+            data[self].tooltip.toggle_visibility()
+            data[self].update()
+        end),
         awful.button({ }, 2, function()
-            if data[self].wibox.visible then
-                data[self].wibox.visible = false
-            end
+            data[self].tooltip.hide()
             awful.util.spawn_with_shell(data[self].external_mixer)
         end),
         awful.button({ }, 3, function()
@@ -117,22 +112,9 @@ local function create_tooltip(self, args)
             set_volume_widget(self, volume, not mute)
         end)
     ))
-    data[self].wibox:buttons(awful.util.table.join(
+    data[self].tooltip.wibox:buttons(awful.util.table.join(
         awful.button({ }, 1, function() change_volume(self) end)
     ))
-    data[self].wibox:geometry({
-        width = data[self].margin * 2 + data[self].width,
-        height = data[self].margin * 2 + data[self].height
-    })
-
-    data[self].hide_timer:connect_signal("timeout", function()
-        data[self].wibox.visible = false
-        data[self].hide_timer:stop()
-    end)
-
-    data[self].wibox:connect_signal("mouse::enter", function() data[self].hide_timer:stop() end)
-
-    data[self].wibox:connect_signal("mouse::leave", function() data[self].hide_timer:again() end)
 end
 
 function volume.widget(args)
@@ -145,15 +127,12 @@ function volume.widget(args)
         update = function() update_volume_widget(self) end,
         external_mixer = args.mixer or "pavucontrol",
         round = args.round or 0.05,
-        wibox = wibox({ }),
-        margin_layout = wibox.layout.margin(),
         layout = wibox.layout.fixed.vertical(),
         reversepb = wibox.layout.rotate(),
         progressbar = awful.widget.progressbar(),
-        margin = args.margin or 8,
         height = args.height or 100,
         width = args.width or 10,
-        hide_timer = timer({ timeout = args.hide_timer or 2}),
+
         img_muted = args.muted or beautiful.volume_muted,
         img_off = args.off or beautiful.volume_off,
         img_low = args.low or beautiful.volume_low,
@@ -161,11 +140,25 @@ function volume.widget(args)
         img_high = args.high or beautiful.volume_high
     }
     create_tooltip(self, args)
+    if beautiful.volume_border_width then
+        data[self].tooltip.wibox.border_width = beautiful.volume_border_width
+    end
+    if beautiful.volume_border_color then
+        data[self].tooltip.wibox.border_color = beautiful.volume_border_color
+    end
+    if beautiful.volume_opacity then
+        data[self].tooltip.wibox.opacity = beautiful.volume_opacity
+    end
+    if beautiful.volume_bg_color then
+        data[self].tooltip.wibox:set_bg(beautiful.volume_bg_color)
+    end
+    if beautiful.volume_fg_color then
+        data[self].tooltip.wibox:set_fg(beautiful.volume_fg_color)
+    end
     data[self].update()
-    timer = timer({ timeout = args.timeout or 1 })
+    local timer = timer({ timeout = args.timeout or 1 })
     timer:connect_signal("timeout", data[self].update)
     timer:start()
-    self:connect_signal("mouse::leave", function() data[self].hide_timer:start() end)
     return self
 end
 
