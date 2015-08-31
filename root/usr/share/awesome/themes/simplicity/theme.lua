@@ -118,6 +118,9 @@ theme.volume_medium = "/usr/share/awesome/themes/simplicity/panel/audio-volume-m
 theme.volume_high = "/usr/share/awesome/themes/simplicity/panel/audio-volume-high.svg"
 theme.volume_muted = "/usr/share/awesome/themes/simplicity/panel/audio-volume-muted.svg"
 
+theme.mail = "/usr/share/awesome/themes/simplicity/panel/mail.svg"
+theme.mail_new = "/usr/share/awesome/themes/simplicity/panel/mail-new.svg"
+
 theme.icon_theme = nil
 
 theme.poweroff = "/usr/share/awesome/themes/simplicity/panel/system-poweroff.svg"

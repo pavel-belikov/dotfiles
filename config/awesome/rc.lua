@@ -1,7 +1,6 @@
 -- TODO:
 -- eth, wlan
 -- mem, cpu, drive, google drive
--- mail, vk
 -- tasklist popup menu
 
 -- Standard awesome library
@@ -19,9 +18,10 @@ local menubar = require("menubar")
 
 -- Custom widgets
 local calendar = require("calendar")
-local cmus = require("cmus")
 local volume = require("volume")
 local battery = require("battery")
+cmus = require("cmus")
+mail = require("mail")
 
 --Local settings
 local config = require("config")
@@ -156,8 +156,6 @@ update_layout_indicator()
 --Music widget
 if config.enable_cmus_widget then
     music_widget = cmus.widget(config.cmus or {})
-else
-    music_widget = {update = function() end}
 end
 
 --Volume widget
@@ -166,6 +164,11 @@ volume_widget = volume.widget(config.volume or {})
 --Battery
 if config.enable_battery_widget then
     battery_widget = battery.widget(config.battery or {})
+end
+
+--Mail
+if config.enable_mail_widget then
+    mail_widget = mail.widget(config.mail or {})
 end
 
 separator = wibox.widget.textbox("|")
@@ -259,9 +262,13 @@ for s = 1, screen.count() do
     right_layout:add(separator)
     right_layout:add(kbdwidget)
     right_layout:add(separator)
+    -- Tray
     right_layout:add(volume_widget)
     if config.enable_battery_widget then
         right_layout:add(battery_widget)
+    end
+    if config.enable_mail_widget then
+        right_layout:add(mail_widget)
     end
     if s == 1 then
         right_layout:add(wibox.widget.systray())
@@ -548,4 +555,5 @@ function run_once(cmd)
 end
 
 run_once("kbdd")
+awful.util.spawn_with_shell("killall smwd; smwd")
 awful.util.spawn_with_shell(terminal .. " -class cmus -e cmus")

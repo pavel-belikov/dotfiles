@@ -114,10 +114,16 @@ local function create_tooltip(self, args)
     data[self].wibox:set_widget(data[self].margin_layout)
 end
 
+function cmus.update()
+    for self, data in pairs(data) do
+        self.update()
+    end
+end
+
 function cmus.widget(args)
     local self = wibox.widget.textbox()
     data[self] = {
-        format = args and args.format or "%{?status=\\\">\\\"?▶?▮▮} %a - %02n. %t",
+        format = args and args.format or "%{?status=\\\">\\\"?▶?▮▮} %a - %02n. %t (%{position}/%{duration})",
         update = function() update_music_widget(self) end,
         wibox = wibox({ }),
         margin_layout = wibox.layout.margin(),
@@ -148,6 +154,14 @@ function cmus.widget(args)
     self:connect_signal("mouse::leave", function()
         data[self].wibox.visible = false
     end)
+
+    if args.timeout and args.timeout == 0 then
+
+    else
+        local timer = timer({ timeout = args.timeout or 1 })
+        timer:connect_signal("timeout", data[self].update)
+        timer:start()
+    end
     
     self.update = data[self].update
     create_tooltip(self, args)

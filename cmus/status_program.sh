@@ -1,1 +1,1 @@
-echo 'music_widget.update()' | awesome-client
+echo 'cmus.update()' | awesome-client
