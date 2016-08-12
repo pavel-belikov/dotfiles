@@ -33,7 +33,7 @@ if [ ! -e "$HOME/.vim/bundle/Vundle.vim" ]; then
 fi
 
 if [ ! -e "$HOME/.config/awesome/config.lua" ]; then
-    echo "return {}" > "$HOME/.config/awesome/config.lua"
+    echo "return {music_wmclass = \"gmpc\"}" > "$HOME/.config/awesome/config.lua"
 fi
 
 echo "Ready"

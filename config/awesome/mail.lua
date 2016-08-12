@@ -32,13 +32,21 @@ function mail.update(account, open, count)
 end
 
 function mail.notify(account, open, count)
-    local title = "New mail" .. (count == 1 and "" or " (" .. count .. ")")
     naughty.notify({ timeout = 0,
                      icon = mail.icon_new or beautiful.mail_new,
                      icon_size = 48,
-                     title = title,
+                     title = "New mail (" .. count  .. ")",
                      text = account })
+end 
+
+function mail.notify_one(account, open, subject, from, to, text)
+    naughty.notify({ timeout = 0,
+                     icon = mail.icon_new or beautiful.mail_new,
+                     icon_size = 48,
+                     title = subject or "(no subject)",
+                     text = (from and from .. "\n" or "") .. (text or "") })
 end
+
 
 function mail.widget(args)
     local self = wibox.layout.fixed.horizontal()

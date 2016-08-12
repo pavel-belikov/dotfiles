@@ -21,6 +21,7 @@ local calendar = require("calendar")
 local volume = require("volume")
 local battery = require("battery")
 cmus = require("cmus")
+mpd = require("mpd")
 mail = require("mail")
 
 --Local settings
@@ -28,6 +29,15 @@ local config = require("config")
 
 -- Load Debian menu entries
 require("debian.menu")
+
+-- Set music player
+if config.music_player == "mpd" then
+    music = mpd
+    music.args = config.mpd or {}
+else
+    music = cmus
+    music.args = config.cmus or {}
+end
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -154,8 +164,8 @@ dbus.connect_signal("ru.gentoo.kbdd", update_layout_indicator)
 update_layout_indicator()
 
 --Music widget
-if config.enable_cmus_widget then
-    music_widget = cmus.widget(config.cmus or {})
+if config.enable_music_widget then
+    music_widget = music.widget(music.args)
 end
 
 --Volume widget
@@ -256,7 +266,7 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    if config.enable_cmus_widget then
+    if config.enable_music_widget then
         right_layout:add(music_widget)
     end
     right_layout:add(separator)
@@ -359,9 +369,9 @@ globalkeys = awful.util.table.join(
     -- Print screen
     awful.key({  }, "Print", function() awful.util.spawn_with_shell("scrot") end),
     -- Music
-    awful.key({ "Shift" }, "F10", cmus.toggle_play_pause),
-    awful.key({ "Shift" }, "F11", cmus.prev),
-    awful.key({ "Shift" }, "F12", cmus.next)
+    awful.key({ "Shift" }, "F10", music.toggle_play_pause),
+    awful.key({ "Shift" }, "F11", music.prev),
+    awful.key({ "Shift" }, "F12", music.next)
 )
 
 clientkeys = awful.util.table.join(
@@ -457,8 +467,10 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "Plugin%-container" },
       properties = { floating = true } },
+    { rule = { class = config.music_wmclass },
+      properties = { tag = tags[1][9] } },
     { rule = { class = "cmus" },
-      properties = { tag = tags[1][9] }    }
+      properties = { tag = tags[1][9] } }
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
@@ -555,5 +567,4 @@ function run_once(cmd)
 end
 
 run_once("kbdd")
-awful.util.spawn_with_shell("killall smwd; smwd")
-awful.util.spawn_with_shell(terminal .. " -class cmus -e cmus")
+awful.util.spawn_with_shell("pgrep -u $USER -x smwd > /dev/null && (smwd renotify) || (smwd)")

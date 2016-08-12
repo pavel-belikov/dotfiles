@@ -1,4 +1,4 @@
 [Global]
 Interval=5
-NotifyExec=printf "mail.notify('%{Name}', '%{OpenExec}', %d)" | awesome-client
-UnreadCountExec=printf "mail.update('%{Name}', '%{OpenExec}', %d)" | awesome-client
+NotifyExec=printf "mail.notify('%{Name}', '%{OpenExec}', '%{uids}')" | awesome-client &
+UnreadCountExec=printf "mail.update('%{Name}', '%{OpenExec}', %d)" | awesome-client &

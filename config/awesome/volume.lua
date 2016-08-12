@@ -14,9 +14,12 @@ local function get_volume(amixer_cmd)
     local status = fd:read("*all")
     fd:close()
     status = string.match(status, "%[%d+%%%] %[[^%]]+%]")
+    if status then
     local volume = string.match(status, "%d+")
-    local muted = not string.find(status, "on")
-    return tonumber(volume), muted
+        local muted = not string.find(status, "on")
+        return tonumber(volume), muted
+    end
+    return 0
 end
 
 local function set_volume(amixer_cmd, v)
