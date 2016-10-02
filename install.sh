@@ -16,7 +16,7 @@ install_dotfile () {
     target="$1"
     link="$2"
     if [ -f "$link" ]; then
-        rm "$link"
+        rm -f "$link"
     fi
     mkdir -p "$(dirname "$link")"
     ln -s "$target" "$link"
@@ -34,11 +34,13 @@ run_scripts () {
             filename="$script"
             script="$dir/$script"
             file_target="$(echo "$filename" | cut -f1 -d. -)"
-            file_priority="$(echo "$filename" | cut -f3 -d. -)"
-            if [[ "$file_target" == "$target" && "$file_priority" -ge "$min_priority" && "$file_priority" -le "$max_priority" ]]; then
-                echo "Run script: $script"
-                chmod u+x "$script"
-                "$script"
+            file_priority="$(echo "$filename" | cut -f3 -d. - | sed -e 's/^0*\(.\)/\1/')"
+            if [[ "$file_target" == "$target" || "$file_target" == "all" ]]; then
+                if [[ "$file_priority" -ge "$min_priority" && "$file_priority" -le "$max_priority" ]]; then
+                    echo "Run script: $script"
+                    chmod u+x "$script"
+                    "$script" || return 1
+                fi
             fi
         done < <(ls -1 "$dir" | sort -k3 -t.)
     fi

@@ -9,16 +9,22 @@ Installation
 ```
 git clone https://github.com/pavel-belikov/dotfiles.git
 cd dotfiles
-sudo ./install.sh
+./install.sh # or sudo ./install.sh root && ./install.sh user
 ```
 
-*Note*: `install.sh` needs administrative permissions to install awesome theme in `/usr/share/awesome/themes`.
+*Note*: `install.sh` needs administrative permissions to install awesome theme in `/usr/share/awesome/themes` and dependencies via git/apt-get.
 
-Dependencies
+Some dependencies (fonts and themes) are downloaded from external source (dropbox).
+
+Todo
 --------------
-- scrot
-- dbus
-- xkb-switch
-- kbdd
-- numlockx
-- Inconsolata LGC ttf font
+- build YouCompleteMe for user
+- update fc-cache
+- QtCreator, mpd
+- external samba
+- usermod -aG sudo
+- dropbox
+- jenkins
+- docker
+- vim: {}, long lines, new plugins
+- vim: Qt TaskList format
