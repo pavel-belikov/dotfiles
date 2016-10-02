@@ -1,39 +1,74 @@
 #!/bin/bash
 
-installDotfiles () {
-	if [ "${1:0:3}" != "./." -a "$1" != "./install.sh" -a "$1" != "./README.md" -a "$1" != "./LICENSE" ]
-	then
-        if [ "${1:0:6}" == "./root" ]; then
-            DST="${1:6}"
-        else
-            DST="$HOME/.${1:2}"
-        fi
-        if [ "$2" == "check" ]; then
-            echo "check: $DST → $PWD/${1:2}"
-        else
-            mkdir -p "`dirname \"$DST\"`"
-		    rm -f "$DST"
-		    ln -s "$PWD/${1:2}" "$DST"
-            echo "create link: $DST → $PWD/${1:2}"
-        fi
-	fi
+set -e
+shopt -s dotglob
+
+if [ -z "$1" ]; then
+    su -c ". \"$0\" root"
+    "$0" user
+    exit 0
+fi
+
+target="$1"
+root="$(pwd)"
+
+install_dotfile () {
+    target="$1"
+    link="$2"
+    if [ -f "$link" ]; then
+        rm "$link"
+    fi
+    mkdir -p "$(dirname "$link")"
+    ln -s "$target" "$link"
+    echo "Create link: $link → $target"
 }
 
-export -f installDotfiles
-if [ "$1" == "check" ]; then
-    find -type f -exec bash -c 'installDotfiles "{}" check' \;
+run_scripts () {
+    target="$1"
+    min_priority="$2"
+    max_priority="$3"
+    dir="$root/$4"
+    if [ -d "$dir" ]; then
+        while read script;
+        do
+            filename="$script"
+            script="$dir/$script"
+            file_target="$(echo "$filename" | cut -f1 -d. -)"
+            file_priority="$(echo "$filename" | cut -f3 -d. -)"
+            if [[ "$file_target" == "$target" && "$file_priority" -ge "$min_priority" && "$file_priority" -le "$max_priority" ]]; then
+                echo "Run script: $script"
+                chmod u+x "$script"
+                "$script"
+            fi
+        done < <(ls -1 "$dir" | sort -k3 -t.)
+    fi
+}
+
+install_directory () {
+    export INSTALL_DIRECTORY_FROM="$root/$1" INSTALL_DIRECTORY_TO="$2" 
+    if [ -d "$INSTALL_DIRECTORY_FROM" ] ; then
+        cd "$INSTALL_DIRECTORY_FROM"
+        find * -type f -exec bash -c 'install_dotfile "$INSTALL_DIRECTORY_FROM/{}" "$INSTALL_DIRECTORY_TO/{}"' \;
+    fi
+}
+
+export -f install_dotfile
+
+if [ "$target" == "user" ]; then
+    run_scripts user 0 99 scripts
+    run_scripts user 0 99 external/scripts
+    install_directory dotfiles "$HOME"
+    install_directory external/dotfiles "$HOME"
+    run_scripts user 100 199 scripts
+    run_scripts user 100 199 external/scripts
+elif [ "$target" == "root" ]; then
+    run_scripts root 0 99 scripts
+    run_scripts root 0 99 external/scripts
+    install_directory root ""
+    install_directory external/root ""
+    run_scripts root 100 199 scripts
+    run_scripts root 100 199 external/scripts
 else
-    find -type f -exec bash -c 'installDotfiles "{}"' \;
+    echo "Unknown target: $target"
+    exit 1
 fi
-
-if [ ! -e "$HOME/.vim/bundle/Vundle.vim" ]; then
-    echo "Installing Vim Vundle..."
-	git clone "https://github.com/gmarik/Vundle.vim.git" "$HOME/.vim/bundle/Vundle.vim"
-    vim -u "$HOME/.vimrc.bundles" +PluginInstall +qa
-fi
-
-if [ ! -e "$HOME/.config/awesome/config.lua" ]; then
-    echo "return {music_wmclass = \"gmpc\"}" > "$HOME/.config/awesome/config.lua"
-fi
-
-echo "Ready"
