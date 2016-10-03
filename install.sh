@@ -4,7 +4,7 @@ set -e
 shopt -s dotglob
 
 if [ -z "$1" ]; then
-    su -c ". \"$0\" root"
+    su -c "\"$0\" root"
     "$0" user
     exit 0
 fi
@@ -34,7 +34,7 @@ run_scripts () {
             filename="$script"
             script="$dir/$script"
             file_target="$(echo "$filename" | cut -f1 -d. -)"
-            file_priority="$(echo "$filename" | cut -f3 -d. - | sed -e 's/^0*\(.\)/\1/')"
+            file_priority="$(echo "$filename" | cut -f2 -d. - | sed -e 's/^0*\(.\)/\1/')"
             if [[ "$file_target" == "$target" || "$file_target" == "all" ]]; then
                 if [[ "$file_priority" -ge "$min_priority" && "$file_priority" -le "$max_priority" ]]; then
                     echo "Run script: $script"
@@ -42,7 +42,7 @@ run_scripts () {
                     "$script" || return 1
                 fi
             fi
-        done < <(ls -1 "$dir" | sort -k3 -t.)
+        done < <(ls -1 "$dir" | sort -k2 -t.)
     fi
 }
 
