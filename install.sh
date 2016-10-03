@@ -50,6 +50,12 @@ install_directory () {
     export INSTALL_DIRECTORY_FROM="$root/$1" INSTALL_DIRECTORY_TO="$2" 
     if [ -d "$INSTALL_DIRECTORY_FROM" ] ; then
         cd "$INSTALL_DIRECTORY_FROM"
+        for file in *;
+        do
+            if [ "$file" == "*" ]; then
+                return 0
+            fi
+        done
         find * -type f -exec bash -c 'install_dotfile "$INSTALL_DIRECTORY_FROM/{}" "$INSTALL_DIRECTORY_TO/{}"' \;
     fi
 }

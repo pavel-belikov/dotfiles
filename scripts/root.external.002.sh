@@ -12,7 +12,7 @@ mkdir -p "$external_dir"
 cd "$external_dir"
 
 wget -q -O dotfiles.zip https://www.dropbox.com/sh/fqepviweu1sdbuf/AABmCiawlVAHao34iwy3tpuFa?dl=1
-unzip -qq -x / -o dotfiles.zip -d dotfiles || true
+unzip -qq -o dotfiles.zip -d dotfiles -x / || true
 rm -f dotfiles.zip
 
 cd dotfiles
