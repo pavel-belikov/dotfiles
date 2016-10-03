@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z "$INSTALL_EXTERNAL" ]; then
+if [[ "$INSTALL_DOTFILES_OPTIONS" != *external* ]]; then
     exit 0
 fi
 

@@ -45,12 +45,9 @@ dependencies=(
     python-pip
     python3-pip
 
-    awesome
-    dbus
     scrot
     kbdd
     numlockx
-    feh
     lxappearance
     qt4-qtconfig
 
@@ -63,6 +60,15 @@ dependencies=(
     libxkbfile-dev
     libx11-dev
 )
+
+dependencies_de=(
+    awesome
+    dbus
+)
+
+if [[ "$INSTALL_DOTFILES_OPTIONS" != *no_de* ]]; then
+    dependencies+=dependencies_de
+fi
 
 if type apt-get &> /dev/null ; then
     dpkg --add-architecture i386
