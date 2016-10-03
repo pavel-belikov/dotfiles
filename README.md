@@ -19,8 +19,8 @@ Some dependencies (fonts and themes) are downloaded from external source (dropbo
 Todo
 --------------
 - build YouCompleteMe for user
-- update fc-cache
 - QtCreator, mpd
+- review some terminal emulators
 - external samba
 - usermod -aG sudo
 - dropbox
