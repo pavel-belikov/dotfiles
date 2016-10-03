@@ -125,3 +125,4 @@ GREP_OPTIONS="--color=auto"
 EDITOR="vim"
 VISUAL="vim"
 GIT_EDITOR="vim"
+export QT_STYLE_OVERRIDE=gtk
