@@ -67,7 +67,7 @@ dependencies_de=(
 )
 
 if [[ "$INSTALL_DOTFILES_OPTIONS" != *no_de* ]]; then
-    dependencies+=dependencies_de
+    dependencies=("${dependencies[@]}" "${dependencies_de[@]}")
 fi
 
 if type apt-get &> /dev/null ; then
