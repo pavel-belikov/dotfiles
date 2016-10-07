@@ -24,7 +24,7 @@ hi Question             cterm=bold            ctermfg=darkgreen
 hi StatusLine           cterm=underline       ctermfg=white            ctermbg=darkblue
 hi StatusLineNC         cterm=underline       ctermfg=white            ctermbg=bg
 hi Title                cterm=bold            ctermfg=darkmagenta
-hi Visual               cterm=none                                     ctermbg=grey
+hi Visual               cterm=none            ctermfg=white            ctermbg=darkcyan
 hi WarningMsg           cterm=bold            ctermfg=darkred
 hi Cursor                                     ctermfg=bg               ctermbg=green
 hi Comment                                    ctermfg=cyan
@@ -60,7 +60,7 @@ hi StatusLineVisualMode cterm=underline       ctermfg=white            ctermbg=d
 hi ExtraWhitespace                                                     ctermbg=darkred
 
 "GUI Colors
-hi Normal               gui=none              guifg=#f0f0f0            guibg=#0c0c0c
+hi Normal               gui=none              guifg=#cccccc            guibg=#0c0c0c
 hi Scrollbar            gui=none              guifg=#55ffff            guibg=#008cff
 hi VertSplit            gui=none              guifg=#50ff50            guibg=#202020
 hi Menu                 gui=none              guifg=#0c0c0c            guibg=#55ffff
@@ -78,7 +78,7 @@ hi Question             gui=bold              guifg=#086008
 hi StatusLine           gui=underline         guifg=#f0f0f0            guibg=#0045ff
 hi StatusLineNC         gui=underline         guifg=#f0f0f0            guibg=bg
 hi Title                gui=bold              guifg=#a000a0
-hi Visual               gui=none                                       guibg=#151515
+hi Visual               gui=none              guifg=#ffffff            guibg=#004588
 hi WarningMsg           gui=bold              guifg=#550000
 hi Cursor                                     guifg=bg                 guibg=#50ff50
 hi Comment                                    guifg=#55ffff

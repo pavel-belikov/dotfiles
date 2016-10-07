@@ -7,11 +7,10 @@ set shell=/bin/sh
 endif
 
 if filereadable(expand("~/.vimrc.bundles"))
-	source ~/.vimrc.bundles
+    source ~/.vimrc.bundles
 endif
-
-""set exrc
-""set secure
+"set exrc
+"set secure
 
 set tags=~/.tags
 
@@ -22,16 +21,14 @@ set fileencodings=utf8
 set encoding=utf8
 
 if has("win32")
-	set guifont=Consolas:h14
+    set guifont=Consolas:h14
 else
-	set guifont=InconsolataLGC\ 14
+    set guifont=InconsolataLGC\ 14
 endif
 set guioptions=aie
 set showtabline=0
 
 set laststatus=2
-set statusline=%!MyStatusLine()
-set tabline=%!MyTabLine()
 
 set expandtab
 set shiftwidth=4
@@ -39,46 +36,43 @@ set tabstop=4
 set smarttab
 set autoindent
 set smartindent
-let &cc=join(range(81,999),",")
 
 if &term =~ '^screen' && exists('$TMUX')
-	set t_ku=OA
-	set t_kd=OB
-	set t_kr=OC
-	set t_kl=OD
-	set tenc=utf8
-	autocmd BufReadPost,FileReadPost,BufNewFile,BufWinEnter,BufEnter * call system("tmux rename-window 'vim " . expand("%") . "'")
-	autocmd VimLeave * call system("tmux rename-window bash")
-	set ttymouse=xterm2
-	execute "set <xUp>=\e[1;*A"
-	execute "set <xDown>=\e[1;*B"
-	execute "set <xRight>=\e[1;*C"
-	execute "set <xLeft>=\e[1;*D"
-	execute "set <xHome>=\e[1;*H"
-	execute "set <xEnd>=\e[1;*F"
-	execute "set <Insert>=\e[2;*~"
-	execute "set <Delete>=\e[3;*~"
-	execute "set <PageUp>=\e[5;*~"
-	execute "set <PageDown>=\e[6;*~"
-	execute "set <xF1>=\e[1;*P"
-	execute "set <xF2>=\e[1;*Q"
-	execute "set <xF3>=\e[1;*R"
-	execute "set <xF4>=\e[1;*S"
-	execute "set <F5>=\e[15;*~"
-	execute "set <F6>=\e[17;*~"
-	execute "set <F7>=\e[18;*~"
-	execute "set <F8>=\e[19;*~"
-	execute "set <F9>=\e[20;*~"
-	execute "set <F10>=\e[21;*~"
-	execute "set <F11>=\e[23;*~"
-	execute "set <F12>=\e[24;*~"
+    set t_ku=OA
+    set t_kd=OB
+    set t_kr=OC
+    set t_kl=OD
+    set tenc=utf8
+    autocmd BufReadPost,FileReadPost,BufNewFile,BufWinEnter,BufEnter * call system("tmux rename-window 'vim " . expand("%") . "'")
+    autocmd VimLeave * call system("tmux rename-window bash")
+    set ttymouse=xterm2
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+    execute "set <xHome>=\e[1;*H"
+    execute "set <xEnd>=\e[1;*F"
+    execute "set <Insert>=\e[2;*~"
+    execute "set <Delete>=\e[3;*~"
+    execute "set <PageUp>=\e[5;*~"
+    execute "set <PageDown>=\e[6;*~"
+    execute "set <xF1>=\e[1;*P"
+    execute "set <xF2>=\e[1;*Q"
+    execute "set <xF3>=\e[1;*R"
+    execute "set <xF4>=\e[1;*S"
+    execute "set <F5>=\e[15;*~"
+    execute "set <F6>=\e[17;*~"
+    execute "set <F7>=\e[18;*~"
+    execute "set <F8>=\e[19;*~"
+    execute "set <F9>=\e[20;*~"
+    execute "set <F10>=\e[21;*~"
+    execute "set <F11>=\e[23;*~"
+    execute "set <F12>=\e[24;*~"
 endif
 set iskeyword=@,48-57,_,192-255
 
 filetype plugin indent on
 syntax on
-autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp match ExtraWhitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
 
 set linebreak
 set ruler
@@ -121,6 +115,15 @@ let g:easytags_file='~/.tags'
 let g:easytags_updatetime_min=0
 let g:easytags_updatetime_warn=0
 
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+let g:airline_left_sep = ''
+let g:airline_right_sep = ''
+
+let g:airline_theme = 'lucius'
+
 vnoremap <C-C> "+y
 vnoremap <C-X> "+d
 exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
@@ -139,7 +142,7 @@ inoremap <C-H> <Left><Del>
 inoremap <C-L> <C-O><C-L>
 inoremap ( ()<Left>
 inoremap [ []<Left>
-inoremap { {}<Left><CR><CR><Up><Tab>
+inoremap { {}<Left>
 inoremap " ""<Left>
 inoremap ' ''<Left>
 vmap { S{
@@ -166,102 +169,25 @@ nmap <F8> :TagbarToggle<CR>
 imap <F8> <Esc>:TagbarToggle<CR>a
 
 function! MakeSession()
-	if (argc() == 0)
-		exe "mksession! " $HOME . "/.vim/.session"
-	endif
+    if (argc() == 0)
+        exe "mksession! " $HOME . "/.vim/.session"
+    endif
 endfunction
 
 function! LoadSession()
-	let b:session = $HOME . "/.vim/.session"
-	if (argc() == 0 && filereadable(b:session))
-		exe 'source ' b:session
-	endif
+    let b:session = $HOME . "/.vim/.session"
+    if (argc() == 0 && filereadable(b:session))
+        exe 'source ' b:session
+    endif
 endfunction
+
+autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.cxx,*.cc inoremap { {}<Left><CR><CR><Up><Tab>
+autocmd BufWinLeave * inoremap { {}<Left>
+autocmd BufWinLeave * call clearmatches()
 
 autocmd VimEnter * nested :call LoadSession()
 autocmd VimLeave * :call MakeSession()
 
-function MyStatusLine()
-	let s = ""
-	let m = mode()
-	let t = ""
-	if m == 'i'
-		let t = 'Insert'
-		let m = 'Insert'
-	elseif m == 'R'
-		let t = 'Replace'
-		let m = 'Insert'
-	elseif m == 'Rv'
-		let t = 'Virtual Replace'
-		let m = 'Virtual'
-	elseif m == 'v' || m == 'V'|| m == 'CTRL-V' || m == 's' || m == 'S' || m == 'CTRL-S'
-		let t = 'Visual'
-		let m = 'Visual'
-	elseif m == 'c'
-		let t = 'Command'
-		let m = 'Normal'
-	else
-		let t = 'Normal'
-		let m = 'Normal'
-	endif
-	let s .= '%#StatusLine' . m . 'Mode# ' . t . ' '
-	let s .= '%##| %f %m%r%h%w %y | %{strlen(&fenc) ? &fenc : &enc} | %{&ff}%=%{tagbar#currenttag("%s | ","")}(ch:%b 0x%B) | %c : %l/%L [%p%%]'
-	let branch = system("git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* //'")
-	if branch != ''
-		let s .= ' |%#StatusLineInsertMode# ' . substitute(branch, '\n', '', 'g') . ' '
-	endif
-	return s
-endfunction
-
-function MyTabLine()
-	let s = ''
-	for i in range(tabpagenr('$'))
-		if i != 0
-			let s .= '%#TabLine#%T|'
-		endif
-		if i + 1 == tabpagenr()
-			let s .= '%#TabLineSel#'
-		else
-			let s .= '%#TabLine#'
-		endif
-		let s .= '%' . (i + 1) . 'T [' . (i + 1) . ']'
-		let n = ''
-		for b in tabpagebuflist(i + 1)
-			let n .= ' '
-			if getbufvar(b, "&buftype") == 'help'
-				let n .= '[H]' . fnamemodify(bufname(b), ':t:s/.txt$//')
-			elseif getbufvar(b, "&buftype") == 'quickfix'
-				let n .= '[Q]'
-			else
-				let n .= fnamemodify(bufname(b), ':p:t')
-			endif
-
-			if getbufvar(b, "&modified")
-				let n .= '*'
-			endif
-		endfor
-		if i + 1 == tabpagenr()
-			let s .= '%#TabLineSel#'
-		else
-			let s .= '%#TabLine#'
-		endif
-		if n == ''
-			let s .= '[New]'
-		else
-			let s .= n
-		endif
-		let s .= ' '
-	endfor
-	if tabpagenr('$') >= 0
-		let s .= '%#TabLine#|'
-	endif
-	let s .= '%#TabLineFill#%T'
-	if tabpagenr('$') > 1
-		let s .= '%=%999XX'
-	endif
-	return s
-endfunction
-
 if filereadable(expand("~/.vimrc.local"))
-	source ~/.vimrc.local
+    source ~/.vimrc.local
 endif
