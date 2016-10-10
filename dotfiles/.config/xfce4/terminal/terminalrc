@@ -1,0 +1,23 @@
+[Configuration]
+FontName=Inconsolata LGC Medium 14
+MiscAlwaysShowTabs=FALSE
+MiscBell=FALSE
+MiscBordersDefault=FALSE
+MiscCursorBlinks=FALSE
+MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
+MiscDefaultGeometry=80x24
+MiscInheritGeometry=FALSE
+MiscMenubarDefault=FALSE
+MiscMouseAutohide=FALSE
+MiscToolbarDefault=FALSE
+MiscConfirmClose=TRUE
+MiscCycleTabs=TRUE
+MiscTabCloseButtons=TRUE
+MiscTabCloseMiddleClick=TRUE
+MiscTabPosition=GTK_POS_TOP
+MiscHighlightUrls=TRUE
+FontAllowBold=FALSE
+ColorBackground=#111111111111
+ColorForeground=#cccccccccccc
+ColorPalette=#111111111111;#555500000000;#080860600808;#aaaa55550000;#00004545ffff;#a0a00000a0a0;#00008c8cffff;#202020202020;#202020202020;#ffff3c3c3c3c;#5050ffff5050;#ffffffff3030;#55555555ffff;#e6e64c4ce6e6;#5555ffffffff;#f0f0f0f0f0f0
+

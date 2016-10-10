@@ -15,9 +15,7 @@ root="$(pwd)"
 install_dotfile () {
     target="$1"
     link="$2"
-    if [ -f "$link" ]; then
-        rm -f "$link"
-    fi
+    rm -f "$link"
     mkdir -p "$(dirname "$link")"
     ln -s "$target" "$link"
     echo "Create link: $link → $target"
@@ -47,7 +45,7 @@ run_scripts () {
 }
 
 install_directory () {
-    export INSTALL_DIRECTORY_FROM="$root/$1" INSTALL_DIRECTORY_TO="$2" 
+    export INSTALL_DIRECTORY_FROM="$root/$1" INSTALL_DIRECTORY_TO="$2"
     if [ -d "$INSTALL_DIRECTORY_FROM" ] ; then
         cd "$INSTALL_DIRECTORY_FROM"
         for file in *;

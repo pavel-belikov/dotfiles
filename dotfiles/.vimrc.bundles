@@ -23,6 +23,7 @@ Plugin 'vim-scripts/TaskList.vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'tpope/vim-fugitive'
+Plugin 'kien/ctrlp.vim'
 
 if filereadable(expand("~/.vimrc.bundles.local"))
 	source ~/.vimrc.bundles.local
