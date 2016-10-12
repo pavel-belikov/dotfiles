@@ -5,7 +5,7 @@ flags = [
 '-Wall',
 '-Wextra',
 '-Werror',
-'-std=c++11',
+'-std=c++14',
 '-x',
 'c',
 '-I',
@@ -17,6 +17,14 @@ flags = [
 '-I',
 '~/include'
 ]
+
+cpp_dir = '/usr/include/c++'
+if os.path.dir(cpp_dir):
+    for f in os.listdir(cpp_dir):
+        fp = os.path.join(cpp_dir, f)
+        if os.path.isdir(fp):
+            flags += '-I'
+            flags += fp
 
 compilation_database_folder = ''
 

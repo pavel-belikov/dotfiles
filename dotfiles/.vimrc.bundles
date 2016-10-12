@@ -24,6 +24,8 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'tpope/vim-fugitive'
 Plugin 'kien/ctrlp.vim'
+Plugin 'pavel-belikov/vim-qmake'
+Plugin 'pavel-belikov/vim-qtcreator-tasks'
 
 if filereadable(expand("~/.vimrc.bundles.local"))
 	source ~/.vimrc.bundles.local
