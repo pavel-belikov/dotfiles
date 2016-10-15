@@ -119,6 +119,7 @@ if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
 
+let g:airline_section_z = '[0x%02B] < %l/%L (%c)'
 let g:airline_left_sep = ''
 let g:airline_right_sep = ''
 
