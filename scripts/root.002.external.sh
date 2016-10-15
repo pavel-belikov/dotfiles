@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$INSTALL_DOTFILES_OPTIONS" != *external* ]]; then
+if ! has_install_option external; then
     exit 0
 fi
 

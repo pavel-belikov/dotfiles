@@ -61,13 +61,13 @@ dependencies=(
     libx11-dev
 )
 
-dependencies_de=(
+dependencies_awesome=(
     awesome
     dbus
 )
 
-if [[ "$INSTALL_DOTFILES_OPTIONS" != *no_de* ]]; then
-    dependencies=("${dependencies[@]}" "${dependencies_de[@]}")
+if has_install_option awesome; then
+    dependencies=("${dependencies[@]}" "${dependencies_awesome[@]}")
 fi
 
 if type apt-get &> /dev/null; then

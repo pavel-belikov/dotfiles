@@ -3,16 +3,29 @@
 set -e
 shopt -s dotglob
 
-if [ -z "$1" ]; then
-    su -c "\"$0\" root"
-    "$0" user
+if [[ -z "$1" || "$1" == -* ]]; then
+    su -c "\"$0\" root $@"
+    "$0" user $@
     exit 0
 fi
 
 target="$1"
 root="$(pwd)"
 
-install_dotfile () {
+INSTALL_DOTFILES_OPTIONS="awesome"
+for opt in "${@:2}"
+do
+    if [[ "$opt" == --enable-* ]]; then
+        INSTALL_DOTFILES_OPTIONS="$INSTALL_DOTFILES_OPTIONS ${opt#--enable-}"
+    elif [[ "$opt" == --disable-* ]]; then
+        echo "$INSTALL_DOTFILES_OPTIONS" | sed "s/\s\+\<${opt#--disable-}\>\s\+/ /g"
+    else
+        echo "Unknown option: $opt"
+        exit 1
+    fi
+done
+
+install_dotfile() {
     target="$1"
     link="$2"
     rm -f "$link"
@@ -21,7 +34,7 @@ install_dotfile () {
     echo "Create link: $link → $target"
 }
 
-run_scripts () {
+run_scripts() {
     target="$1"
     min_priority="$2"
     max_priority="$3"
@@ -44,7 +57,7 @@ run_scripts () {
     fi
 }
 
-install_directory () {
+install_directory() {
     export INSTALL_DIRECTORY_FROM="$root/$1" INSTALL_DIRECTORY_TO="$2"
     if [ -d "$INSTALL_DIRECTORY_FROM" ] ; then
         cd "$INSTALL_DIRECTORY_FROM"
@@ -58,23 +71,25 @@ install_directory () {
     fi
 }
 
-export -f install_dotfile
+has_install_option() {
+    for arg in $INSTALL_DOTFILES_OPTIONS
+    do
+        if [ "$arg" == "$1" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
 
-if [ "$target" == "user" ]; then
-    run_scripts user 0 99 scripts
-    run_scripts user 0 99 external/scripts
-    install_directory dotfiles "$HOME"
-    install_directory external/dotfiles "$HOME"
-    run_scripts user 100 199 scripts
-    run_scripts user 100 199 external/scripts
-elif [ "$target" == "root" ]; then
-    run_scripts root 0 99 scripts
-    run_scripts root 0 99 external/scripts
-    install_directory root ""
-    install_directory external/root ""
-    run_scripts root 100 199 scripts
-    run_scripts root 100 199 external/scripts
-else
-    echo "Unknown target: $target"
-    exit 1
-fi
+export -f install_dotfile
+export -f install_directory
+export -f has_install_option
+export INSTALL_DOTFILES_OPTIONS
+
+run_scripts "$target" 0 99 scripts
+run_scripts "$target" 0 99 external/scripts
+install_directory dotfiles "$HOME"
+install_directory external/dotfiles "$HOME"
+run_scripts "$target" 100 199 scripts
+run_scripts "$target" 100 199 external/scripts
+
