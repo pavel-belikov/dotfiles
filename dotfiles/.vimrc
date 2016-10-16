@@ -2,8 +2,11 @@ colorscheme dark
 
 set nocompatible
 if has("win32")
+    set shell=cmd
+    set shellcmdflag=/c
+    au GUIEnter * simalt ~x
 else
-set shell=/bin/sh
+    set shell=/bin/sh
 endif
 
 if filereadable(expand("~/.vimrc.bundles"))
@@ -22,11 +25,13 @@ set encoding=utf8
 
 if has("win32")
     set guifont=Consolas:h14
+    set guioptions=aiet
+    set showtabline=2
 else
     set guifont=InconsolataLGC\ 14
+    set guioptions=aie
+    set showtabline=0
 endif
-set guioptions=aie
-set showtabline=0
 
 set laststatus=2
 

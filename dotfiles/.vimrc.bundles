@@ -1,10 +1,15 @@
 set nocompatible
 filetype off
 
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+if has("win32")
+    set rtp+=$HOME/vimfiles/bundle/Vundle.vim
+    call vundle#begin('$HOME/vimfiles/bundle/')
+else
+    set rtp+=~/.vim/bundle/Vundle.vim
+    call vundle#begin()
+endif
 
-Plugin 'gmarik/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
 Plugin 'majutsushi/tagbar'
 if has("win32")
 else
