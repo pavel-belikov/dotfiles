@@ -15,22 +15,14 @@ dependencies=(
     alsa-tools
     alsa-utils
     pavucontrol
-    xterm
+    xfce4-terminal
 
-    mpd
-    mpc
-    gmpc
     pcmanfm
     keepassx
     xarchiver
     goldendict
     libreoffice-writer
     evince
-    gimp
-    firefox
-    icedove
-    chromium
-    smplayer
 
     git
     gcc
@@ -66,8 +58,31 @@ dependencies_awesome=(
     dbus
 )
 
+dependencies_web=(
+    firefox
+    icedove
+    chromium
+)
+
+dependencies_media=(
+    mpd
+    mpc
+    gmpc
+    smplayer
+    gimp
+
+)
+
 if has_install_option awesome; then
     dependencies=("${dependencies[@]}" "${dependencies_awesome[@]}")
+fi
+
+if has_install_option web; then
+    dependencies=("${dependencies[@]}" "${dependencies_web[@]}")
+fi
+
+if has_install_option media; then
+    dependencies=("${dependencies[@]}" "${dependencies_media[@]}")
 fi
 
 if type apt-get &> /dev/null; then

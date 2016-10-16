@@ -12,7 +12,7 @@ fi
 target="$1"
 root="$(pwd)"
 
-INSTALL_DOTFILES_OPTIONS="awesome"
+INSTALL_DOTFILES_OPTIONS="awesome web media"
 for opt in "${@:2}"
 do
     if [[ "$opt" == --enable-* ]]; then
