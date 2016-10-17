@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if ! has_install_option awesome; then
+    exit 0
+fi
+
 if type xkb-switch &> /dev/null; then
     exit 0
 fi

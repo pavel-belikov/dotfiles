@@ -16,13 +16,8 @@ dependencies=(
     alsa-utils
     pavucontrol
     xfce4-terminal
-
     pcmanfm
-    keepassx
     xarchiver
-    goldendict
-    libreoffice-writer
-    evince
 
     git
     gcc
@@ -48,16 +43,16 @@ dependencies=(
     vim
     vim-gtk
     exuberant-ctags
-
-    libxkbcommon-dev
-    libxkbcommon-x11-dev
-    libxkbfile-dev
-    libx11-dev
 )
 
 dependencies_awesome=(
     awesome
     dbus
+
+    libxkbcommon-dev
+    libxkbcommon-x11-dev
+    libxkbfile-dev
+    libx11-dev
 )
 
 dependencies_web=(
@@ -72,7 +67,10 @@ dependencies_media=(
     gmpc
     smplayer
     gimp
-
+    goldendict
+    libreoffice-writer
+    evince
+    keepassx
 )
 
 if has_install_option awesome; then

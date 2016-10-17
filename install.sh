@@ -12,7 +12,7 @@ fi
 target="$1"
 root="$(pwd)"
 
-INSTALL_DOTFILES_OPTIONS="awesome web media"
+INSTALL_DOTFILES_OPTIONS="awesome web media vim root_dotfiles"
 for opt in "${@:2}"
 do
     if [[ "$opt" == --enable-* ]]; then

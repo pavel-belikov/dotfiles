@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if ! has_install_option root_dotfiles; then
+    exit 0
+fi
+
 shopt -s dotglob
 
 cd "$(dirname "$0")/../dotfiles" || return 0
