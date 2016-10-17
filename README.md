@@ -12,7 +12,7 @@ cd dotfiles
 ./install.sh # or sudo ./install.sh root && ./install.sh user
 ```
 
-*Note*: `install.sh` needs administrative permissions to install awesome theme in `/usr/share/awesome/themes` and dependencies via git/apt-get.
+*Note*: `install.sh` needs administrative permissions to install dependencies via git/apt-get.
 
 Some dependencies (fonts and themes) are downloaded from external source (dropbox).
 
@@ -20,11 +20,8 @@ Todo
 --------------
 - build YouCompleteMe for user
 - QtCreator, mpd
-- review some terminal emulators
 - external samba
 - usermod -aG sudo
 - dropbox
 - jenkins
 - docker
-- vim: {}, long lines, new plugins
-- vim: Qt TaskList format

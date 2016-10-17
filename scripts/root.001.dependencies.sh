@@ -42,6 +42,8 @@ dependencies=(
     numlockx
     lxappearance
     qt4-qtconfig
+    gtk2-engines-pixbuf
+    gtk2-engines-murrine
 
     vim
     vim-gtk
