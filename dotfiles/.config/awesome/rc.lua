@@ -20,24 +20,13 @@ local menubar = require("menubar")
 local calendar = require("calendar")
 local volume = require("volume")
 local battery = require("battery")
-cmus = require("cmus")
 mpd = require("mpd")
-mail = require("mail")
 
 --Local settings
 local config = require("config")
 
 -- Load Debian menu entries
 require("debian.menu")
-
--- Set music player
-if config.music_player == "mpd" then
-    music = mpd
-    music.args = config.mpd or {}
-else
-    music = cmus
-    music.args = config.cmus or {}
-end
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -164,9 +153,7 @@ dbus.connect_signal("ru.gentoo.kbdd", update_layout_indicator)
 update_layout_indicator()
 
 --Music widget
-if config.enable_music_widget then
-    music_widget = music.widget(music.args)
-end
+music_widget = mpd.widget(config.mpd or {})
 
 --Volume widget
 volume_widget = volume.widget(config.volume or {})
@@ -174,11 +161,6 @@ volume_widget = volume.widget(config.volume or {})
 --Battery
 if config.enable_battery_widget then
     battery_widget = battery.widget(config.battery or {})
-end
-
---Mail
-if config.enable_mail_widget then
-    mail_widget = mail.widget(config.mail or {})
 end
 
 separator = wibox.widget.textbox("|")
@@ -266,9 +248,7 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    if config.enable_music_widget then
-        right_layout:add(music_widget)
-    end
+    right_layout:add(music_widget)
     right_layout:add(separator)
     right_layout:add(kbdwidget)
     right_layout:add(separator)
@@ -276,9 +256,6 @@ for s = 1, screen.count() do
     right_layout:add(volume_widget)
     if config.enable_battery_widget then
         right_layout:add(battery_widget)
-    end
-    if config.enable_mail_widget then
-        right_layout:add(mail_widget)
     end
     if s == 1 then
         right_layout:add(wibox.widget.systray())
@@ -369,9 +346,9 @@ globalkeys = awful.util.table.join(
     -- Print screen
     awful.key({  }, "Print", function() awful.util.spawn_with_shell("scrot") end),
     -- Music
-    awful.key({ "Shift" }, "F10", music.toggle_play_pause),
-    awful.key({ "Shift" }, "F11", music.prev),
-    awful.key({ "Shift" }, "F12", music.next)
+    awful.key({ "Shift" }, "F10", mpd.toggle_play_pause),
+    awful.key({ "Shift" }, "F11", mpd.prev),
+    awful.key({ "Shift" }, "F12", mpd.next)
 )
 
 clientkeys = awful.util.table.join(
@@ -467,10 +444,8 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "Plugin%-container" },
       properties = { floating = true } },
-    { rule = { class = config.music_wmclass },
+    { rule = { class = (config.music_wmclass or "gmpc") },
       properties = { tag = tags[1][9] } },
-    { rule = { class = "cmus" },
-      properties = { tag = tags[1][9] } }
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
