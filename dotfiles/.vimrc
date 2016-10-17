@@ -5,13 +5,37 @@ if has("win32")
     set shell=cmd
     set shellcmdflag=/c
     au GUIEnter * simalt ~x
+    let vimfiles = '$HOME/vimfiles'
 else
     set shell=/bin/sh
+    let vimfiles = '~/.vim'
 endif
 
-if filereadable(expand("~/.vimrc.bundles"))
-    source ~/.vimrc.bundles
+call plug#begin(vimfiles . '/bundle/')
+Plug 'VundleVim/Vundle.vim'
+Plug 'majutsushi/tagbar'
+if has("win32")
+else
+    Plug 'Valloric/YouCompleteMe'
 endif
+Plug 'a.vim'
+Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdcommenter'
+Plug 'xolox/vim-misc'
+Plug 'xolox/vim-easytags'
+Plug 'ifdef-highlighting'
+Plug 'tpope/vim-surround'
+Plug 'syntaxdosini.vim'
+Plug 'elzr/vim-json'
+Plug 'vim-scripts/TaskList.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'tpope/vim-fugitive'
+Plug 'kien/ctrlp.vim'
+Plug 'pavel-belikov/vim-qmake'
+Plug 'pavel-belikov/vim-qtcreator-tasks'
+call plug#end()
+
 "set exrc
 "set secure
 

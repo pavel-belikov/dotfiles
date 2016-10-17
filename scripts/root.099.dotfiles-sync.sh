@@ -15,6 +15,7 @@ for file in .vim* .ycm* .config/mc;
 do
     if [ -e "$file" ]; then
         mkdir -p "$(dirname "$dir/$file")"
+        rm -rf "$dir/$file"
         ln -s "$(pwd)/$file" "$dir/$file"
     fi
 done
