@@ -12,7 +12,6 @@ else
 endif
 
 call plug#begin(vimfiles . '/bundle/')
-Plug 'VundleVim/Vundle.vim'
 Plug 'majutsushi/tagbar'
 if has("win32")
 else
