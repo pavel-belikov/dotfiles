@@ -79,13 +79,15 @@ end
 
 local function set_geometry(self)
     local my_geo = self.wibox:geometry()
+    local dpi = beautiful.xresources.get_dpi()
+    local context = {dpi = dpi}
 
-    local cw, ch = self.data.calendar_text:fit(600, 600)
-    local mw, mh = self.data.month_layout:fit(600, 600)
-    local yw, yh = self.data.year_layout:fit(600, 600)
+    local cw, ch = wibox.widget.base.fit_widget(self.data.main_layout, context, self.data.calendar_text, 600, 600)
+    local mw, mh = wibox.widget.base.fit_widget(self.data.main_layout, context, self.data.month_layout, 600, 600)
+    local yw, yh = wibox.widget.base.fit_widget(self.data.main_layout, context, self.data.year_layout, 600, 600)
     local hw = mw + yw + 5
 
-    local n_w, n_h = self.data.main_layout:fit(hw > cw and hw or cw, 600)
+    local n_w, n_h = wibox.widget.base.fit_widget(self.data.main_layout, context, self.data.main_layout, hw > cw and hw or cw, 600)
     n_w = n_w + 2 * self.margin
     n_h = n_h + 2 * self.margin
     if my_geo.width ~= n_w or my_geo.height ~= n_h then

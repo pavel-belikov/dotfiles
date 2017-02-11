@@ -129,5 +129,12 @@ theme.icon_theme = nil
 theme.poweroff = prefix .. "/themes/simplicity/panel/system-poweroff.svg"
 theme.reboot = prefix .. "/themes/simplicity/panel/system-reboot.svg"
 
+theme.slider_bar_border_width = 0
+theme.slider_handle_border_color = "#f0f0f0"
+theme.slider_handle_border_width = 2
+theme.slider_handle_width = 12
+theme.slider_bar_height = 5
+theme.slider_bar_color = "#008cff"
+
 return theme
 

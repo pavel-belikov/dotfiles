@@ -3,6 +3,7 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local naughty = require("naughty")
 local tooltip = require("tooltip")
+local gears = require("gears")
 local mouse = mouse
 
 local volume = {}
@@ -44,28 +45,16 @@ local function set_volume_widget(self, volume, mute)
     end
 
     if data[self].tooltip.wibox.visible then
-        data[self].progressbar:set_value(volume / 100)
+        data[self].prev_value = volume
+        data[self].slider.value = volume
     end
 end
 
 local function change_volume(self)
-    local coords = mouse.coords()
-    local g = data[self].tooltip.wibox:geometry()
-    g.x = g.x + data[self].tooltip.wibox.border_width
-    g.y = g.y + data[self].tooltip.wibox.border_width
-    local m = data[self].tooltip.margin
-    if coords.x >= g.x + m / 2 and coords.x < g.x + g.width - m / 2 and
-       coords.y >= g.y + m / 2 and coords.y < g.y + g.height - m / 2 then
-        local v = (coords.y - g.y - m) / (g.height - 2 * m)
-        local i, f = math.modf(v / data[self].round)
-        v = data[self].round * (i + math.floor(f + 0.5)) * 100
-        if v <= 0 then
-            v = 0
-        elseif v >= 100 then
-            v = 100
-        end
-        data[self].set_volume(v)
-        set_volume_widget(self, v, false)
+    local value = data[self].slider.value
+    if value ~= (data[self].prev_value or -1) then
+        data[self].set_volume(value)
+        set_volume_widget(self, value, false)
     end
 end
 
@@ -87,13 +76,8 @@ local function create_tooltip(self, args)
         margin = args.margin or 8
     })
 
-    data[self].progressbar:set_vertical(true)
-    data[self].progressbar:set_background_color(args.background or beautiful.volume_background or "#0024ff")
-    data[self].progressbar:set_color(args.color or beautiful.volume_color or "#008cff")
-    data[self].progressbar:set_height(data[self].height)
-
-    data[self].reversepb:set_widget(data[self].progressbar)
-    data[self].reversepb:set_direction("south")
+    data[self].reversepb:set_widget(data[self].slider)
+    data[self].reversepb:set_direction("west")
     data[self].layout:add(data[self].reversepb)
 
     self:buttons(awful.util.table.join(
@@ -115,9 +99,7 @@ local function create_tooltip(self, args)
             set_volume_widget(self, volume, not mute)
         end)
     ))
-    data[self].tooltip.wibox:buttons(awful.util.table.join(
-        awful.button({ }, 1, function() change_volume(self) end)
-    ))
+    data[self].slider:connect_signal("property::value", function() change_volume(self) end)
 end
 
 function volume.widget(args)
@@ -131,8 +113,8 @@ function volume.widget(args)
         external_mixer = args.mixer or "pavucontrol",
         round = args.round or 0.05,
         layout = wibox.layout.fixed.vertical(),
-        reversepb = wibox.layout.rotate(),
-        progressbar = awful.widget.progressbar(),
+        reversepb = wibox.container.rotate(),
+        slider = wibox.widget.slider(),
         height = args.height or 100,
         width = args.width or 10,
 
@@ -142,6 +124,9 @@ function volume.widget(args)
         img_medium = args.medium or beautiful.volume_medium,
         img_high = args.high or beautiful.volume_high
     }
+
+    data[self].slider.handle_shape = gears.shape.circle
+
     create_tooltip(self, args)
     if beautiful.volume_border_width then
         data[self].tooltip.wibox.border_width = beautiful.volume_border_width
