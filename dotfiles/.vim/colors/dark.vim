@@ -21,7 +21,7 @@ hi LineNr               cterm=none            ctermfg=green            ctermbg=l
 hi CursorLineNr         cterm=none            ctermfg=yellow           ctermbg=black
 hi ColorColumn                                                         ctermbg=lightgray
 hi Question             cterm=bold            ctermfg=darkgreen
-hi StatusLine           cterm=underline       ctermfg=white            ctermbg=darkblue
+hi StatusLine           cterm=underline       ctermfg=blue             ctermbg=white
 hi StatusLineNC         cterm=underline       ctermfg=white            ctermbg=bg
 hi Title                cterm=bold            ctermfg=darkmagenta
 hi Visual               cterm=none            ctermfg=white            ctermbg=darkcyan
@@ -40,7 +40,7 @@ hi PreProc                                    ctermfg=blue
 hi Type                 cterm=none            ctermfg=green
 hi Error                                      ctermfg=darkcyan         ctermbg=black
 hi Todo                                       ctermfg=darkcyan         ctermbg=bg
-hi CursorLine           cterm=none                                     ctermbg=grey
+hi CursorLine           cterm=none                                     ctermbg=lightgray
 hi CursorColumn                                                        ctermbg=grey
 hi MatchParen           cterm=none            ctermfg=red              ctermbg=bg
 hi TabLine              cterm=underline       ctermfg=white            ctermbg=darkgrey

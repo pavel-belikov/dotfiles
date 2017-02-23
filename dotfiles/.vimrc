@@ -153,6 +153,10 @@ let g:airline_right_sep = ''
 
 let g:airline_theme = 'lucius'
 
+let g:ctrlp_custom_ignore = '\v[\/](\.git|\.hg|\.svn|CMakeFiles)$'
+
+let &makeprg = 'if [ -f Makefile ]; then make; else make -C build; fi'
+
 vnoremap <C-C> "+y
 vnoremap <C-X> "+d
 exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
