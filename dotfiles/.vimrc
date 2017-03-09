@@ -36,6 +36,7 @@ Plug 'tpope/vim-surround'
 Plug 'raimondi/delimitmate'
 Plug 'tpope/vim-endwise'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'easymotion/vim-easymotion'
 
 Plug 'kien/ctrlp.vim'
 Plug 'a.vim'
@@ -180,6 +181,7 @@ imap <F7> <Esc>:NERDTreeToggle<CR>a
 nmap <F8> :TagbarToggle<CR>
 imap <F8> <Esc>:TagbarToggle<CR>a
 
+let mapleader = "\<Space>"
 nnoremap <leader>w :ToggleWorkspace<CR>
 
 if filereadable(expand("~/.vimrc.local"))
