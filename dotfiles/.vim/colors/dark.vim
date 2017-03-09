@@ -113,6 +113,11 @@ hi StatusLineVisualMode gui=underline         guifg=#f0f0f0            guibg=#55
 
 hi ExtraWhitespace                                                     guibg=#550000
 
+hi IndentGuidesOdd  guibg=#121212   ctermbg=lightgray
+hi IndentGuidesEven guibg=#151515   ctermbg=lightgray
+
+hi SignColumn guibg=#101010 ctermbg=lightgray
+
 hi link IncSearch       Visual
 hi link Character       String
 hi link Number          Constant
@@ -156,6 +161,7 @@ hi link cTypeTag      Type
 hi link cPreProcTag   PreProc
 hi link cFunctionTag  Function
 hi link cBoolean      Keyword
+hi link cppSTLnamespace Type
 
 if exists("g:NERDChristmasTree") && g:NERDChristmasTree
 	hi link NERDTreePart        Special

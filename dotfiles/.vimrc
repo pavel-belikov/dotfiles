@@ -9,50 +9,61 @@ if has("win32")
 else
     set shell=/bin/sh
     let vimfiles = '~/.vim'
+    let &makeprg = 'if [ -f Makefile ]; then make; else make -C build; fi'
 endif
 
 call plug#begin(vimfiles . '/bundle/')
-Plug 'majutsushi/tagbar'
 if has("win32")
+    Plug 'thaerkh/vim-workspace'
 else
     Plug 'Valloric/YouCompleteMe'
+    Plug 'xolox/vim-misc'
+    Plug 'xolox/vim-easytags'
+    Plug 'majutsushi/tagbar'
 endif
-Plug 'a.vim'
+
 Plug 'scrooloose/nerdtree'
-Plug 'scrooloose/nerdcommenter'
-Plug 'xolox/vim-misc'
-Plug 'xolox/vim-easytags'
-Plug 'ifdef-highlighting'
-Plug 'tpope/vim-surround'
-Plug 'syntaxdosini.vim'
-Plug 'elzr/vim-json'
+
 Plug 'vim-scripts/TaskList.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'nathanaelkane/vim-indent-guides'
+
 Plug 'tpope/vim-fugitive'
+
+Plug 'scrooloose/nerdcommenter'
+Plug 'tpope/vim-surround'
+Plug 'raimondi/delimitmate'
+Plug 'tpope/vim-endwise'
+Plug 'terryma/vim-multiple-cursors'
+
 Plug 'kien/ctrlp.vim'
+Plug 'a.vim'
+
+Plug 'ifdef-highlighting'
+Plug 'syntaxdosini.vim'
+Plug 'elzr/vim-json'
 Plug 'pavel-belikov/vim-qmake'
 Plug 'pavel-belikov/vim-qtcreator-tasks'
-call plug#end()
 
-"set exrc
-"set secure
+Plug 'octol/vim-cpp-enhanced-highlight'
+call plug#end()
 
 set tags=~/.tags
 
 set mouse=a
 set sessionoptions=blank,buffers,curdir,folds,tabpages
 
-set fileencodings=utf8
+set fileencodings=utf8,cp1251
 set encoding=utf8
 
 if has("win32")
     set guifont=Consolas:h14
-    set guioptions=aiet
+    set guioptions=ait
     set showtabline=2
 else
     set guifont=InconsolataLGC\ 14
-    set guioptions=aie
+    set guioptions=ait
     set showtabline=0
 endif
 
@@ -64,43 +75,6 @@ set tabstop=4
 set smarttab
 set autoindent
 set smartindent
-
-if &term =~ '^screen' && exists('$TMUX')
-    set t_ku=OA
-    set t_kd=OB
-    set t_kr=OC
-    set t_kl=OD
-    set tenc=utf8
-    autocmd BufReadPost,FileReadPost,BufNewFile,BufWinEnter,BufEnter * call system("tmux rename-window 'vim " . expand("%") . "'")
-    autocmd VimLeave * call system("tmux rename-window bash")
-    set ttymouse=xterm2
-    execute "set <xUp>=\e[1;*A"
-    execute "set <xDown>=\e[1;*B"
-    execute "set <xRight>=\e[1;*C"
-    execute "set <xLeft>=\e[1;*D"
-    execute "set <xHome>=\e[1;*H"
-    execute "set <xEnd>=\e[1;*F"
-    execute "set <Insert>=\e[2;*~"
-    execute "set <Delete>=\e[3;*~"
-    execute "set <PageUp>=\e[5;*~"
-    execute "set <PageDown>=\e[6;*~"
-    execute "set <xF1>=\e[1;*P"
-    execute "set <xF2>=\e[1;*Q"
-    execute "set <xF3>=\e[1;*R"
-    execute "set <xF4>=\e[1;*S"
-    execute "set <F5>=\e[15;*~"
-    execute "set <F6>=\e[17;*~"
-    execute "set <F7>=\e[18;*~"
-    execute "set <F8>=\e[19;*~"
-    execute "set <F9>=\e[20;*~"
-    execute "set <F10>=\e[21;*~"
-    execute "set <F11>=\e[23;*~"
-    execute "set <F12>=\e[24;*~"
-endif
-set iskeyword=@,48-57,_,192-255
-
-filetype plugin indent on
-syntax on
 
 set linebreak
 set ruler
@@ -122,12 +96,14 @@ set nobackup
 
 set incsearch
 set ignorecase
-set showmatch
 
 set completeopt=
 set ww=b,s,<,>,[,]
-
+set iskeyword=@,48-57,_,192-255
 set backspace=2
+
+filetype plugin indent on
+syntax on
 
 let g:tagbar_sort=0
 let g:tagbar_left=0
@@ -150,34 +126,37 @@ endif
 let g:airline_section_z = '[0x%02B] < %l/%L (%c)'
 let g:airline_left_sep = ''
 let g:airline_right_sep = ''
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_splits = 0
+let g:airline#extensions#tabline#buffer_nr_show = 0
+let g:airline#extensions#tabline#show_buffers = 0
+let g:airline#extensions#tabline#tab_nr_type = 1
+let g:airline#extensions#tabline#show_tab_nr = 1
+let g:airline#extensions#tabline#tab_min_count = 2
 
 let g:airline_theme = 'lucius'
 
 let g:ctrlp_custom_ignore = '\v[\/](\.git|\.hg|\.svn|CMakeFiles)$'
 
-let &makeprg = 'if [ -f Makefile ]; then make; else make -C build; fi'
+let g:delimitMate_expand_cr = 1
+
+let g:indent_guides_auto_colors = 0
+let g:indent_guides_enable_on_vim_startup=1
+
+let g:cpp_experimental_template_highlight = 1
 
 vnoremap <C-C> "+y
 vnoremap <C-X> "+d
 exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
 exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
-
 imap <C-Z> <Esc>ui
 imap <C-Y> <Esc><C-R>i
 imap <C-S> <Esc>:w<CR>i
-
 imap <C-F> <Esc>/
-
 imap <C-Space> <C-X><C-U>
+imap <C-Backspace> <C-W>
+imap <C-Del> <C-[>lde
 
-inoremap <C-W> <Esc><C-W>a
-inoremap <C-H> <Left><Del>
-inoremap <C-L> <C-O><C-L>
-inoremap ( ()<Left>
-inoremap [ []<Left>
-inoremap { {}<Left>
-inoremap " ""<Left>
-inoremap ' ''<Left>
 vmap { S{
 vmap ( S(
 vmap [ S[
@@ -201,25 +180,7 @@ imap <F7> <Esc>:NERDTreeToggle<CR>a
 nmap <F8> :TagbarToggle<CR>
 imap <F8> <Esc>:TagbarToggle<CR>a
 
-function! MakeSession()
-    if (argc() == 0)
-        exe "mksession! " $HOME . "/.vim/.session"
-    endif
-endfunction
-
-function! LoadSession()
-    let b:session = $HOME . "/.vim/.session"
-    if (argc() == 0 && filereadable(b:session))
-        exe 'source ' b:session
-    endif
-endfunction
-
-autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.cxx,*.cc inoremap { {}<Left><CR><CR><Up><Tab>
-autocmd BufWinLeave * inoremap { {}<Left>
-autocmd BufWinLeave * call clearmatches()
-
-autocmd VimEnter * nested :call LoadSession()
-autocmd VimLeave * :call MakeSession()
+nnoremap <leader>w :ToggleWorkspace<CR>
 
 if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
