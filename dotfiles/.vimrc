@@ -2,6 +2,7 @@ colorscheme dark
 
 set nocompatible
 if has("win32")
+    set noshelltemp
     set shell=cmd
     set shellcmdflag=/c
     au GUIEnter * simalt ~x
@@ -57,6 +58,8 @@ set sessionoptions=blank,buffers,curdir,folds,tabpages
 
 set fileencodings=utf8,cp1251
 set encoding=utf8
+
+set langmap=ёйцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕHГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.QWERTYUIOP{}ASDFGHJKL:\\«ZXCVBNM<>
 
 if has("win32")
     set guifont=Consolas:h14
@@ -134,6 +137,7 @@ let g:airline#extensions#tabline#show_buffers = 0
 let g:airline#extensions#tabline#tab_nr_type = 1
 let g:airline#extensions#tabline#show_tab_nr = 1
 let g:airline#extensions#tabline#tab_min_count = 2
+let g:airline#extensions#tabline#fnamemod = ':t'
 
 let g:airline_theme = 'lucius'
 
@@ -145,6 +149,8 @@ let g:indent_guides_auto_colors = 0
 let g:indent_guides_enable_on_vim_startup=1
 
 let g:cpp_experimental_template_highlight = 1
+
+let g:workspace_autosave_untrailspaces = 0
 
 vnoremap <C-C> "+y
 vnoremap <C-X> "+d
