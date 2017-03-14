@@ -10,7 +10,6 @@ if has("win32")
 else
     set shell=/bin/sh
     let vimfiles = '~/.vim'
-    let &makeprg = 'if [ -f Makefile ]; then make; else make -C build; fi'
 endif
 
 call plug#begin(vimfiles . '/bundle/')
@@ -22,6 +21,8 @@ else
     Plug 'xolox/vim-easytags'
     Plug 'majutsushi/tagbar'
 endif
+
+Plug 'embear/vim-localvimrc'
 
 Plug 'scrooloose/nerdtree'
 
@@ -116,7 +117,6 @@ let g:NERDTreeWinPos='left'
 let g:NERDTreeShowHidden=1
 
 let g:ycm_confirm_extra_conf=0
-let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
 let g:ycm_key_list_select_completion = ['<Down>']
 
 let g:easytags_file='~/.tags'
@@ -151,6 +151,11 @@ let g:indent_guides_enable_on_vim_startup=1
 let g:cpp_experimental_template_highlight = 1
 
 let g:workspace_autosave_untrailspaces = 0
+
+let g:localvimrc_ask = 0
+let g:localvimrc_sandbox = 0
+
+let mapleader = "\<Space>"
 
 vnoremap <C-C> "+y
 vnoremap <C-X> "+d
@@ -187,7 +192,6 @@ imap <F7> <Esc>:NERDTreeToggle<CR>a
 nmap <F8> :TagbarToggle<CR>
 imap <F8> <Esc>:TagbarToggle<CR>a
 
-let mapleader = "\<Space>"
 nnoremap <leader>w :ToggleWorkspace<CR>
 
 if filereadable(expand("~/.vimrc.local"))
