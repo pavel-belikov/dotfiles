@@ -109,7 +109,7 @@ install_dependencies() {
     git gcc g++ clang cmake valgrind gdb lldb
     vim vim-gtk exuberant-ctags
     qtcreator
-    clang-tidy clang-format
+    clang-tidy clang-format doxygen
     python3 python3-pip
 
     scrot kbdd numlockx
