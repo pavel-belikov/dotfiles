@@ -1,0 +1,5 @@
+setxkbmap -layout us,ru -option grp:caps_toggle,grp_led:scroll,terminate:ctrl_alt_bksp,compose:ralt
+xkbcomp $DISPLAY - | egrep -v "group . = AltGr;" | xkbcomp - $DISPLAY
+
+xrandr --setprovideroutputsource modesetting NVIDIA-0
+xrandr --output HDMI-1-1 --auto --left-of DVI-D-0

@@ -2,27 +2,26 @@ colorscheme dark
 
 set nocompatible
 if has("win32")
-    set noshelltemp
-    set shell=cmd
-    set shellcmdflag=/c
-    au GUIEnter * simalt ~x
     let vimfiles = '$HOME/vimfiles'
 else
-    set shell=/bin/sh
     let vimfiles = '~/.vim'
 endif
 
 call plug#begin(vimfiles . '/bundle/')
 if has("win32")
     Plug 'thaerkh/vim-workspace'
+    Plug 'octol/vim-cpp-enhanced-highlight'
 else
     Plug 'Valloric/YouCompleteMe'
+    Plug 'jeaye/color_coded'
+
     Plug 'xolox/vim-misc'
     Plug 'xolox/vim-easytags'
+
     Plug 'majutsushi/tagbar'
 endif
 
-Plug 'embear/vim-localvimrc'
+Plug 'editorconfig/editorconfig-vim'
 
 Plug 'scrooloose/nerdtree'
 
@@ -39,18 +38,25 @@ Plug 'raimondi/delimitmate'
 Plug 'tpope/vim-endwise'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'easymotion/vim-easymotion'
+Plug 'godlygeek/tabular'
 
 Plug 'kien/ctrlp.vim'
 Plug 'a.vim'
 
-Plug 'ifdef-highlighting'
 Plug 'syntaxdosini.vim'
 Plug 'elzr/vim-json'
 Plug 'pavel-belikov/vim-qmake'
 Plug 'pavel-belikov/vim-qtcreator-tasks'
-
-Plug 'octol/vim-cpp-enhanced-highlight'
 call plug#end()
+
+if has("win32")
+    set noshelltemp
+    set shell=cmd
+    set shellcmdflag=/c
+    au GUIEnter * simalt ~x
+else
+    set shell=/bin/sh
+endif
 
 set tags=~/.tags
 
@@ -60,7 +66,16 @@ set sessionoptions=blank,buffers,curdir,folds,tabpages
 set fileencodings=utf8,cp1251
 set encoding=utf8
 
+let $LANG='en'
+set langmenu=en
 set langmap=ёйцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕHГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.QWERTYUIOP{}ASDFGHJKL:\\«ZXCVBNM<>
+
+set wildignore=*.o,*~,*.pyc
+if has("win32")
+    set wildignore+=.git\*,.hg\*,.svn\*
+else
+    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+endif
 
 if has("win32")
     set guifont=Consolas:h14
@@ -141,7 +156,9 @@ let g:airline#extensions#tabline#fnamemod = ':t'
 
 let g:airline_theme = 'lucius'
 
-let g:ctrlp_custom_ignore = '\v[\/](\.git|\.hg|\.svn|CMakeFiles)$'
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  'CMakeFiles$\|\.git$\|\.hg$\|\.svn$',
+    \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$\|\.PVS-Studio' }
 
 let g:delimitMate_expand_cr = 1
 
@@ -152,10 +169,9 @@ let g:cpp_experimental_template_highlight = 1
 
 let g:workspace_autosave_untrailspaces = 0
 
-let g:localvimrc_ask = 0
-let g:localvimrc_sandbox = 0
-
 let mapleader = "\<Space>"
+
+nmap <Leader>w :w!<CR>
 
 vnoremap <C-C> "+y
 vnoremap <C-X> "+d
@@ -191,8 +207,6 @@ nmap <F7> :NERDTreeToggle<CR>
 imap <F7> <Esc>:NERDTreeToggle<CR>a
 nmap <F8> :TagbarToggle<CR>
 imap <F8> <Esc>:TagbarToggle<CR>a
-
-nnoremap <leader>w :ToggleWorkspace<CR>
 
 if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
