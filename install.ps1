@@ -1,22 +1,34 @@
+param (
+    [switch]$choco = $false,
+    [switch]$vim = $true
+)
+
 $ErrorActionPreference = "Stop"
-Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
-$hasChoco = Get-Command choco -ErrorAction SilentlyContinue 2>$null >$null
-if (!$hasChoco) {
-    iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
+if ($choco) {
+    $hasChoco = Get-Command choco -ErrorAction SilentlyContinue 2>$null >$null
+    if (!$hasChoco) {
+        iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
+    }
+
+    $packages = @(
+        "vim", "msys2", "firefox", "ctags", "git", "tortoisesvn",
+        "tortoisegit", "pip", "7zip", "cmake",
+        "python", "-version", "3.5.1",
+        "lua51",       "thunderbird", "virtualbox", "keepassx"
+    )
+    choco install -y @packages
 }
 
-choco install -y vim msys2 firefox ctags git tortoisesvn
-choco install -y tortoisegit python pip 7zip cmake
-choco install -y thunderbird virtualbox keepassx
+if ($vim) {
+    $vimPlugFilePath = "~\vimfiles\autoload\plug.vim"
+    $hasVimPlug = Test-Path $vimPlugFilePath -ErrorAction SilentlyContinue
+    if (!$hasVimPlug) {
+        md "~\vimfiles\autoload"
+        $uri = "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+        $path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($vimPlugFilePath)
+        (New-Object Net.WebClient).DownloadFile($uri, $path)
+    }
 
-$hasVimPlug = Test-Path "~\vimfiles\autoload\plug.vim" -ErrorAction SilentlyContinue
-if (!$hasVimPlug) {
-    md ~\vimfiles\autoload
-    $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-    (New-Object Net.WebClient).DownloadFile($uri, $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("~\vimfiles\autoload\plug.vim"))
+    cp "dotfiles\.vimrc" "~\_vimrc"
 }
-
-cp -recurse dotfiles\.vim\* ~\vimfiles
-cp dotfiles\.vimrc ~\_vimrc
-

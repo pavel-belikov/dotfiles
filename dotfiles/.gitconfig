@@ -19,3 +19,5 @@
     df = diff
 [include]
     path = .gitconfig.local
+[difftool]
+	prompt = false
