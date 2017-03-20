@@ -9,7 +9,11 @@ endif
 call plug#begin(vimfiles . '/bundle/')
 " C++ {{{
 Plug 'Valloric/YouCompleteMe'
-Plug 'jeaye/color_coded'
+if has("win32")
+    Plug 'octol/vim-cpp-enhanced-highlight'
+else
+    Plug 'jeaye/color_coded'
+endif
 " }}}
 
 " Project {{{
@@ -30,14 +34,16 @@ Plug 'tpope/vim-fugitive'
 " }}}
 
 " Text editing {{{
+Plug 'raimondi/delimitmate'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-unimpaired'
-Plug 'raimondi/delimitmate'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'easymotion/vim-easymotion'
 Plug 'godlygeek/tabular'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 " }}}
 
 " Filesystem {{{
@@ -52,6 +58,11 @@ Plug 'pavel-belikov/vim-qdark'
 Plug 'pavel-belikov/vim-qmake'
 Plug 'pavel-belikov/vim-qtcreator-tasks'
 Plug 'pprovost/vim-ps1'
+" }}}
+
+" Org {{{
+Plug 'jceb/vim-orgmode'
+Plug 'tpope/vim-speeddating'
 " }}}
 call plug#end()
 " }}}
@@ -146,6 +157,8 @@ set backspace=2
 
 set scrolloff=3
 
+set cinoptions=l0,:0
+
 set diffopt=filler,context:1000000,vertical
 
 filetype plugin indent on
@@ -191,13 +204,16 @@ let g:ctrlp_working_path_mode = 'a'
 let g:delimitMate_expand_cr = 1
 
 let g:indent_guides_auto_colors = 0
-let g:indent_guides_enable_on_vim_startup=1
+let g:indent_guides_enable_on_vim_startup = 1
 
 let g:cpp_experimental_template_highlight = 1
 
 let g:workspace_autosave_untrailspaces = 0
 
+let g:UltiSnipsExpandTrigger="<C-Space>"
+
 let mapleader = "\<Space>"
+let maplocalleader = ","
 " }}}
 
 " Key bindings {{{
@@ -206,13 +222,20 @@ nmap <A-Right> dp
 nmap <A-Up> [c
 nmap <A-Down> ]c
 
-nmap <Leader>h :nohl<CR>
+nmap <Space> <nop>
 nmap <Leader>q :qa<CR>
-nmap <Leader>f za
 nmap <Leader>w <Leader><Leader>w
-nmap <Leader>b <Leader><Leader>b
-nmap <Leader>s <Leader><Leader>s
 nmap <Leader>e <Leader><Leader>e
+nmap <Leader>t <Plug>TaskList<CR>
+nmap <Leader>u :UltiSnipsEdit<CR>
+nmap <Leader>a :A<CR>
+nmap <Leader>s <Leader><Leader>s
+nmap <Leader>f za
+nmap <Leader>g <C-]>
+nmap <Leader>h :nohl<CR>
+nmap <Leader>b <Leader><Leader>b
+nmap <Leader>n :NERDTreeToggle<CR>
+nmap <Leader>m :TagbarToggle<CR>
 
 vnoremap <C-C> "+y
 vnoremap <C-X> "+d
@@ -222,33 +245,15 @@ imap <C-Z> <Esc>ui
 imap <C-Y> <Esc><C-R>i
 imap <C-S> <Esc>:w<CR>i
 nmap <C-S> :w!<CR>
-imap <C-F> <Esc>/
-imap <C-Space> <C-X><C-U>
-imap <C-Backspace> <C-W>
-imap <C-Del> <C-[>lde
 
-vmap { S{
-vmap ( S(
-vmap [ S[
+vmap { S}
+vmap ( S)
+vmap [ S]
 vmap " S"
 vmap ' S'
 
 nmap <F2> <C-]>
-imap <F2> <Esc><C-]>i
-
-nmap <F4> :A!<CR>
-vmap <F4> <Esc>:A!<CR>
-imap <F4> <Esc>:A!<CR>i
-
-nmap <F5> :YcmDiags<CR>
-imap <F5> <C-O>:YcmDiags<CR>
-nmap <F6> :lclose<CR>
-imap <F6> <C-O>:lclose<CR>
-
-nmap <F7> :NERDTreeToggle<CR>
-imap <F7> <Esc>:NERDTreeToggle<CR>a
-nmap <F8> :TagbarToggle<CR>
-imap <F8> <Esc>:TagbarToggle<CR>a
+nmap <F4> :A<CR>
 " }}}
 
 " Local config {{{
