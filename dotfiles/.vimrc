@@ -1,9 +1,9 @@
 " Plugins {{{
 set nocompatible
 if has("win32")
-    let vimfiles = '$HOME/vimfiles'
+    let vimfiles='$HOME/vimfiles'
 else
-    let vimfiles = '~/.vim'
+    let vimfiles='~/.vim'
 endif
 
 call plug#begin(vimfiles . '/bundle/')
@@ -67,27 +67,7 @@ Plug 'tpope/vim-speeddating'
 call plug#end()
 " }}}
 
-" GUI & OS {{{
-if has("win32")
-    set noshelltemp
-    au GUIEnter * simalt ~x
-
-    set guifont=Consolas:h14
-    set guioptions=ait
-    set showtabline=2
-else
-    set shell=/bin/sh
-
-    set guifont=InconsolataLGC\ 14
-    set guioptions=ait
-    set showtabline=0
-endif
-
-set tags=~/.tags
-
-set mouse=a
-set sessionoptions=blank,buffers,curdir,folds,tabpages
-" }}}
+" Vim config {{{
 
 " Language {{{
 set fileencodings=utf8,cp1251
@@ -98,7 +78,20 @@ set langmenu=en
 set langmap=ёйцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕHГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.QWERTYUIOP{}ASDFGHJKL:\\«ZXCVBNM<>
 " }}}
 
-" Vim config {{{
+" GUI {{{
+if has("win32")
+    set noshelltemp
+    au GUIEnter * simalt ~x
+    set guifont=Consolas:h14
+else
+    set shell=/bin/sh
+    set guifont=InconsolataLGC\ 14
+endif
+
+set mouse=a
+set guioptions=ait
+" }}}
+
 try
     colorscheme qdark
 catch
@@ -113,6 +106,7 @@ else
 endif
 
 set laststatus=2
+set showtabline=0
 
 set expandtab
 set shiftwidth=4
@@ -161,6 +155,8 @@ set cinoptions=l0,:0
 
 set diffopt=filler,context:1000000,vertical
 
+set tags=~/.tags
+
 filetype plugin indent on
 syntax on
 " }}}
@@ -173,47 +169,48 @@ let g:NERDTreeWinPos='left'
 let g:NERDTreeShowHidden=1
 
 let g:ycm_confirm_extra_conf=0
+let g:ycm_disable_for_files_larger_than_kb=2048
 
 let g:easytags_file='~/.tags'
 let g:easytags_updatetime_min=0
 let g:easytags_updatetime_warn=0
 
 if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
+    let g:airline_symbols={}
 endif
 
-let g:airline_section_z = '[0x%02B] < %l/%L (%c)'
-let g:airline_left_sep = ''
-let g:airline_right_sep = ''
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#show_splits = 0
-let g:airline#extensions#tabline#buffer_nr_show = 0
-let g:airline#extensions#tabline#show_buffers = 0
-let g:airline#extensions#tabline#tab_nr_type = 1
-let g:airline#extensions#tabline#show_tab_nr = 1
-let g:airline#extensions#tabline#tab_min_count = 2
-let g:airline#extensions#tabline#fnamemod = ':t'
+let g:airline_section_z='[0x%02B] < %l/%L (%c)'
+let g:airline_left_sep=''
+let g:airline_right_sep=''
+let g:airline#extensions#tabline#enabled=1
+let g:airline#extensions#tabline#show_splits=0
+let g:airline#extensions#tabline#buffer_nr_show=0
+let g:airline#extensions#tabline#show_buffers=0
+let g:airline#extensions#tabline#tab_nr_type=1
+let g:airline#extensions#tabline#show_tab_nr=1
+let g:airline#extensions#tabline#tab_min_count=2
+let g:airline#extensions#tabline#fnamemod=':t'
 
-let g:airline_theme = 'lucius'
+let g:airline_theme='lucius'
 
-let g:ctrlp_custom_ignore = {
+let g:ctrlp_custom_ignore={
     \ 'dir':  'CMakeFiles$\|\.git$\|\.hg$\|\.svn$',
     \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$\|\.PVS-Studio' }
-let g:ctrlp_working_path_mode = 'a'
+let g:ctrlp_working_path_mode='a'
 
-let g:delimitMate_expand_cr = 1
+let g:delimitMate_expand_cr=1
 
-let g:indent_guides_auto_colors = 0
-let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_auto_colors=0
+let g:indent_guides_enable_on_vim_startup=1
 
-let g:cpp_experimental_template_highlight = 1
+let g:cpp_experimental_template_highlight=1
 
-let g:workspace_autosave_untrailspaces = 0
+let g:workspace_autosave_untrailspaces=0
 
 let g:UltiSnipsExpandTrigger="<C-Space>"
 
-let mapleader = "\<Space>"
-let maplocalleader = ","
+let mapleader="\<Space>"
+let maplocalleader=","
 " }}}
 
 " Key bindings {{{
@@ -241,8 +238,6 @@ vnoremap <C-C> "+y
 vnoremap <C-X> "+d
 exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
 exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
-imap <C-Z> <Esc>ui
-imap <C-Y> <Esc><C-R>i
 imap <C-S> <Esc>:w<CR>i
 nmap <C-S> :w!<CR>
 
@@ -251,9 +246,6 @@ vmap ( S)
 vmap [ S]
 vmap " S"
 vmap ' S'
-
-nmap <F2> <C-]>
-nmap <F4> :A<CR>
 " }}}
 
 " Local config {{{
