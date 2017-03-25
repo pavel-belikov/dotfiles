@@ -1,14 +1,11 @@
 #!/bin/sh
 
-#TODO: remove dropbox
-# - color_coded, ycm dependencies
-
 set -e
 
 ROOT="$(pwd)"
 
 DOTFILES_USER="$USER"
-DOTFILES_OPTIONS="Options:"
+DOTFILES_OPTIONS=""
 DOTFILES_HELP="no"
 DOTFILES_PROFILE=""
 for opt in "${@}"
@@ -22,9 +19,6 @@ do
             DOTFILES_PROFILE="user"
             DOTFILES_USER="${opt#-U}"
             ;;
-        --*)
-            DOTFILES_OPTIONS="$DOTFILES_OPTIONS ${opt#--}"
-            ;;
         -*)
             for c in `printf "%s\n" "${opt#-}" | sed 's/./& /g' | xargs`
             do
@@ -33,6 +27,7 @@ do
                     d) DOTFILES_OPTIONS="$DOTFILES_OPTIONS dotfiles" ;;
                     p) DOTFILES_OPTIONS="$DOTFILES_OPTIONS deps" ;;
                     w) DOTFILES_OPTIONS="$DOTFILES_OPTIONS awesome" ;;
+                    v) DOTFILES_OPTIONS="$DOTFILES_OPTIONS virtualbox" ;;
                     *) DOTFILES_HELP="yes" ;;
                 esac
             done
@@ -46,17 +41,20 @@ if [ "$DOTFILES_USER" = "" ]; then
     exit 1
 fi
 
-if [ "$DOTFILES_OPTIONS" = "Options:" -o "$DOTFILES_HELP" = "yes" ]; then
+if [ "$DOTFILES_OPTIONS" = "" -o "$DOTFILES_HELP" = "yes" ]; then
     echo "Usage: ./install.sh  [options]"
     echo "Options:"
-    echo "  -w --awesome     Awesome options"
-    echo "  -d --dotfiles    Dotfiles"
-    echo "  -l --local       Local git options"
-    echo "  -p --deps        Packages"
+    echo "  -w  Awesome options"
+    echo "  -d  Dotfiles"
+    echo "  -l  Local git options"
+    echo "  -p  Packages"
+    echo "  -v  Virtual Box guest additions"
     exit 1
 fi
 
-echo "$DOTFILES_OPTIONS"
+if [ "$DOTFILES_PROFILE" = "" ]; then
+    echo "Options:$DOTFILES_OPTIONS"
+fi
 
 has_install_option() {
     for arg in $DOTFILES_OPTIONS
@@ -65,6 +63,29 @@ has_install_option() {
             return 0
         fi
     done
+    return 1
+}
+
+has_binary() {
+    if type "$1" > /dev/null 2>&1; then
+        return 0
+    fi
+    return 1
+}
+
+has_font() {
+    if has_binary fc-list; then
+        if fc-list | grep "$1" > /dev/null 2>&1; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
+has_theme() {
+    if find "/usr/share/themes" -maxdepth 1 -name "$1" | grep . > /dev/null; then
+        return 0
+    fi
     return 1
 }
 
@@ -77,17 +98,20 @@ dir() {
 install_dotfile() {
     target="$1"
     link="$2"
-    rm -f "$link"
-    mkdir -p "$(dirname "$link")"
-    ln -s "$target" "$link"
-    echo "Create link: $link → $target"
+    if [ ! "`readlink "$link"`" = "$target" ]; then
+        rm -f "$link"
+        mkdir -p "$(dirname "$link")"
+        ln -s "$target" "$link"
+        echo "  \\e[93mCreate link: \\e[92m$link\\e[0m → \\e[96m${target#$ROOT/}\\e[0m"
+    fi
 }
 
 install_directory() {
     export INSTALL_DIRECTORY_FROM="$ROOT/$1" INSTALL_DIRECTORY_TO="$2"
+    shift; shift
     if [ -d "$INSTALL_DIRECTORY_FROM" ]; then
         cd "$INSTALL_DIRECTORY_FROM"
-        find . -type f -not -name ".xinitrc" |
+        find . -type f "${@}" |
         while read filename
         do
             filename="${filename#./}"
@@ -97,13 +121,12 @@ install_directory() {
     fi
 }
 
-install_dependencies() {
+install_apt_dependencies() {
     dependencies="
-    sudo htop ntp gparted curl
+    sudo htop ntp gparted curl wget strace
     mc pcmanfm xfce4-terminal
     unzip p7zip-full xarchiver
     pulseaudio alsa-tools alsa-utils pavucontrol
-
     fontforge
 
     git gcc g++ clang cmake valgrind gdb lldb
@@ -131,8 +154,19 @@ install_dependencies() {
     libxkbfile-dev libx11-dev
     "
 
+    dependencies_local=""
+    dependencies_vbox="virtualbox-guest-utils"
+
     if has_install_option awesome; then
         dependencies="$dependencies $dependencies_awesome"
+    fi
+
+    if has_install_option local; then
+        dependencies="$dependencies $dependencies_local"
+    fi
+
+    if has_install_option virtualbox; then
+        dependencies="$dependencies $dependencies_vbox"
     fi
 
     dpkg --add-architecture i386
@@ -143,7 +177,35 @@ install_dependencies() {
     apt clean
 }
 
+install_dependencies() {
+    if has_binary apt; then
+        install_apt_dependencies
+    fi
+}
+
+install_user_groups() {
+    adduser "$DOTFILES_USER" sudo
+
+    if has_install_option virtualbox; then
+        usermod -aG vboxsf "$DOTFILES_USER"
+    fi
+
+    if ! grep "^$DOTFILES_USER" /etc/sudoers > /dev/null 2>&1; then
+        echo "$DOTFILES_USER ALL= NOPASSWD: /sbin/poweroff, /sbin/reboot, /usr/bin/mount, /usr/bin/umount" >> /etc/sudoers
+    fi
+}
+
+add_environment() {
+    if ! grep "$1=" /etc/environment > /dev/null 2>&1; then
+        echo "export $1=$2" >> /etc/environment
+    fi
+}
+
 install_themes() {
+    if has_theme "dorian-theme"; then
+        return 0
+    fi
+
     dir build/themes
 
     echo "downloading dotfiles.zip"
@@ -158,30 +220,34 @@ install_themes() {
             cp -rv .$name/* /usr/share/$name
         fi
     done
-
-    if ! grep "QT_STYLE_OVERRIDE=" /etc/environment > /dev/null 2>&1; then
-        echo "export QT_STYLE_OVERRIDE=gtk2" >> /etc/environment
-    fi
 }
 
 install_fonts() {
-    dir build/fonts
+    refresh=0
 
-    git clone https://github.com/MihailJP/Inconsolata-LGC.git .
-    make ttf
-    cp *.ttf /usr/share/fonts
+    if ! has_font "Inconsolata LGC"; then
+        dir build/inconsolatalgc
+        git clone https://github.com/MihailJP/Inconsolata-LGC.git .
+        make ttf
+        chmod 644 *.ttf
+        cp *.ttf /usr/share/fonts
+        refresh=1
+    fi
 
-    fc-cache -fv > /dev/null 2>&1
+    if [ $refresh = 1 ]; then
+        fc-cache -fv > /dev/null 2>&1
+    fi
 }
 
+
 install_xkb_switch() {
-    if type xkb-switch > /dev/null 2>&1; then
+    if has_binary xkb-switch; then
         return 0
     fi
 
     dir build/xkb-switch
 
-    git clone https://github.com/ierton/xkb-switch.git
+    git clone https://github.com/ierton/xkb-switch.git .
     mkdir build
     cd build
     cmake ..
@@ -189,49 +255,86 @@ install_xkb_switch() {
     make install
 }
 
+install_autologin() {
+    if has_binary systemctl; then
+        DIR="/etc/systemd/system/getty@tty1.service.d"
+        FILE="$DIR/override.conf"
+        if [ -d "$DIR" ]; then
+            return 0
+        fi
+        EXEC="-/sbin/agetty --autologin $DOTFILES_USER --noclear %I \$TERM"
+        mkdir -p "$DIR" -m755
+        echo "[Service]\nExecStart=\nExecStart=$EXEC" > "$FILE"
+        chmod 644 "$FILE"
+        systemctl enable getty@tty1.service
+        systemctl daemon-reload
+    fi
+}
+
 install_vim_config() {
     PLUG_PATH="$1/.vim/autoload/plug.vim"
     if [ ! -f "$PLUG_PATH" ]; then
-        curl -fLo "$PLUG_PATH" --create-dirs "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+        url="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+        curl -fLo "$PLUG_PATH" --create-dirs "$url"
         vim +PlugInstall +qa
     fi
+}
+
+write_file_if_not_exists() {
+    if [ ! -f "$1" ]; then
+        echo "$2" > "$1"
+    fi
+}
+
+install_local_environment() {
+    add_environment "LC_ALL"    "en_US.UTF-8"
+    add_environment "LANG"      "en_US.UTF-8"
+    add_environment "LANGUAGE"  "en_US.UTF-8"
 }
 
 opt() {
     cd "$ROOT"
     if has_install_option "$1"; then
         shift
+        echo "\\e[93m${@}\\e[0m"
         ${@}
     fi
 }
 
+install_wrapper() {
+    if has_binary sudo; then
+        sudo "$0" "-R$DOTFILES_USER" "${@}"
+    else
+        su -c "$0 -R$DOTFILES_USER ${@}"
+    fi
+    "$0" "-U$DOTFILES_USER" "${@}"
+}
+
+install_as_user() {
+    opt local       install_directory local "$HOME"
+    opt dotfiles    install_directory dotfiles "$HOME" -not -name ".xinitrc"
+    opt dotfiles    install_vim_config "$HOME"
+    opt awesome     install_dotfile "dotfiles/.xinitrc" "$HOME/.xinitrc"
+    opt awesome     write_file_if_not_exists "$HOME/.config/awesome/config.lua" "return {}"
+}
+
+install_as_root() {
+    opt deps        install_dependencies
+    opt deps        install_user_groups
+    opt local       install_directory local "/root" -name '.vimrc'
+    opt local       install_local_environment
+    opt dotfiles    install_directory dotfiles "/root" -name '.vimrc'
+    opt dotfiles    install_themes
+    opt dotfiles    add_environment "QT_STYLE_OVERRIDE" "gtk2"
+    opt dotfiles    install_vim_config "/root"
+    opt dotfiles    install_fonts
+    opt awesome     install_autologin
+    opt awesome     install_xkb_switch
+}
+
 case "$DOTFILES_PROFILE" in
-    "")
-        if ! type sudo > /dev/null 2>&1; then
-            su -c "apt-install sudo && adduser $USER sudo"
-        fi
-        sudo "$0" "-R$USER" "${@}"
-        "$0" "-U$USER" "${@}"
-        ;;
-    user)
-        opt dotfiles    install_directory dotfiles "$HOME"
-        opt awesome     install_dotfile "dotfiles/.xinitrc" "$HOME/.xinitrc"
-        opt awesome     touch "$HOME/.xinitrc.local"
-        opt local       install_directory local "$HOME"
-        opt dotfiles    install_vim_config "$HOME"
-        ;;
-    root)
-        opt dotfiles    install_directory dotfiles "/root"
-        opt local       install_directory local "/root"
-        opt deps        install_dependencies
-        opt dotfiles    install_themes
-        opt dotfiles    install_vim_config "/root"
-        opt dotfiles    install_fonts
-        opt awesome     install_xkb_switch
-        ;;
-    *)
-        echo "Fatal Error: unknown profile $DOTFILES_PROFILE"
-        exit 1
-        ;;
+    "")     install_wrapper "${@}" ;;
+    user)   install_as_user "${@}" ;;
+    root)   install_as_root "${@}" ;;
 esac
 

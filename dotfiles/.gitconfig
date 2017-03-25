@@ -20,4 +20,4 @@
 [include]
     path = .gitconfig.local
 [difftool]
-	prompt = false
+    prompt = false

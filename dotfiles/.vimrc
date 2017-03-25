@@ -18,6 +18,14 @@ if has("win32") || &diff
 else
     Plug 'jeaye/color_coded'
 endif
+
+" }}}
+
+" Python {{{
+Plug 'xolox/vim-misc'
+Plug 'xolox/vim-easytags'
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'tmhedberg/simpylfold', { 'for': 'python' }
 " }}}
 
 " Project {{{
@@ -145,7 +153,7 @@ set incsearch
 set ignorecase
 
 set foldenable
-set foldlevel=1
+set foldlevel=99
 set foldmethod=marker
 
 set completeopt=
@@ -164,7 +172,6 @@ set tags=~/.tags
 filetype plugin indent on
 syntax on
 
-au FileType c,cpp setlocal commentstring=//\ %s
 " }}}
 
 " Plugins config {{{
@@ -210,8 +217,6 @@ let g:delimitMate_expand_cr=1
 let g:indent_guides_auto_colors=0
 let g:indent_guides_enable_on_vim_startup=1
 
-let g:cpp_experimental_template_highlight=1
-
 let g:workspace_autosave_untrailspaces=0
 
 let g:UltiSnipsExpandTrigger="<C-Space>"
@@ -224,15 +229,18 @@ let maplocalleader=","
 
 " Key bindings {{{
 " vim-better-mswin {{{
-nnoremap <A-Left> do
-nnoremap <A-Right> dp
-nnoremap <A-Up> [c
-nnoremap <A-Down> ]c
+if &diff
+    nnoremap <A-Left> <C-W>ldp
+    nnoremap <A-Right> <C-W>ldo
+    nnoremap <A-Up> [c
+    nnoremap <A-Down> ]c
 
-inoremap <A-Left> <C-O>do
-inoremap <A-Right> <C-O>dp
-inoremap <A-Up> <C-O>[c
-inoremap <A-Down> <C-O>]c
+    inoremap <A-Left> <C-O><C-W>l<C-O>dp
+    inoremap <A-Right> <C-O><C-W>l<C-O>do
+    inoremap <A-Up> <C-O>[c
+    inoremap <A-Down> <C-O>]c
+endif
+
 
 nnoremap <C-Left> b
 vnoremap <C-Left> b
@@ -250,19 +258,19 @@ nnoremap <C-S-Right> ve
 inoremap <C-S-Right> <C-\><C-O>ve
 vnoremap <C-S-Right> e
 
-noremap <C-A> ggvG
-inoremap <C-A> <Esc>ggvG
+nnoremap <C-A> ggvG$
+inoremap <C-A> <Esc>ggvG$
 
-noremap <C-Z> u
+nnoremap <C-Z> u
 inoremap <C-Z> <C-O>u
 
-noremap <C-Y> <C-R>
+nnoremap <C-Y> <C-R>
 inoremap <C-Y> <C-O><C-R>
 
-noremap <C-Tab> <C-W>w
+nnoremap <C-Tab> <C-W>w
 inoremap <C-Tab> <C-O><C-W>w
 
-noremap <C-F4> <C-W>c
+nnoremap <C-F4> <C-W>c
 inoremap <C-F4> <C-O><C-W>c
 
 vnoremap <C-C> "+y
@@ -271,58 +279,64 @@ vmap <C-Insert> <C-C>
 vnoremap <C-X> "+d
 vmap <S-Del> <C-X>
 
-noremap <C-T> :tabnew<Space>
+nnoremap <C-T> :tabnew<Space>
 
-noremap <C-V> "+gP
+nnoremap <C-V> "+gP
 exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
 exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
-map <S-Insert> <C-V>
+nmap <S-Insert> <C-V>
 imap <S-Insert> <C-V>
 vmap <S-Insert> <C-V>
 
 inoremap <C-S> <C-\><C-O>:w<CR>
 nnoremap <C-S> :w!<CR>
+
+nnoremap <A-Up> :m .-2<CR>
+nnoremap <A-Down> :m .+1<CR>
+inoremap <A-Up> <Esc>:m .-2<CR>gi
+inoremap <A-Down> <Esc>:m .+1<CR>gi
+vnoremap <A-Up> :m '<-2<CR>gv
+vnoremap <A-Down> :m '>+1<CR>gv
 " }}}
 
 " vim-whitespace {{{
-
-function s:MatchWhitespace()
-    let l:pattern = '\s\+$'
-    if &expandtab
-        let l:pattern .= '\|\t\+'
+function s:MatchWhitespace(mode)
+    if exists('b:highlight_whitespace') && b:highlight_whitespace && a:mode =~ 'i'
+        let l:pattern = '\s\+$'
+        if &expandtab
+            let l:pattern .= '\|\t\+'
+        endif
+        exe 'match ExtraWhitespace /' . l:pattern . '/'
+    else
+        match ExtraWhitespace //
     endif
-    let g:deb_p = l:pattern
-    exe 'match ExtraWhitespace /' . l:pattern . '/'
 endfunction
 
-autocmd BufRead,BufNew * call s:MatchWhitespace()
-autocmd InsertLeave * call s:MatchWhitespace()
-autocmd InsertEnter * call s:MatchWhitespace()
-
+augroup vim_whitespace
+    autocmd BufRead,BufNew * call s:MatchWhitespace('n')
+    autocmd InsertLeave * call s:MatchWhitespace('i')
+    autocmd InsertEnter * call s:MatchWhitespace('n')
+augroup END
 " }}}
-
-function! NumberToggle()
-    if &relativenumber
-        set norelativenumber
-    else
-        set relativenumber
-    endif
-endfunc
 
 nmap <Space> <nop>
 nmap <Leader>q :qa<CR>
 nmap <Leader>w <Leader><Leader>w
+omap <Leader>w <Leader><Leader>w
 nmap <Leader>e <Leader><Leader>e
-nmap <Leader>r :call NumberToggle()<CR>
+omap <Leader>e <Leader><Leader>e
+nmap <Leader>r cor
 nmap <Leader>t <Plug>TaskList<CR>
 nmap <Leader>u :UltiSnipsEdit<CR>
 nmap <Leader>i :nohl<CR>
 nmap <Leader>o :w!<CR>
 nmap <Leader>a :FSHere<CR>
 nmap <Leader>s <Leader><Leader>s
+omap <Leader>s <Leader><Leader>s
 nmap <Leader>f za
 nmap <Leader>g <C-]>
 nmap <Leader>b <Leader><Leader>b
+omap <Leader>b <Leader><Leader>b
 nmap <Leader>n :NERDTreeToggle<CR>
 nmap <Leader>m :TagbarToggle<CR>
 
@@ -331,11 +345,22 @@ nmap <C-K> <C-W>k
 nmap <C-L> <C-W>l
 nmap <C-H> <C-W>h
 
+nmap <C-M> :CtrlPMRUFiles<CR>
 vmap { S}
 vmap ( S)
 vmap [ S]
 vmap " S"
 vmap ' S'
+" }}}
+
+" FileType config {{{
+augroup ft_config
+    au!
+    au FileType c,cpp let b:easytags_auto_highlight = 0 |
+                    \ let b:highlight_whitespace=1
+                    \ setlocal commentstring=//\ %s
+    au BufNewFile,BufRead *.i set filetype=cpp
+augroup END
 " }}}
 
 " Local config {{{
