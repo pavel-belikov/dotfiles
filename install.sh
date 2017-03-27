@@ -124,6 +124,7 @@ install_directory() {
 install_apt_dependencies() {
     dependencies="
     sudo htop ntp gparted curl wget strace
+    ack silversearcher-ag
     mc pcmanfm xfce4-terminal
     unzip p7zip-full xarchiver
     pulseaudio alsa-tools alsa-utils pavucontrol
@@ -170,10 +171,10 @@ install_apt_dependencies() {
     fi
 
     dpkg --add-architecture i386
-    apt -y update
-    apt -y upgrade
-    apt -y dist-upgrade
-    apt -y install $dependencies
+    apt -yq update
+    apt -yq upgrade
+    apt -yq dist-upgrade
+    apt -yq install $dependencies
     apt clean
 }
 

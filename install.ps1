@@ -1,7 +1,8 @@
 param (
     [switch]$choco = $false,
-    [switch]$vim = $true,
-    [switch]$escswap = $true
+    [switch]$dotfiles = $true,
+    [switch]$escswap = $true,
+    [switch]$local = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -20,7 +21,7 @@ if ($choco) {
         "msys2", "ctags", "cmake", "7zip",
         "curl", "wget",
         "git", "tortoisesvn", "tortoisegit",
-        "vim",
+        "vim", "ask", "ag",
         "firefox", "thunderbird",
         "virtualbox",
         "keepassx"
@@ -29,7 +30,7 @@ if ($choco) {
     Write-Host "Install python for vim"
 }
 
-if ($vim) {
+if ($dotfiles) {
     $vimPlugFilePath = "~\vimfiles\autoload\plug.vim"
     $hasVimPlug = Test-Path $vimPlugFilePath -ErrorAction SilentlyContinue
     if (!$hasVimPlug) {
@@ -39,9 +40,10 @@ if ($vim) {
         (New-Object Net.WebClient).DownloadFile($uri, $path)
     }
 
-    $vimrcPath = "$HOME\_vimrc"
-    $hasVimrc = Test-Path $vimrcPath -ErrorAction SilentlyContinue
-    if (!$hasVimrc) {
-        cp "$vimrcPath" "dotfiles\.vimrc"
+    cp "$HOME\_vimrc" "dotfiles\.vimrc"
+    cp "$HOME\.gitignore" "dotfiles\.gitignore"
+
+    if ($local) {
+        cp "$HOME\.vimrc.local" "local\.vimrc.local"
     }
 }

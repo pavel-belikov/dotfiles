@@ -1,30 +1,23 @@
 " Plugins {{{
 set nocompatible
-if has("win32")
-    let vimfiles='$HOME/vimfiles'
-else
-    let vimfiles='~/.vim'
-endif
 
-call plug#begin(vimfiles . '/bundle/')
+call plug#begin()
 " C++ {{{
 if &diff
-else
-    Plug 'Valloric/YouCompleteMe'
+    Plug 'Valloric/YouCompleteMe', { 'on': [] }
 endif
 
 if has("win32") || &diff
     Plug 'octol/vim-cpp-enhanced-highlight'
 else
+    Plug 'gilligan/vim-lldb'
     Plug 'jeaye/color_coded'
 endif
-
 " }}}
 
 " Python {{{
-Plug 'xolox/vim-misc'
-Plug 'xolox/vim-easytags'
-Plug 'michaeljsmith/vim-indent-object'
+Plug 'xolox/vim-misc', { 'for': ['sh', 'python'] }
+Plug 'xolox/vim-easytags', { 'for': ['sh', 'python'] }
 Plug 'tmhedberg/simpylfold', { 'for': 'python' }
 " }}}
 
@@ -43,6 +36,9 @@ Plug 'majutsushi/tagbar'
 
 " VCS {{{
 Plug 'tpope/vim-fugitive'
+if &diff
+    Plug 'rickhowe/diffchar.vim'
+endif
 " }}}
 
 " Text editing {{{
@@ -53,14 +49,17 @@ Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-unimpaired'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'easymotion/vim-easymotion'
-Plug 'godlygeek/tabular'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
+Plug 'kana/vim-textobj-user'
+Plug 'kana/vim-textobj-entire'
+Plug 'michaeljsmith/vim-indent-object'
 " }}}
 
 " Filesystem {{{
-Plug 'kien/ctrlp.vim'
+Plug 'kien/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles'] }
+Plug 'felikz/ctrlp-py-matcher'
 Plug 'derekwyatt/vim-fswitch'
+Plug 'mileszs/ack.vim', { 'on': 'Ack' }
 " }}}
 
 " Syntax {{{
@@ -80,15 +79,6 @@ call plug#end()
 " }}}
 
 " Vim config {{{
-
-" Language {{{
-set fileencodings=utf8,cp1251
-set encoding=utf8
-
-let $LANG='en'
-set langmenu=en
-set langmap=ёйцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕHГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.QWERTYUIOP{}ASDFGHJKL:\\«ZXCVBNM<>
-" }}}
 
 " GUI {{{
 if has("win32")
@@ -110,23 +100,29 @@ catch
     colorscheme desert
 endtry
 
+" Filters {{{
 set wildignore=*.o,*~,*.pyc,*.i,*~TMP,*.bak
 if has("win32")
     set wildignore+=.git\*,.hg\*,.svn\*
 else
     set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 endif
+" }}}
 
-set laststatus=2
-set showtabline=0
-
+" Style {{{
 set expandtab
 set shiftwidth=4
 set tabstop=4
 set smarttab
 set autoindent
 set smartindent
+set cinoptions=l0,:0
+" }}}
 
+" UI {{{
+set scrolloff=3
+set laststatus=2
+set showtabline=1
 set lazyredraw
 set linebreak
 set ruler
@@ -135,8 +131,7 @@ set wildmenu
 set showmode
 set number
 set hls
-if &diff
-else
+if !&diff
     set cursorline
 endif
 
@@ -144,7 +139,9 @@ set noerrorbells
 set visualbell
 set t_vb=
 set tm=500
+" }}}
 
+" Misc {{{
 set autoread
 set noswapfile
 set nobackup
@@ -161,17 +158,19 @@ set ww=b,s,<,>,[,]
 set iskeyword=@,48-57,_,192-255
 set backspace=2
 
-set scrolloff=3
-
-set cinoptions=l0,:0
-
 set diffopt=filler,context:1000000,vertical
+if &diff
+    augroup DiffOptions
+        au!
+        au FilterWritePre * setlocal wrap<
+    augroup END
+endif
 
 set tags=~/.tags
 
 filetype plugin indent on
 syntax on
-
+" }}}
 " }}}
 
 " Plugins config {{{
@@ -188,6 +187,7 @@ let g:easytags_file='~/.tags'
 let g:easytags_updatetime_min=0
 let g:easytags_updatetime_warn=0
 
+" Airline {{{
 if !exists('g:airline_symbols')
     let g:airline_symbols={}
 endif
@@ -195,7 +195,7 @@ endif
 let g:airline_section_z='[0x%02B] < %l/%L (%c)'
 let g:airline_left_sep=''
 let g:airline_right_sep=''
-let g:airline#extensions#tabline#enabled=1
+let g:airline#extensions#tabline#enabled=0
 let g:airline#extensions#tabline#show_splits=0
 let g:airline#extensions#tabline#buffer_nr_show=0
 let g:airline#extensions#tabline#show_buffers=0
@@ -203,9 +203,10 @@ let g:airline#extensions#tabline#tab_nr_type=1
 let g:airline#extensions#tabline#show_tab_nr=1
 let g:airline#extensions#tabline#tab_min_count=2
 let g:airline#extensions#tabline#fnamemod=':t'
-let g:airline#extensions#whitespace#enabled = 1
+let g:airline#extensions#whitespace#enabled=0
 
 let g:airline_theme='lucius'
+" }}}
 
 let g:ctrlp_custom_ignore={
     \ 'dir':  'CMakeFiles$\|\.git$\|\.hg$\|\.svn$',
@@ -221,13 +222,22 @@ let g:workspace_autosave_untrailspaces=0
 
 let g:UltiSnipsExpandTrigger="<C-Space>"
 
-let g:EasyMotion_verbose = 0
+let g:EasyMotion_verbose=0
+let g:EasyMotion_smartcase=1
 
-let mapleader="\<Space>"
-let maplocalleader=","
+let g:DiffColors=0
+let g:DiffUnit="Word1"
+
+if executable('ag')
+    let g:ackprg='ag --vimgrep'
+endif
+
 " }}}
 
 " Key bindings {{{
+let mapleader="\<Space>"
+let maplocalleader="\\"
+
 " vim-better-mswin {{{
 if &diff
     nnoremap <A-Left> <C-W>ldp
@@ -240,7 +250,6 @@ if &diff
     inoremap <A-Up> <C-O>[c
     inoremap <A-Down> <C-O>]c
 endif
-
 
 nnoremap <C-Left> b
 vnoremap <C-Left> b
@@ -284,26 +293,52 @@ nnoremap <C-T> :tabnew<Space>
 nnoremap <C-V> "+gP
 exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
 exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
+cnoremap <C-V> <C-R>+
 nmap <S-Insert> <C-V>
 imap <S-Insert> <C-V>
 vmap <S-Insert> <C-V>
+cmap <S-Insert> <C-V>
 
 inoremap <C-S> <C-\><C-O>:w<CR>
 nnoremap <C-S> :w!<CR>
 
-nnoremap <A-Up> :m .-2<CR>
-nnoremap <A-Down> :m .+1<CR>
-inoremap <A-Up> <Esc>:m .-2<CR>gi
-inoremap <A-Down> <Esc>:m .+1<CR>gi
-vnoremap <A-Up> :m '<-2<CR>gv
-vnoremap <A-Down> :m '>+1<CR>gv
+if !&diff
+    nnoremap <A-Up> :m .-2<CR>
+    nnoremap <A-Down> :m .+1<CR>
+    inoremap <A-Up> <Esc>:m .-2<CR>gi
+    inoremap <A-Down> <Esc>:m .+1<CR>gi
+    vnoremap <A-Up> :m '<-2<CR>gv
+    vnoremap <A-Down> :m '>+1<CR>gv
+endif
+
+if &diff
+    nnoremap <F5> :diffupdate<CR>
+endif
+
+nnoremap <F2> <C-]>
+nmap <F12> <F2>
+
+nmap <F4> :FSHere<CR>
 " }}}
 
 " vim-whitespace {{{
+if !exists('g:extra_whitespace_ignored_filetypes')
+    let g:extra_whitespace_ignored_filetypes = []
+endif
+
 function s:MatchWhitespace(mode)
-    if exists('b:highlight_whitespace') && b:highlight_whitespace && a:mode =~ 'i'
-        let l:pattern = '\s\+$'
+    if !exists('b:highlight_whitespace') || b:highlight_whitespace == 1
+        if a:mode == 'i'
+            let l:pattern = '\s\+\%#\@<!$'
+        else
+            let l:pattern = '\s\+$'
+        endif
         if &expandtab
+            let l:pattern .= '\|^\t\+'
+        else
+            let l:pattern .= '\|^ \+'
+        endif
+        if exists('b:highlight_any_tab') && b:highlight_any_tab == 1
             let l:pattern .= '\|\t\+'
         endif
         exe 'match ExtraWhitespace /' . l:pattern . '/'
@@ -312,54 +347,92 @@ function s:MatchWhitespace(mode)
     endif
 endfunction
 
-augroup vim_whitespace
-    autocmd BufRead,BufNew * call s:MatchWhitespace('n')
-    autocmd InsertLeave * call s:MatchWhitespace('i')
-    autocmd InsertEnter * call s:MatchWhitespace('n')
+function s:SetHighlightWhitespace()
+    if !exists('b:highlight_whitespace')
+        for ft in g:extra_whitespace_ignored_filetypes
+            if ft ==# &filetype
+                let b:highlight_whitespace = 0
+                call s:MatchWhitespace('n')
+                return
+            endif
+        endfor
+    endif
+endfunction
+
+hi def link ExtraWhitespace ErrorMsg
+
+augroup VimWhitespace
+    au!
+    au BufRead,BufNew * call s:MatchWhitespace('n')
+    au InsertLeave * call s:MatchWhitespace('n')
+    au InsertEnter * call s:MatchWhitespace('i')
+    au FileType * call s:SetHighlightWhitespace()
 augroup END
 " }}}
 
+nmap gt <C-]>
+
+" Misc Leader {{{
 nmap <Space> <nop>
-nmap <Leader>q :qa<CR>
-nmap <Leader>w <Leader><Leader>w
-omap <Leader>w <Leader><Leader>w
-nmap <Leader>e <Leader><Leader>e
-omap <Leader>e <Leader><Leader>e
-nmap <Leader>r cor
-nmap <Leader>t <Plug>TaskList<CR>
-nmap <Leader>u :UltiSnipsEdit<CR>
+nmap <Leader>t :TaskList<CR>
 nmap <Leader>i :nohl<CR>
-nmap <Leader>o :w!<CR>
 nmap <Leader>a :FSHere<CR>
-nmap <Leader>s <Leader><Leader>s
-omap <Leader>s <Leader><Leader>s
 nmap <Leader>f za
-nmap <Leader>g <C-]>
-nmap <Leader>b <Leader><Leader>b
-omap <Leader>b <Leader><Leader>b
 nmap <Leader>n :NERDTreeToggle<CR>
 nmap <Leader>m :TagbarToggle<CR>
+" }}}
 
+" EasyMotion {{{
+nmap <Leader>w <Leader><Leader>w
+omap <Leader>w <Leader><Leader>w
+nmap <Leader>s <Leader><Leader>s
+omap <Leader>s <Leader><Leader>s
+nmap <Leader>b <Leader><Leader>b
+omap <Leader>b <Leader><Leader>b
+" }}}
+
+" VCS {{{
+nmap <Leader>gs :Gstatus<CR>
+nmap <Leader>gc :Gcommit<CR>
+nmap <Leader>gd :Gdiff<CR>
+nmap <Leader>gp :Gpush<CR>
+nmap <Leader>gl :Gpull<CR>
+" }}}
+
+" Windows {{{
 nmap <C-J> <C-W>j
 nmap <C-K> <C-W>k
 nmap <C-L> <C-W>l
 nmap <C-H> <C-W>h
+" }}}
 
-nmap <C-M> :CtrlPMRUFiles<CR>
+" CtrlP {{{
+nmap <Leader>ef :CtrlP<CR>
+nmap <Leader>er :CtrlPMRUFiles<CR>
+" }}}
+
+" Surround {{{
 vmap { S}
 vmap ( S)
 vmap [ S]
 vmap " S"
 vmap ' S'
 " }}}
+" }}}
 
 " FileType config {{{
-augroup ft_config
+augroup FileTypeConfig
     au!
-    au FileType c,cpp let b:easytags_auto_highlight = 0 |
-                    \ let b:highlight_whitespace=1
-                    \ setlocal commentstring=//\ %s
+    au FileType c,cpp let b:easytags_auto_highlight = 0
+                   \| setlocal commentstring=//\ %s
     au BufNewFile,BufRead *.i set filetype=cpp
+    au FileType org setlocal ts=2 sw=2
+augroup END
+
+augroup LoadInsertPlugins
+    au!
+    au InsertEnter * call plug#load('YouCompleteMe')
+                  \| au! LoadInsertPlugins
 augroup END
 " }}}
 
@@ -368,4 +441,6 @@ if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
 endif
 " }}}
+
+" vim:foldlevel=1:
 
