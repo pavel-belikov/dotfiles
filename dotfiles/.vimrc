@@ -3,7 +3,7 @@ set nocompatible
 
 call plug#begin()
 " C++ {{{
-if &diff
+if !&diff
     Plug 'Valloric/YouCompleteMe', { 'on': [] }
 endif
 
@@ -13,17 +13,14 @@ else
     Plug 'jeaye/color_coded'
 endif
 " }}}
-
 " Python {{{
-Plug 'xolox/vim-misc', { 'for': ['sh', 'python'] }
-Plug 'xolox/vim-easytags', { 'for': ['sh', 'python'] }
+Plug 'xolox/vim-misc', { 'for': ['sh', 'python', 'vim'] }
+Plug 'xolox/vim-easytags', { 'for': ['sh', 'python', 'vim'] }
 Plug 'tmhedberg/simpylfold', { 'for': 'python' }
 " }}}
-
 " Project {{{
 Plug 'editorconfig/editorconfig-vim'
 " }}}
-
 " UI {{{
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'vim-scripts/TaskList.vim', { 'on': 'TaskList' }
@@ -32,14 +29,12 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'majutsushi/tagbar'
 " }}}
-
 " VCS {{{
 Plug 'tpope/vim-fugitive'
 if &diff
     Plug 'rickhowe/diffchar.vim'
 endif
 " }}}
-
 " Text editing {{{
 Plug 'raimondi/delimitmate'
 Plug 'tpope/vim-commentary'
@@ -52,15 +47,14 @@ Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
 Plug 'kana/vim-textobj-user'
 Plug 'kana/vim-textobj-entire'
 Plug 'michaeljsmith/vim-indent-object'
+Plug 'haya14busa/incsearch.vim'
 " }}}
-
 " Filesystem {{{
 Plug 'kien/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles'] }
 Plug 'felikz/ctrlp-py-matcher'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'mileszs/ack.vim', { 'on': 'Ack' }
 " }}}
-
 " Syntax {{{
 Plug 'syntaxdosini.vim'
 Plug 'elzr/vim-json'
@@ -69,7 +63,6 @@ Plug 'pavel-belikov/vim-qmake'
 Plug 'pavel-belikov/vim-qtcreator-tasks'
 Plug 'pprovost/vim-ps1'
 " }}}
-
 " Org {{{
 Plug 'jceb/vim-orgmode'
 Plug 'tpope/vim-speeddating', { 'for': 'org' }
@@ -78,7 +71,6 @@ call plug#end()
 " }}}
 
 " Vim config {{{
-
 " GUI {{{
 if has("win32")
     set noshelltemp
@@ -92,33 +84,13 @@ endif
 set mouse=a
 set guioptions=ait
 " }}}
-
+" UI {{{
 try
     colorscheme qdark
 catch
     colorscheme desert
 endtry
 
-" Filters {{{
-set wildignore=*.o,*~,*.pyc,*.i,*~TMP,*.bak
-if has("win32")
-    set wildignore+=.git\*,.hg\*,.svn\*
-else
-    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
-endif
-" }}}
-
-" Style {{{
-set expandtab
-set shiftwidth=4
-set tabstop=4
-set smarttab
-set autoindent
-set smartindent
-set cinoptions=l0,:0
-" }}}
-
-" UI {{{
 set scrolloff=3
 set laststatus=2
 set showtabline=1
@@ -139,7 +111,23 @@ set visualbell
 set t_vb=
 set tm=500
 " }}}
-
+" Filters {{{
+set wildignore=*.o,*~,*.pyc,*.i,*~TMP,*.bak
+if has("win32")
+    set wildignore+=.git\*,.hg\*,.svn\*
+else
+    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+endif
+" }}}
+" Style {{{
+set expandtab
+set shiftwidth=4
+set tabstop=4
+set smarttab
+set autoindent
+set smartindent
+set cinoptions=l0,:0
+" }}}
 " Misc {{{
 set autoread
 set noswapfile
@@ -173,19 +161,23 @@ syntax on
 " }}}
 
 " Plugins config {{{
+" Tagbar {{{
 let g:tagbar_sort=0
 let g:tagbar_left=0
-
+" }}}
+" NERDTree {{{
 let g:NERDTreeWinPos='left'
 let g:NERDTreeShowHidden=1
-
+" }}}
+" YouCompleteMe {{{
 let g:ycm_confirm_extra_conf=0
 let g:ycm_disable_for_files_larger_than_kb=2048
-
+" }}}
+" EasyTags {{{
 let g:easytags_file='~/.tags'
 let g:easytags_updatetime_min=0
 let g:easytags_updatetime_warn=0
-
+" }}}
 " Airline {{{
 if !exists('g:airline_symbols')
     let g:airline_symbols={}
@@ -206,37 +198,48 @@ let g:airline#extensions#whitespace#enabled=0
 
 let g:airline_theme='lucius'
 " }}}
-
+" CtrlP {{{
 let g:ctrlp_custom_ignore={
     \ 'dir':  'CMakeFiles$\|\.git$\|\.hg$\|\.svn$',
     \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$\|\.PVS-Studio' }
 let g:ctrlp_working_path_mode='a'
-
+" }}}
+" delitMate {{{
 let g:delimitMate_expand_cr=1
-
+" }}}
+" indent-guides {{{
 let g:indent_guides_auto_colors=0
 let g:indent_guides_enable_on_vim_startup=1
-
+" }}}
+" vim-workspace {{{
 let g:workspace_autosave_untrailspaces=0
-
+" }}}
+" UltiSnips {{{
 let g:UltiSnipsExpandTrigger="<C-Space>"
-
+" }}}
+" EasyMotion {{{
 let g:EasyMotion_verbose=0
 let g:EasyMotion_smartcase=1
-
+" }}}
+" vim-diffchar {{{
 let g:DiffColors=0
 let g:DiffUnit="Word1"
-
+" }}}
+" Ack {{{
 if executable('ag')
     let g:ackprg='ag --vimgrep'
 endif
-
+" }}}
+" incsearch.vim {{{
+let g:incsearch#auto_nohlsearch = 1
+" }}}
 " }}}
 
 " Key bindings {{{
+" Leader {{{
 let mapleader="\<Space>"
 let maplocalleader="\\"
-
+" }}}
 " vim-better-mswin {{{
 if &diff
     nnoremap <A-Left> <C-W>ldp
@@ -275,19 +278,14 @@ inoremap <C-Z> <C-O>u
 nnoremap <C-Y> <C-R>
 inoremap <C-Y> <C-O><C-R>
 
-nnoremap <C-Tab> <C-W>w
-inoremap <C-Tab> <C-O><C-W>w
-
-nnoremap <C-F4> <C-W>c
-inoremap <C-F4> <C-O><C-W>c
+nnoremap <C-Tab> gt
+inoremap <C-Tab> <C-O>gt
 
 vnoremap <C-C> "+y
 vmap <C-Insert> <C-C>
 
 vnoremap <C-X> "+d
 vmap <S-Del> <C-X>
-
-nnoremap <C-T> :tabnew<Space>
 
 nnoremap <C-V> "+gP
 exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
@@ -319,69 +317,96 @@ nmap <F12> <F2>
 
 nmap <F4> :FSHere<CR>
 " }}}
-
 " vim-whitespace {{{
 if !exists('g:extra_whitespace_ignored_filetypes')
     let g:extra_whitespace_ignored_filetypes = ['help']
 endif
 
-function s:MatchWhitespace(mode)
-    if !exists('b:highlight_whitespace') || b:highlight_whitespace == 1
-        if a:mode == 'i'
-            let l:pattern = '\s\+\%#\@<!$'
-        else
-            let l:pattern = '\s\+$'
-        endif
-        if &expandtab
-            let l:pattern .= '\|^\t\+'
-        else
-            let l:pattern .= '\|^ \+'
-        endif
-        if exists('b:highlight_any_tab') && b:highlight_any_tab == 1
-            let l:pattern .= '\|\t\+'
-        endif
-        exe 'match ExtraWhitespace /' . l:pattern . '/'
-    else
-        match ExtraWhitespace //
-    endif
-endfunction
-
-function s:SetHighlightWhitespace()
-    if !exists('b:highlight_whitespace')
-        for ft in g:extra_whitespace_ignored_filetypes
-            if ft ==# &filetype
-                let b:highlight_whitespace = 0
-                call s:MatchWhitespace('n')
-                return
-            endif
-        endfor
-    endif
-endfunction
+if !exists('g:whitespace_enable_by_default')
+    let g:whitespace_enable_by_default = 1
+endif
 
 hi def link ExtraWhitespace ErrorMsg
+hi def link whitespaceTabIndent ExtraWhitespace
+hi def link whitespaceTab ExtraWhitespace
+hi def link whitespaceSpaceIndent ExtraWhitespace
+hi def link whitespaceTrailing ExtraWhitespace
+
+function s:InitBuffer()
+    if !exists('b:whitespace_enabled')
+        let b:whitespace_enabled = g:whitespace_enable_by_default
+    endif
+    call s:UpdateOptions()
+endfunction
+
+function s:UpdateFileType()
+    if exists('b:whitespace_enabled') && b:whitespace_enabled
+        if index(g:extra_whitespace_ignored_filetypes, &ft) >= 0
+            let b:whitespace_enabled = 0
+            call s:UpdateOptions()
+        endif
+    endif
+endfunction
+
+function s:UpdateOptions()
+    if !exists('b:whitespace_enabled')
+        return
+    endif
+
+    if b:whitespace_enabled && &expandtab
+        match whitespaceTabIndent /^\t\+/
+        match whitespaceTab /[^\t]\t/
+    else
+        match whitespaceTabIndent //
+        match whitespaceTab //
+    endif
+
+    if b:whitespace_enabled && !&expandtab
+        match whitespaceSpaceIndent /^ \+/
+    else
+        match whitespaceSpaceIndent //
+    endif
+
+    if b:whitespace_enabled
+        call s:ToggleMode('n')
+    else
+        match whitespaceTrailing //
+    endif
+endfunction
+
+function s:ToggleMode(mode)
+    if !exists('b:whitespace_enabled') || !b:whitespace_enabled
+        return
+    endif
+
+    if a:mode == 'i'
+        match whitespaceTrailing /\s\+\%#\@<!$/
+    else
+        match whitespaceTrailing /\s\+$/
+    endif
+endfunction
 
 augroup VimWhitespace
     au!
-    au BufRead,BufNew * call s:MatchWhitespace('n')
-    au InsertLeave * call s:MatchWhitespace('n')
-    au InsertEnter * call s:MatchWhitespace('i')
-    au FileType * call s:SetHighlightWhitespace()
+    au BufRead,BufNew * call s:InitBuffer()
+    au FileType * call s:UpdateFileType()
+    au OptionSet * call s:UpdateOptions()
+    au InsertLeave * call s:ToggleMode('n')
+    au InsertEnter * call s:ToggleMode('i')
 augroup END
 " }}}
-
-nmap gt <C-]>
-
-" Misc Leader {{{
+" Misc (f,q,o) {{{
 nmap <Space> <nop>
-nmap <Leader>t :TaskList<CR>
-nmap <Leader>i :nohl<CR>
-nmap <Leader>a :FSHere<CR>
 nmap <Leader>f za
-nmap <Leader>n :NERDTreeToggle<CR>
-nmap <Leader>m :TagbarToggle<CR>
+nmap <Leader>q :q<CR>
+nmap <Leader>o :w<CR>
 " }}}
-
-" EasyMotion {{{
+" Toggle Window (t) {{{
+nmap <Leader>tt :TaskList<CR>
+nmap <Leader>tn :NERDTreeToggle<CR>
+nmap <Leader>tb :TagbarToggle<CR>
+" }}}
+" EasyMotion (w,s,b) {{{
 nmap <Leader>w <Leader><Leader>w
 omap <Leader>w <Leader><Leader>w
 nmap <Leader>s <Leader><Leader>s
@@ -389,33 +414,45 @@ omap <Leader>s <Leader><Leader>s
 nmap <Leader>b <Leader><Leader>b
 omap <Leader>b <Leader><Leader>b
 " }}}
-
-" VCS {{{
+" VCS (g) {{{
 nmap <Leader>gs :Gstatus<CR>
 nmap <Leader>gc :Gcommit<CR>
 nmap <Leader>gd :Gdiff<CR>
 nmap <Leader>gp :Gpush<CR>
 nmap <Leader>gl :Gpull<CR>
 " }}}
-
+" Files (e) {{{
+nmap <Leader>ef :CtrlP<CR>
+nmap <Leader>er :CtrlPMRUFiles<CR>
+nmap <Leader>ea :FSHere<CR>
+nmap <Leader>ed <C-]>
+" }}}
+" Build (m) {{{
+nmap <Leader>m :make<CR>
+" }}}
 " Windows {{{
 nmap <C-J> <C-W>j
 nmap <C-K> <C-W>k
 nmap <C-L> <C-W>l
 nmap <C-H> <C-W>h
 " }}}
-
-" CtrlP {{{
-nmap <Leader>ef :CtrlP<CR>
-nmap <Leader>er :CtrlPMRUFiles<CR>
-" }}}
-
 " Surround {{{
 vmap { S}
 vmap ( S)
 vmap [ S]
 vmap " S"
 vmap ' S'
+" }}}
+" incsearch.vim {{{
+map n  <Plug>(incsearch-nohl-n)
+map N  <Plug>(incsearch-nohl-N)
+map *  <Plug>(incsearch-nohl-*)
+map #  <Plug>(incsearch-nohl-#)
+map g* <Plug>(incsearch-nohl-g*)
+map g# <Plug>(incsearch-nohl-g#)
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
 " }}}
 " }}}
 

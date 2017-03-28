@@ -128,6 +128,7 @@ install_apt_dependencies() {
     mc pcmanfm xfce4-terminal
     unzip p7zip-full xarchiver
     pulseaudio alsa-tools alsa-utils pavucontrol
+    gdebi
     fontforge
 
     git gcc g++ clang cmake valgrind gdb lldb
