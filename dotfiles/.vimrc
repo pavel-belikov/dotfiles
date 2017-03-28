@@ -10,7 +10,6 @@ endif
 if has("win32") || &diff
     Plug 'octol/vim-cpp-enhanced-highlight'
 else
-    Plug 'gilligan/vim-lldb'
     Plug 'jeaye/color_coded'
 endif
 " }}}
@@ -323,7 +322,7 @@ nmap <F4> :FSHere<CR>
 
 " vim-whitespace {{{
 if !exists('g:extra_whitespace_ignored_filetypes')
-    let g:extra_whitespace_ignored_filetypes = []
+    let g:extra_whitespace_ignored_filetypes = ['help']
 endif
 
 function s:MatchWhitespace(mode)
