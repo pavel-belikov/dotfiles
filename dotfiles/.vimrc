@@ -46,7 +46,7 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'haya14busa/incsearch.vim'
 
 " Filesystem {{{2
-Plug 'kien/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles'] }
+Plug 'kien/ctrlp.vim'
 Plug 'felikz/ctrlp-py-matcher'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'mileszs/ack.vim', { 'on': 'Ack' }
@@ -401,7 +401,11 @@ omap <Leader>s <Leader><Leader>s
 nmap <Leader>b <Leader><Leader>b
 omap <Leader>b <Leader><Leader>b
 
-" VCS (g) {{{2
+" Align (a) {{{2
+nnoremap <Leader>a= :Tabularize /=<CR>
+vnoremap <Leader>a= :Tabularize /=<CR>
+
+" Git (g) {{{2
 nmap <Leader>gs :Gstatus<CR>
 nmap <Leader>gc :Gcommit<CR>
 nmap <Leader>gd :Gdiff<CR>
@@ -419,11 +423,15 @@ nmap <Leader>fd <C-]>
 " Build (m) {{{2
 nmap <Leader>m :make<CR>
 
-" Windows {{{2
-nmap <C-J> <C-W>j
-nmap <C-K> <C-W>k
-nmap <C-L> <C-W>l
-nmap <C-H> <C-W>h
+" Windows (h,j,k,l) {{{2
+nnoremap <C-H> <C-W><
+nnoremap <C-J> <C-W>+
+nnoremap <C-K> <C-W>-
+nnoremap <C-L> <C-W>>
+nnoremap <Leader>h <C-W>h
+nnoremap <Leader>j <C-W>j
+nnoremap <Leader>k <C-W>k
+nnoremap <Leader>l <C-W>l
 
 " Surround {{{2
 vmap { S}
@@ -451,6 +459,7 @@ augroup FileTypeConfig
     au FileType c,cpp let b:easytags_auto_highlight = 0
                    \| setlocal commentstring=//\ %s
     au BufNewFile,BufRead *.i set filetype=cpp
+    au FileType tasks,make setlocal noexpandtab
     au FileType org setlocal ts=2 sw=2
 augroup END
 
