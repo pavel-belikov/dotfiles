@@ -73,22 +73,6 @@ has_binary() {
     return 1
 }
 
-has_font() {
-    if has_binary fc-list; then
-        if fc-list | grep "$1" > /dev/null 2>&1; then
-            return 0
-        fi
-    fi
-    return 1
-}
-
-has_theme() {
-    if find "/usr/share/themes" -maxdepth 1 -name "$1" | grep . > /dev/null; then
-        return 0
-    fi
-    return 1
-}
-
 dir() {
     rm -rf "$1"
     mkdir -p "$1"
@@ -140,6 +124,8 @@ install_apt_dependencies() {
     scrot kbdd numlockx
     lxappearance qt4-qtconfig qt5-style-plugins
     gtk2-engines-pixbuf gtk2-engines-murrine
+    gnome-themes-standard adwaita-icon-theme
+    fonts-hack-ttf
 
     firefox thunderbird
 
@@ -202,45 +188,6 @@ add_environment() {
         echo "export $1=$2" >> /etc/environment
     fi
 }
-
-install_themes() {
-    if has_theme "dorian-theme"; then
-        return 0
-    fi
-
-    dir build/themes
-
-    echo "downloading dotfiles.zip"
-    wget -q -O dotfiles.zip "https://www.dropbox.com/sh/fqepviweu1sdbuf/AABmCiawlVAHao34iwy3tpuFa?dl=1"
-    unzip -qq -o dotfiles.zip -d dotfiles -x / || true
-
-    cd dotfiles
-
-    for name in fonts themes;
-    do
-        if [ -d .$name ]; then
-            cp -rv .$name/* /usr/share/$name
-        fi
-    done
-}
-
-install_fonts() {
-    refresh=0
-
-    if ! has_font "Inconsolata LGC"; then
-        dir build/inconsolatalgc
-        git clone https://github.com/MihailJP/Inconsolata-LGC.git .
-        make ttf
-        chmod 644 *.ttf
-        cp *.ttf /usr/share/fonts
-        refresh=1
-    fi
-
-    if [ $refresh = 1 ]; then
-        fc-cache -fv > /dev/null 2>&1
-    fi
-}
-
 
 install_xkb_switch() {
     if has_binary xkb-switch; then
@@ -326,10 +273,8 @@ install_as_root() {
     opt local       install_directory local "/root" -name '.vimrc'
     opt local       install_local_environment
     opt dotfiles    install_directory dotfiles "/root" -name '.vimrc'
-    opt dotfiles    install_themes
     opt dotfiles    add_environment "QT_STYLE_OVERRIDE" "gtk2"
     opt dotfiles    install_vim_config "/root"
-    opt dotfiles    install_fonts
     opt awesome     install_autologin
     opt awesome     install_xkb_switch
 }

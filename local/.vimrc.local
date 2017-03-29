@@ -1,6 +1,0 @@
-set fileencodings=utf8,cp1251
-set encoding=utf8
-
-let $LANG='en'
-set langmenu=en
-set langmap=ёйцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕHГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.QWERTYUIOP{}ASDFGHJKL:\\«ZXCVBNM<>

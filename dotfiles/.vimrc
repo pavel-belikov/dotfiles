@@ -1,41 +1,37 @@
-" Plugins {{{
+" Plugins {{{1
 set nocompatible
 
 call plug#begin()
-" C++ {{{
-if !&diff
-    Plug 'Valloric/YouCompleteMe', { 'on': [] }
-endif
+" C++ {{{2
+Plug 'Valloric/YouCompleteMe', { 'on': [] }
 
-if has("win32") || &diff
+if has("win32")
     Plug 'octol/vim-cpp-enhanced-highlight'
 else
-    Plug 'jeaye/color_coded'
+    Plug 'jeaye/color_coded', &diff ? { 'on': [] } : {}
+    Plug 'octol/vim-cpp-enhanced-highlight', !&diff ? { 'on': [] } : {}
 endif
-" }}}
-" Python {{{
+
+" Python {{{2
 Plug 'xolox/vim-misc', { 'for': ['sh', 'python', 'vim'] }
 Plug 'xolox/vim-easytags', { 'for': ['sh', 'python', 'vim'] }
 Plug 'tmhedberg/simpylfold', { 'for': 'python' }
-" }}}
-" Project {{{
+
+" Project {{{2
 Plug 'editorconfig/editorconfig-vim'
-" }}}
-" UI {{{
+
+" UI {{{2
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'vim-scripts/TaskList.vim', { 'on': 'TaskList' }
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'majutsushi/tagbar'
-" }}}
-" VCS {{{
+
+" VCS {{{2
 Plug 'tpope/vim-fugitive'
-if &diff
-    Plug 'rickhowe/diffchar.vim'
-endif
-" }}}
-" Text editing {{{
+
+" Text editing {{{2
 Plug 'raimondi/delimitmate'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
@@ -48,43 +44,46 @@ Plug 'kana/vim-textobj-user'
 Plug 'kana/vim-textobj-entire'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'haya14busa/incsearch.vim'
-" }}}
-" Filesystem {{{
+
+" Filesystem {{{2
 Plug 'kien/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles'] }
 Plug 'felikz/ctrlp-py-matcher'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'mileszs/ack.vim', { 'on': 'Ack' }
-" }}}
-" Syntax {{{
+
+" Syntax {{{2
 Plug 'syntaxdosini.vim'
 Plug 'elzr/vim-json'
 Plug 'pavel-belikov/vim-qdark'
 Plug 'pavel-belikov/vim-qmake'
 Plug 'pavel-belikov/vim-qtcreator-tasks'
 Plug 'pprovost/vim-ps1'
-" }}}
-" Org {{{
+
+" Org {{{2
 Plug 'jceb/vim-orgmode'
 Plug 'tpope/vim-speeddating', { 'for': 'org' }
-" }}}
 call plug#end()
-" }}}
 
-" Vim config {{{
-" GUI {{{
+" Vim config {{{1
+" GUI {{{2
 if has("win32")
     set noshelltemp
     au GUIEnter * simalt ~x
-    set guifont=Consolas:h14
+    set guifont=Hack:h11
 else
     set shell=/bin/sh
-    set guifont=InconsolataLGC\ 14
+    set guifont=Hack\ 11
 endif
 
 set mouse=a
 set guioptions=ait
-" }}}
-" UI {{{
+set fileencodings=utf8,cp1251
+set encoding=utf8
+
+let $LANG='en'
+set langmenu=en
+
+" UI {{{2
 try
     colorscheme qdark
 catch
@@ -110,16 +109,16 @@ set noerrorbells
 set visualbell
 set t_vb=
 set tm=500
-" }}}
-" Filters {{{
+
+" Filters {{{2
 set wildignore=*.o,*~,*.pyc,*.i,*~TMP,*.bak
 if has("win32")
     set wildignore+=.git\*,.hg\*,.svn\*
 else
     set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 endif
-" }}}
-" Style {{{
+
+" Style {{{2
 set expandtab
 set shiftwidth=4
 set tabstop=4
@@ -127,8 +126,8 @@ set smarttab
 set autoindent
 set smartindent
 set cinoptions=l0,:0
-" }}}
-" Misc {{{
+
+" Misc {{{2
 set autoread
 set noswapfile
 set nobackup
@@ -157,35 +156,28 @@ set tags=~/.tags
 
 filetype plugin indent on
 syntax on
-" }}}
-" }}}
 
-" Plugins config {{{
-" Tagbar {{{
+" Plugins config {{{1
+" Tagbar {{{2
 let g:tagbar_sort=0
 let g:tagbar_left=0
-" }}}
-" NERDTree {{{
+
+" NERDTree {{{2
 let g:NERDTreeWinPos='left'
 let g:NERDTreeShowHidden=1
-" }}}
-" YouCompleteMe {{{
+
+" YouCompleteMe {{{2
 let g:ycm_confirm_extra_conf=0
 let g:ycm_disable_for_files_larger_than_kb=2048
-" }}}
-" EasyTags {{{
+
+" EasyTags {{{2
 let g:easytags_file='~/.tags'
 let g:easytags_updatetime_min=0
 let g:easytags_updatetime_warn=0
-" }}}
-" Airline {{{
-if !exists('g:airline_symbols')
-    let g:airline_symbols={}
-endif
 
+" Airline {{{2
+let g:airline_powerline_fonts = 1
 let g:airline_section_z='[0x%02B] < %l/%L (%c)'
-let g:airline_left_sep=''
-let g:airline_right_sep=''
 let g:airline#extensions#tabline#enabled=0
 let g:airline#extensions#tabline#show_splits=0
 let g:airline#extensions#tabline#buffer_nr_show=0
@@ -197,50 +189,48 @@ let g:airline#extensions#tabline#fnamemod=':t'
 let g:airline#extensions#whitespace#enabled=0
 
 let g:airline_theme='lucius'
-" }}}
-" CtrlP {{{
+
+" CtrlP {{{2
 let g:ctrlp_custom_ignore={
     \ 'dir':  'CMakeFiles$\|\.git$\|\.hg$\|\.svn$',
     \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$\|\.PVS-Studio' }
 let g:ctrlp_working_path_mode='a'
-" }}}
-" delitMate {{{
+
+" delitMate {{{2
 let g:delimitMate_expand_cr=1
-" }}}
-" indent-guides {{{
+
+" indent-guides {{{2
 let g:indent_guides_auto_colors=0
 let g:indent_guides_enable_on_vim_startup=1
-" }}}
-" vim-workspace {{{
+
+" vim-workspace {{{2
 let g:workspace_autosave_untrailspaces=0
-" }}}
-" UltiSnips {{{
+
+" UltiSnips {{{2
 let g:UltiSnipsExpandTrigger="<C-Space>"
-" }}}
-" EasyMotion {{{
+
+" EasyMotion {{{2
 let g:EasyMotion_verbose=0
 let g:EasyMotion_smartcase=1
-" }}}
-" vim-diffchar {{{
+
+" vim-diffchar {{{2
 let g:DiffColors=0
 let g:DiffUnit="Word1"
-" }}}
-" Ack {{{
+
+" Ack {{{2
 if executable('ag')
     let g:ackprg='ag --vimgrep'
 endif
-" }}}
-" incsearch.vim {{{
-let g:incsearch#auto_nohlsearch = 1
-" }}}
-" }}}
 
-" Key bindings {{{
-" Leader {{{
+" incsearch.vim {{{2
+let g:incsearch#auto_nohlsearch = 1
+
+" Key bindings {{{1
+" Leader {{{2
 let mapleader="\<Space>"
 let maplocalleader="\\"
-" }}}
-" vim-better-mswin {{{
+
+" vim-better-mswin {{{2
 if &diff
     nnoremap <A-Left> <C-W>ldp
     nnoremap <A-Right> <C-W>ldo
@@ -280,6 +270,8 @@ inoremap <C-Y> <C-O><C-R>
 
 nnoremap <C-Tab> gt
 inoremap <C-Tab> <C-O>gt
+nnoremap <C-T> :tabnew<CR>
+inoremap <C-T> <C-O>:tabnew<CR>
 
 vnoremap <C-C> "+y
 vmap <C-Insert> <C-C>
@@ -316,8 +308,8 @@ nnoremap <F2> <C-]>
 nmap <F12> <F2>
 
 nmap <F4> :FSHere<CR>
-" }}}
-" vim-whitespace {{{
+
+" vim-whitespace {{{2
 if !exists('g:extra_whitespace_ignored_filetypes')
     let g:extra_whitespace_ignored_filetypes = ['help']
 endif
@@ -394,56 +386,53 @@ augroup VimWhitespace
     au InsertLeave * call s:ToggleMode('n')
     au InsertEnter * call s:ToggleMode('i')
 augroup END
-" }}}
-" Misc (f,q,o) {{{
-nmap <Space> <nop>
-nmap <Leader>f za
-nmap <Leader>q :q<CR>
-nmap <Leader>o :w<CR>
-" }}}
-" Toggle Window (t) {{{
+
+" Toggle Window (t) {{{2
+nmap <Leader>tq :q<CR>
 nmap <Leader>tt :TaskList<CR>
 nmap <Leader>tn :NERDTreeToggle<CR>
 nmap <Leader>tb :TagbarToggle<CR>
-" }}}
-" EasyMotion (w,s,b) {{{
+
+" EasyMotion (w,s,b) {{{2
 nmap <Leader>w <Leader><Leader>w
 omap <Leader>w <Leader><Leader>w
 nmap <Leader>s <Leader><Leader>s
 omap <Leader>s <Leader><Leader>s
 nmap <Leader>b <Leader><Leader>b
 omap <Leader>b <Leader><Leader>b
-" }}}
-" VCS (g) {{{
+
+" VCS (g) {{{2
 nmap <Leader>gs :Gstatus<CR>
 nmap <Leader>gc :Gcommit<CR>
 nmap <Leader>gd :Gdiff<CR>
 nmap <Leader>gp :Gpush<CR>
-nmap <Leader>gl :Gpull<CR>
-" }}}
-" Files (e) {{{
-nmap <Leader>ef :CtrlP<CR>
-nmap <Leader>er :CtrlPMRUFiles<CR>
-nmap <Leader>ea :FSHere<CR>
-nmap <Leader>ed <C-]>
-" }}}
-" Build (m) {{{
+nmap <Leader>gu :Gpull<CR>
+nmap <Leader>gl :Glog<CR>
+
+" Files (f) {{{2
+nmap <Leader>ff :CtrlP<CR>
+nmap <Leader>fw :w<CR>
+nmap <Leader>fr :CtrlPMRUFiles<CR>
+nmap <Leader>fa :FSHere<CR>
+nmap <Leader>fd <C-]>
+
+" Build (m) {{{2
 nmap <Leader>m :make<CR>
-" }}}
-" Windows {{{
+
+" Windows {{{2
 nmap <C-J> <C-W>j
 nmap <C-K> <C-W>k
 nmap <C-L> <C-W>l
 nmap <C-H> <C-W>h
-" }}}
-" Surround {{{
+
+" Surround {{{2
 vmap { S}
 vmap ( S)
 vmap [ S]
 vmap " S"
 vmap ' S'
-" }}}
-" incsearch.vim {{{
+
+" incsearch.vim {{{2
 map n  <Plug>(incsearch-nohl-n)
 map N  <Plug>(incsearch-nohl-N)
 map *  <Plug>(incsearch-nohl-*)
@@ -453,10 +442,10 @@ map g# <Plug>(incsearch-nohl-g#)
 map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
-" }}}
-" }}}
 
-" FileType config {{{
+
+
+" FileType config {{{2
 augroup FileTypeConfig
     au!
     au FileType c,cpp let b:easytags_auto_highlight = 0
@@ -465,18 +454,19 @@ augroup FileTypeConfig
     au FileType org setlocal ts=2 sw=2
 augroup END
 
-augroup LoadInsertPlugins
-    au!
-    au InsertEnter * call plug#load('YouCompleteMe')
-                  \| au! LoadInsertPlugins
-augroup END
-" }}}
+if !&diff
+    augroup LoadInsertPlugins
+        au!
+        au InsertEnter * call plug#load('YouCompleteMe')
+                    \| au! LoadInsertPlugins
+    augroup END
+endif
 
-" Local config {{{
+
+" Local config {{{1
 if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
 endif
-" }}}
 
 " vim:foldlevel=1:
 

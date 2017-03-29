@@ -24,7 +24,8 @@ if ($choco) {
         "vim", "ask", "ag",
         "firefox", "thunderbird",
         "virtualbox",
-        "keepassx"
+        "keepassx",
+        "hackfont"
     )
     choco install -y @packages
     Write-Host "Install python for vim"
@@ -42,8 +43,4 @@ if ($dotfiles) {
 
     cp "$HOME\_vimrc" "dotfiles\.vimrc"
     cp "$HOME\.gitignore" "dotfiles\.gitignore"
-
-    if ($local) {
-        cp "$HOME\.vimrc.local" "local\.vimrc.local"
-    }
 }
