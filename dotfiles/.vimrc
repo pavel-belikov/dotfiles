@@ -25,7 +25,6 @@ Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'vim-scripts/TaskList.vim', { 'on': 'TaskList' }
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'nathanaelkane/vim-indent-guides'
 Plug 'majutsushi/tagbar'
 
 " VCS {{{2
@@ -404,6 +403,8 @@ omap <Leader>b <Leader><Leader>b
 " Align (a) {{{2
 nnoremap <Leader>a= :Tabularize /=<CR>
 vnoremap <Leader>a= :Tabularize /=<CR>
+nnoremap <Leader>a<Space> :Tabularize /\S\+<CR>
+vnoremap <Leader>a<Space> :Tabularize /\S\+<CR>
 
 " Git (g) {{{2
 nmap <Leader>gs :Gstatus<CR>
