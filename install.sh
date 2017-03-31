@@ -109,7 +109,7 @@ install_apt_dependencies() {
     dependencies="
     sudo htop ntp gparted curl wget strace
     ack silversearcher-ag
-    mc pcmanfm xfce4-terminal
+    mc pcmanfm
     unzip p7zip-full xarchiver
     pulseaudio alsa-tools alsa-utils pavucontrol
     gdebi

@@ -452,8 +452,6 @@ map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
 
-
-
 " FileType config {{{2
 augroup FileTypeConfig
     au!
