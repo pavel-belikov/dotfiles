@@ -7,9 +7,16 @@ Plug 'Valloric/YouCompleteMe', { 'on': [] }
 
 if has("win32")
     Plug 'octol/vim-cpp-enhanced-highlight'
+elseif has("nvim")
+    Plug 'arakashic/chromatica.nvim', &diff ? { 'on': [] } : {}
+    Plug 'octol/vim-cpp-enhanced-highlight', !&diff ? { 'on': [] } : {}
 else
     Plug 'jeaye/color_coded', &diff ? { 'on': [] } : {}
     Plug 'octol/vim-cpp-enhanced-highlight', !&diff ? { 'on': [] } : {}
+endif
+
+if has("nvim") && !has("win32")
+    Plug 'critiqjo/lldb.nvim'
 endif
 
 " Python {{{2
@@ -36,13 +43,9 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-unimpaired'
-Plug 'terryma/vim-multiple-cursors'
 Plug 'easymotion/vim-easymotion'
 Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
-Plug 'kana/vim-textobj-user'
-Plug 'kana/vim-textobj-entire'
 Plug 'michaeljsmith/vim-indent-object'
-Plug 'haya14busa/incsearch.vim'
 
 " Filesystem {{{2
 Plug 'kien/ctrlp.vim'
@@ -51,9 +54,9 @@ Plug 'derekwyatt/vim-fswitch'
 Plug 'mileszs/ack.vim', { 'on': 'Ack' }
 
 " Syntax {{{2
-Plug 'syntaxdosini.vim'
 Plug 'elzr/vim-json'
-Plug 'pavel-belikov/vim-qdark'
+" Plug 'pavel-belikov/vim-qdark'
+Plug '/home/belikov/projects/vim/vim-qdark'
 Plug 'pavel-belikov/vim-qmake'
 Plug 'pavel-belikov/vim-qtcreator-tasks'
 Plug 'pprovost/vim-ps1'
@@ -89,15 +92,22 @@ catch
     colorscheme desert
 endtry
 
+if $TERM == "xterm" || $TERM == "xterm-256color"
+    let &t_SI = "\<Esc>[6 q"
+    let &t_SR = "\<Esc>[4 q"
+    let &t_EI = "\<Esc>[2 q"
+endif
+
 set scrolloff=3
 set laststatus=2
 set showtabline=1
 set lazyredraw
+set ttyfast
 set linebreak
 set ruler
 set showcmd
 set wildmenu
-set showmode
+set noshowmode
 set number
 set hls
 if !&diff
@@ -176,7 +186,7 @@ let g:easytags_updatetime_warn=0
 
 " Airline {{{2
 let g:airline_powerline_fonts = 1
-let g:airline_section_z='[0x%02B] < %l/%L (%c)'
+let g:airline_section_z="[0x%02B] \ue0b3 %l/%L (%c)"
 let g:airline#extensions#tabline#enabled=0
 let g:airline#extensions#tabline#show_splits=0
 let g:airline#extensions#tabline#buffer_nr_show=0
@@ -221,8 +231,10 @@ if executable('ag')
     let g:ackprg='ag --vimgrep'
 endif
 
-" incsearch.vim {{{2
-let g:incsearch#auto_nohlsearch = 1
+" chromatica {{{2
+let g:chromatica#libclang_path='/usr/lib/llvm-3.9/lib'
+let g:chromatica#enable_at_startup=1
+let g:chromatica#responsive_mode=1
 
 " Key bindings {{{1
 " Leader {{{2
@@ -441,16 +453,8 @@ vmap [ S]
 vmap " S"
 vmap ' S'
 
-" incsearch.vim {{{2
-map n  <Plug>(incsearch-nohl-n)
-map N  <Plug>(incsearch-nohl-N)
-map *  <Plug>(incsearch-nohl-*)
-map #  <Plug>(incsearch-nohl-#)
-map g* <Plug>(incsearch-nohl-g*)
-map g# <Plug>(incsearch-nohl-g#)
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
+" Misc {{{2
+nnoremap <silent> <BS> :noh<CR><BS>
 
 " FileType config {{{2
 augroup FileTypeConfig
@@ -460,6 +464,7 @@ augroup FileTypeConfig
     au BufNewFile,BufRead *.i set filetype=cpp
     au FileType tasks,make setlocal noexpandtab
     au FileType org setlocal ts=2 sw=2
+    au BufNewFile,BufReadPost *.md set filetype=markdown
 augroup END
 
 if !&diff

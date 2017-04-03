@@ -1,4 +1,5 @@
 *faceName:    Hack:size=11:antialias=true
+xterm*VT100.Translations: #override Ctrl Shift <Key>V: insert-selection(CLIPBOARD) \n Ctrl Shift <Key>C: copy-selection(CLIPBOARD)
 URxvt.font:        xft:Hack:size=11
 *termName:    xterm-256color
 Xft.dpi:           96

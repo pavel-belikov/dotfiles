@@ -116,10 +116,13 @@ install_apt_dependencies() {
     fontforge
 
     git gcc g++ clang cmake valgrind gdb lldb
-    vim vim-gtk3 exuberant-ctags cscope
+    vim nvim vim-gtk3 exuberant-ctags cscope
     qtcreator
     clang-tidy clang-format doxygen
     python3 python3-pip
+    python-dev python3-dev build-essential
+    libclang-3.9-dev libncurses-dev libz-dev
+    xz-utils libpthread-workqueue-dev
 
     scrot kbdd numlockx
     lxappearance qt4-qtconfig qt5-style-plugins

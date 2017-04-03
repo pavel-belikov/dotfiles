@@ -120,6 +120,8 @@ if [ -f /etc/bash_completion ]; then
   . /etc/bash_completion
 fi
 
+stty -ixon
+
 PS1='${debian_chroot:+($debian_chroot)}\[\e[01;32m\]\u@\h\[\e[1;34m\]:\[\e[01;33m\]\w\[\e[00m\e[0;36m\]$(__git_ps1)\[\e[1;34m\]\$\[\e[0m\] '
 GREP_OPTIONS="--color=auto"
 EDITOR="vim"
@@ -129,3 +131,4 @@ GIT_EDITOR="vim"
 if [ -f ~/.bashrc.local ]; then
     . ~/.bashrc.local
 fi
+
