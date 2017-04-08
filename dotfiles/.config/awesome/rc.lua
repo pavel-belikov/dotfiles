@@ -16,9 +16,6 @@ local calendar = require("calendar")
 local volume = require("volume")
 local battery = require("battery")
 
---Local settings
-local config = require("config")
-
 -- Load Debian menu entries
 require("debian.menu")
 
@@ -194,15 +191,13 @@ screen.connect_signal("property::geometry", set_wallpaper)
 -- {{{ Custom widgets
 -- Create a textclock widget
 mytextclock = awful.widget.textclock(" %b %d, %I:%M %p ", 30)
-calendar.register(mytextclock, config.calendar or {})
+calendar.register(mytextclock, {})
 
 --Volume widget
-volume_widget = volume.widget(config.volume or {})
+volume_widget = volume.widget()
 
 --Battery
-if config.enable_battery_widget then
-    battery_widget = battery.widget(config.battery or {})
-end
+battery_widget = battery.has_power_supply() and battery.widget() or nil
 
 -- }}}
 
@@ -247,7 +242,7 @@ awful.screen.connect_for_each_screen(function(s)
             music_widget,
             mykeyboardlayout,
             volume_widget,
-            config.enable_battery_widget and battery_widget or nil,
+            battery_widget,
             wibox.widget.systray(),
             mytextclock,
             s.mylayoutbox,

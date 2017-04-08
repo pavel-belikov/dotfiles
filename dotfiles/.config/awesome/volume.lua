@@ -64,6 +64,7 @@ local function update_volume_widget(self)
 end
 
 local function create_tooltip(self, args)
+    args = args or {}
     data[self].tooltip = tooltip.create({
         hide_timer = args.hide_timer or 2,
         widget = data[self].layout,
@@ -103,6 +104,7 @@ local function create_tooltip(self, args)
 end
 
 function volume.widget(args)
+    args = args or {}
     local self = wibox.widget.imagebox()
     data[self] = {
         get_volume = args.get_volume or function() return get_volume(args.get_cmd or "amixer sget Master") end,

@@ -114,7 +114,7 @@ install_apt_dependencies() {
     gdebi
 
     git gcc g++ clang cmake valgrind gdb lldb
-    vim nvim vim-gtk3 exuberant-ctags cscope
+    vim exuberant-ctags cscope
     qtcreator
     clang-tidy clang-format doxygen
     python3 python3-pip
@@ -127,6 +127,8 @@ install_apt_dependencies() {
     fonts-hack-ttf fontforge
 
     firefox thunderbird keepassx
+
+    xorg
     "
 
     dependencies_awesome="
@@ -205,12 +207,6 @@ install_vim_config() {
     fi
 }
 
-write_file_if_not_exists() {
-    if [ ! -f "$1" ]; then
-        echo "$2" > "$1"
-    fi
-}
-
 install_local_environment() {
     add_environment "LC_ALL"    "en_US.UTF-8"
     add_environment "LANG"      "en_US.UTF-8"
@@ -237,10 +233,8 @@ install_wrapper() {
 
 install_as_user() {
     opt local       install_directory local "$HOME"
-    opt dotfiles    install_directory dotfiles "$HOME" -not -name ".xinitrc"
+    opt dotfiles    install_directory dotfiles "$HOME"
     opt dotfiles    install_vim_config "$HOME"
-    opt awesome     install_dotfile "dotfiles/.xinitrc" "$HOME/.xinitrc"
-    opt awesome     write_file_if_not_exists "$HOME/.config/awesome/config.lua" "return {}"
 }
 
 install_as_root() {

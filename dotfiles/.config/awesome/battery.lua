@@ -7,6 +7,13 @@ local tooltip = require("tooltip")
 local battery = {}
 local data = {}
 
+function battery.has_power_supply()
+    local fd = io.popen("acpi")
+    local state = fd:read()
+    fd:close()
+    return state and not string.find(state, "No support")
+end
+
 local function get_status()
     local fd = io.popen("acpi")
     local state = fd:read()
@@ -98,6 +105,7 @@ local function update_battery(self, capacity, is_charging, remaining)
 end
 
 function battery.widget(args)
+    args = args or {}
     local self = wibox.widget.imagebox()
     data[self] = {
         get_status = args.get_status or function() return get_status() end,
