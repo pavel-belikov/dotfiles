@@ -15,7 +15,6 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 local calendar = require("calendar")
 local volume = require("volume")
 local battery = require("battery")
-mpd = require("mpd")
 
 --Local settings
 local config = require("config")
@@ -124,12 +123,12 @@ mylauncher = awful.widget.launcher({ image = beautiful.launcher_icon,
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
 -- }}}
 
--- Keyboard map indicator and switcher
-mykeyboardlayout = awful.widget.keyboardlayout()
-
 -- {{{ Wibar
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock()
+
+-- Keyboard map indicator and switcher
+mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = awful.util.table.join(
@@ -197,29 +196,6 @@ screen.connect_signal("property::geometry", set_wallpaper)
 mytextclock = awful.widget.textclock(" %b %d, %I:%M %p ", 30)
 calendar.register(mytextclock, config.calendar or {})
 
--- Keyboard layout widget
-kbdwidget = wibox.widget.textbox()
-kbdwidget.border_width = 1
-kbdwidget.border_color = beautiful.fg_normal
-
-function update_layout_indicator(...)
-    local fd = io.popen('xkb-switch')
-    local layout = fd:read()
-    fd:close()
-    if layout then
-        kbdwidget:set_markup(" <b>" .. string.upper(layout) .. "</b> ")
-    end
-end
-
-dbus.request_name("session", "ru.gentoo.kbdd")
-dbus.add_match("session", "interface='ru.gentoo.kbdd',member='layoutChanged'")
-dbus.connect_signal("ru.gentoo.kbdd", update_layout_indicator)
-
-update_layout_indicator()
-
---Music widget
-music_widget = mpd.widget(config.mpd or {})
-
 --Volume widget
 volume_widget = volume.widget(config.volume or {})
 
@@ -227,9 +203,6 @@ volume_widget = volume.widget(config.volume or {})
 if config.enable_battery_widget then
     battery_widget = battery.widget(config.battery or {})
 end
-
-separator = wibox.widget.textbox("|")
-spacer = wibox.widget.textbox(" ")
 
 -- }}}
 
@@ -272,10 +245,7 @@ awful.screen.connect_for_each_screen(function(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             music_widget,
-            separator,
-            kbdwidget,
-            -- mykeyboardlayout,
-            separator,
+            mykeyboardlayout,
             volume_widget,
             config.enable_battery_widget and battery_widget or nil,
             wibox.widget.systray(),
@@ -398,11 +368,6 @@ globalkeys = awful.util.table.join(
 
     -- Print screen
     awful.key({  }, "Print", function() awful.util.spawn_with_shell("scrot") end),
-
-    -- Music
-    awful.key({ "Shift" }, "F10", mpd.toggle_play_pause),
-    awful.key({ "Shift" }, "F11", mpd.prev),
-    awful.key({ "Shift" }, "F12", mpd.next),
 
     -- Hide wibox
     awful.key({ modkey            }, "b",
@@ -627,15 +592,3 @@ client.connect_signal("focus", function(c) c.border_color = beautiful.border_foc
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
--- Autostart
-function run_once(cmd)
-    findme = cmd
-    firstspace = cmd:find(" ")
-    if firstspace then
-        findme = cmd:sub(0, firstspace-1)
-    end
-    awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
-end
-
-run_once("kbdd")
-awful.util.spawn_with_shell("pgrep -u $USER -x smwd > /dev/null && (smwd renotify) || (smwd)")

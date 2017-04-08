@@ -3,19 +3,23 @@ set nocompatible
 
 call plug#begin()
 " C++ {{{2
-Plug 'Valloric/YouCompleteMe', { 'on': [] }
-
-if has("win32")
-    Plug 'octol/vim-cpp-enhanced-highlight'
-elseif has("nvim")
-    Plug 'arakashic/chromatica.nvim', &diff ? { 'on': [] } : {}
-    Plug 'octol/vim-cpp-enhanced-highlight', !&diff ? { 'on': [] } : {}
-else
-    Plug 'jeaye/color_coded', &diff ? { 'on': [] } : {}
-    Plug 'octol/vim-cpp-enhanced-highlight', !&diff ? { 'on': [] } : {}
+if has('python') || has('python3')
+    Plug 'Valloric/YouCompleteMe', { 'on': [] }
 endif
 
-if has("nvim") && !has("win32")
+if has('win32')
+    Plug 'octol/vim-cpp-enhanced-highlight'
+elseif has('nvim') && has('python3')
+    Plug 'arakashic/chromatica.nvim', &diff ? { 'on': [] } : {}
+    Plug 'octol/vim-cpp-enhanced-highlight', !&diff ? { 'on': [] } : {}
+elseif has('lua')
+    Plug 'jeaye/color_coded', &diff ? { 'on': [] } : {}
+    Plug 'octol/vim-cpp-enhanced-highlight', !&diff ? { 'on': [] } : {}
+else
+    Plug 'octol/vim-cpp-enhanced-highlight'
+endif
+
+if has('nvim') && !has('win32') && has('python')
     Plug 'critiqjo/lldb.nvim'
 endif
 
@@ -23,9 +27,16 @@ endif
 Plug 'xolox/vim-misc', { 'for': ['sh', 'python', 'vim'] }
 Plug 'xolox/vim-easytags', { 'for': ['sh', 'python', 'vim'] }
 Plug 'tmhedberg/simpylfold', { 'for': 'python' }
+Plug 'nvie/vim-flake8', { 'for': 'python' }
+Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' }
+
+" Haskell
+Plug 'eagletmt/neco-ghc', { 'for': 'haskell' }
 
 " Project {{{2
-Plug 'editorconfig/editorconfig-vim'
+if has('python') || has('python3')
+    Plug 'editorconfig/editorconfig-vim'
+endif
 
 " UI {{{2
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
@@ -55,15 +66,16 @@ Plug 'mileszs/ack.vim', { 'on': 'Ack' }
 
 " Syntax {{{2
 Plug 'elzr/vim-json'
-" Plug 'pavel-belikov/vim-qdark'
-Plug '/home/belikov/projects/vim/vim-qdark'
+Plug 'pavel-belikov/vim-qdark'
 Plug 'pavel-belikov/vim-qmake'
 Plug 'pavel-belikov/vim-qtcreator-tasks'
 Plug 'pprovost/vim-ps1'
 
 " Org {{{2
-Plug 'jceb/vim-orgmode'
-Plug 'tpope/vim-speeddating', { 'for': 'org' }
+if has('python3')
+    Plug 'jceb/vim-orgmode'
+    Plug 'tpope/vim-speeddating', { 'for': 'org' }
+endif
 call plug#end()
 
 " Vim config {{{1
@@ -110,6 +122,8 @@ set wildmenu
 set noshowmode
 set number
 set hls
+set synmaxcol=250
+syntax sync minlines=256
 if !&diff
     set cursorline
 endif
@@ -146,12 +160,14 @@ set ignorecase
 
 set foldenable
 set foldlevel=99
-set foldmethod=marker
+set foldmethod=syntax
 
 set completeopt=
 set ww=b,s,<,>,[,]
 set iskeyword=@,48-57,_,192-255
 set backspace=2
+
+let g:haskellmode_completion_ghc = 0
 
 set diffopt=filler,context:1000000,vertical
 if &diff
@@ -178,6 +194,7 @@ let g:NERDTreeShowHidden=1
 " YouCompleteMe {{{2
 let g:ycm_confirm_extra_conf=0
 let g:ycm_disable_for_files_larger_than_kb=2048
+let g:ycm_semantic_triggers = {'haskell' : ['.']}
 
 " EasyTags {{{2
 let g:easytags_file='~/.tags'
@@ -236,6 +253,13 @@ let g:chromatica#libclang_path='/usr/lib/llvm-3.9/lib'
 let g:chromatica#enable_at_startup=1
 let g:chromatica#responsive_mode=1
 
+" PVS-Studio {{{2
+let g:pvs_studio_level_glyph = '|'
+let g:pvs_studio_favored_glyph = '●'
+let g:pvs_studio_not_favored_glyph = '○'
+let g:pvs_studio_statusline_glyph = "\ue0b1"
+let g:pvs_studio_default_sort = ['path', 'line']
+
 " Key bindings {{{1
 " Leader {{{2
 let mapleader="\<Space>"
@@ -270,8 +294,8 @@ nnoremap <C-S-Right> ve
 inoremap <C-S-Right> <C-\><C-O>ve
 vnoremap <C-S-Right> e
 
-nnoremap <C-A> ggvG$
-inoremap <C-A> <Esc>ggvG$
+nnoremap <C-A> ggVG
+inoremap <C-A> <Esc>ggVG
 
 nnoremap <C-Z> u
 inoremap <C-Z> <C-O>u
@@ -454,7 +478,7 @@ vmap " S"
 vmap ' S'
 
 " Misc {{{2
-nnoremap <silent> <BS> :noh<CR><BS>
+nnoremap <silent> <BS> :noh<CR>
 
 " FileType config {{{2
 augroup FileTypeConfig
@@ -465,6 +489,8 @@ augroup FileTypeConfig
     au FileType tasks,make setlocal noexpandtab
     au FileType org setlocal ts=2 sw=2
     au BufNewFile,BufReadPost *.md set filetype=markdown
+    au FileType haskell setlocal omnifunc=necoghc#omnifunc
+    au FileType vim setlocal foldmethod=marker
 augroup END
 
 if !&diff
@@ -481,5 +507,5 @@ if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
 endif
 
-" vim:foldlevel=1:
+" vim:foldlevel=1:foldmethod=marker:
 

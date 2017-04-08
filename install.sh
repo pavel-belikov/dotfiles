@@ -109,11 +109,9 @@ install_apt_dependencies() {
     dependencies="
     sudo htop ntp gparted curl wget strace
     ack silversearcher-ag
-    mc pcmanfm
-    unzip p7zip-full xarchiver
+    unzip p7zip-full xarchiver pcmanfm mc
     pulseaudio alsa-tools alsa-utils pavucontrol
     gdebi
-    fontforge
 
     git gcc g++ clang cmake valgrind gdb lldb
     vim nvim vim-gtk3 exuberant-ctags cscope
@@ -121,28 +119,18 @@ install_apt_dependencies() {
     clang-tidy clang-format doxygen
     python3 python3-pip
     python-dev python3-dev build-essential
-    libclang-3.9-dev libncurses-dev libz-dev
-    xz-utils libpthread-workqueue-dev
 
-    scrot kbdd numlockx
+    scrot numlockx
     lxappearance qt4-qtconfig qt5-style-plugins
     gtk2-engines-pixbuf gtk2-engines-murrine
     gnome-themes-standard adwaita-icon-theme
-    fonts-hack-ttf
+    fonts-hack-ttf fontforge
 
-    firefox thunderbird
-
-    mpd mpc gmpc
-    smplayer gimp
-    goldendict keepassx
-    libreoffice-writer evince
+    firefox thunderbird keepassx
     "
 
     dependencies_awesome="
     awesome dbus
-
-    libxkbcommon-dev libxkbcommon-x11-dev
-    libxkbfile-dev libx11-dev
     "
 
     dependencies_local=""
@@ -190,21 +178,6 @@ add_environment() {
     if ! grep "$1=" /etc/environment > /dev/null 2>&1; then
         echo "export $1=$2" >> /etc/environment
     fi
-}
-
-install_xkb_switch() {
-    if has_binary xkb-switch; then
-        return 0
-    fi
-
-    dir build/xkb-switch
-
-    git clone https://github.com/ierton/xkb-switch.git .
-    mkdir build
-    cd build
-    cmake ..
-    make
-    make install
 }
 
 install_autologin() {
@@ -279,7 +252,6 @@ install_as_root() {
     opt dotfiles    add_environment "QT_STYLE_OVERRIDE" "gtk2"
     opt dotfiles    install_vim_config "/root"
     opt awesome     install_autologin
-    opt awesome     install_xkb_switch
 }
 
 case "$DOTFILES_PROFILE" in
