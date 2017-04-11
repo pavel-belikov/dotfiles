@@ -1,20 +1,18 @@
 " Plugins {{{1
 set nocompatible
 
+let s:has_python = has('python') || has('python3')
+
 call plug#begin()
 " C++ {{{2
-if has('python') || has('python3')
-    Plug 'Valloric/YouCompleteMe', { 'on': [] }
+if s:has_python
+    Plug 'Valloric/YouCompleteMe', &diff ? { 'on': [] } : {}
 endif
 
-if has('win32')
-    Plug 'octol/vim-cpp-enhanced-highlight'
-elseif has('nvim') && has('python3')
-    Plug 'arakashic/chromatica.nvim', &diff ? { 'on': [] } : {}
-    Plug 'octol/vim-cpp-enhanced-highlight', !&diff ? { 'on': [] } : {}
-elseif has('lua')
-    Plug 'jeaye/color_coded', &diff ? { 'on': [] } : {}
-    Plug 'octol/vim-cpp-enhanced-highlight', !&diff ? { 'on': [] } : {}
+if has('nvim') && s:has_python && !&diff
+    Plug 'arakashic/chromatica.nvim', { 'for': ['c', 'cpp'] }
+elseif has('lua') && !has('win32') && !&diff
+    Plug 'jeaye/color_coded', { 'for': ['c', 'cpp'] }
 else
     Plug 'octol/vim-cpp-enhanced-highlight'
 endif
@@ -24,19 +22,26 @@ if has('nvim') && !has('win32') && has('python')
 endif
 
 " Python {{{2
-Plug 'xolox/vim-misc', { 'for': ['sh', 'python', 'vim'] }
-Plug 'xolox/vim-easytags', { 'for': ['sh', 'python', 'vim'] }
+if executable('ctags')
+    Plug 'xolox/vim-misc', { 'for': ['sh', 'python', 'vim'] }
+    Plug 'xolox/vim-easytags', { 'for': ['sh', 'python', 'vim'] }
+endif
+if executable('flake8')
+    Plug 'nvie/vim-flake8', { 'for': 'python' }
+endif
 Plug 'tmhedberg/simpylfold', { 'for': 'python' }
-Plug 'nvie/vim-flake8', { 'for': 'python' }
 Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' }
 
-" Haskell
-Plug 'eagletmt/neco-ghc', { 'for': 'haskell' }
+" Haskell {{{2
+if executable('ghc')
+    Plug 'eagletmt/neco-ghc', { 'for': 'haskell' }
+endif
 
 " Project {{{2
-if has('python') || has('python3')
+if s:has_python
     Plug 'editorconfig/editorconfig-vim'
 endif
+Plug 'thinca/vim-quickrun', { 'on': 'QuickRun' }
 
 " UI {{{2
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
@@ -57,10 +62,13 @@ Plug 'tpope/vim-unimpaired'
 Plug 'easymotion/vim-easymotion'
 Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
 Plug 'michaeljsmith/vim-indent-object'
+Plug 'tpope/vim-repeat'
 
 " Filesystem {{{2
 Plug 'kien/ctrlp.vim'
-Plug 'felikz/ctrlp-py-matcher'
+if s:has_python
+    Plug 'felikz/ctrlp-py-matcher'
+endif
 Plug 'derekwyatt/vim-fswitch'
 Plug 'mileszs/ack.vim', { 'on': 'Ack' }
 
@@ -72,7 +80,7 @@ Plug 'pavel-belikov/vim-qtcreator-tasks'
 Plug 'pprovost/vim-ps1'
 
 " Org {{{2
-if has('python3')
+if s:has_python
     Plug 'jceb/vim-orgmode'
     Plug 'tpope/vim-speeddating', { 'for': 'org' }
 endif
@@ -132,6 +140,8 @@ set noerrorbells
 set visualbell
 set t_vb=
 set tm=500
+
+set shortmess=atToO
 
 " Filters {{{2
 set wildignore=*.o,*~,*.pyc,*.i,*~TMP,*.bak
@@ -221,6 +231,10 @@ let g:ctrlp_custom_ignore={
     \ 'dir':  'CMakeFiles$\|\.git$\|\.hg$\|\.svn$',
     \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$\|\.PVS-Studio' }
 let g:ctrlp_working_path_mode='a'
+let g:ctrlp_clear_cache_on_exit=1
+if s:has_python
+    let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+endif
 
 " delitMate {{{2
 let g:delimitMate_expand_cr=1
@@ -259,6 +273,9 @@ let g:pvs_studio_favored_glyph = '●'
 let g:pvs_studio_not_favored_glyph = '○'
 let g:pvs_studio_statusline_glyph = "\ue0b1"
 let g:pvs_studio_default_sort = ['path', 'line']
+
+" EditorConfig {{{2
+let g:EditorConfig_core_mode = 'python_external'
 
 " Key bindings {{{1
 " Leader {{{2
@@ -459,6 +476,7 @@ nmap <Leader>fd <C-]>
 
 " Build (m) {{{2
 nmap <Leader>m :make<CR>
+nmap <Leader>q :QuickRun<CR>
 
 " Windows (h,j,k,l) {{{2
 nnoremap <C-H> <C-W><
@@ -481,26 +499,21 @@ vmap ' S'
 nnoremap <silent> <BS> :noh<CR>
 
 " FileType config {{{2
+set cmdheight=3 " Workaround to ignore "compile color_coded" message
+
 augroup FileTypeConfig
     au!
     au FileType c,cpp let b:easytags_auto_highlight = 0
                    \| setlocal commentstring=//\ %s
+                   \| nnoremap <buffer> <Leader>fd :YcmCompleter Goto<CR>
     au BufNewFile,BufRead *.i set filetype=cpp
     au FileType tasks,make setlocal noexpandtab
     au FileType org setlocal ts=2 sw=2
     au BufNewFile,BufReadPost *.md set filetype=markdown
     au FileType haskell setlocal omnifunc=necoghc#omnifunc
     au FileType vim setlocal foldmethod=marker
+    au VimEnter * set cmdheight=1
 augroup END
-
-if !&diff
-    augroup LoadInsertPlugins
-        au!
-        au InsertEnter * call plug#load('YouCompleteMe')
-                    \| au! LoadInsertPlugins
-    augroup END
-endif
-
 
 " Local config {{{1
 if filereadable(expand("~/.vimrc.local"))

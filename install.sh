@@ -114,7 +114,7 @@ install_apt_dependencies() {
     gdebi
 
     git gcc g++ clang cmake valgrind gdb lldb
-    vim exuberant-ctags cscope
+    vim vim-gtk exuberant-ctags cscope
     qtcreator
     clang-tidy clang-format doxygen
     python3 python3-pip
@@ -124,7 +124,7 @@ install_apt_dependencies() {
     lxappearance qt4-qtconfig qt5-style-plugins
     gtk2-engines-pixbuf gtk2-engines-murrine
     gnome-themes-standard adwaita-icon-theme
-    fonts-hack-ttf fontforge
+    fonts-hack-ttf
 
     firefox thunderbird keepassx
 
@@ -243,7 +243,7 @@ install_as_root() {
     opt local       install_directory local "/root" -name '.vimrc'
     opt local       install_local_environment
     opt dotfiles    install_directory dotfiles "/root" -name '.vimrc'
-    opt dotfiles    add_environment "QT_STYLE_OVERRIDE" "gtk2"
+    opt dotfiles    add_environment "QT_STYLE_OVERRIDE" "gtk"
     opt dotfiles    install_vim_config "/root"
     opt awesome     install_autologin
 }
