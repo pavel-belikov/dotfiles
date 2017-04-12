@@ -10,9 +10,9 @@ if s:has_python
 endif
 
 if has('nvim') && s:has_python && !&diff
-    Plug 'arakashic/chromatica.nvim', { 'for': ['c', 'cpp'] }
+    Plug 'arakashic/chromatica.nvim'
 elseif has('lua') && !has('win32') && !&diff
-    Plug 'jeaye/color_coded', { 'for': ['c', 'cpp'] }
+    Plug 'jeaye/color_coded'
 else
     Plug 'octol/vim-cpp-enhanced-highlight'
 endif
@@ -144,7 +144,7 @@ set tm=500
 set shortmess=atToO
 
 " Filters {{{2
-set wildignore=*.o,*~,*.pyc,*.i,*~TMP,*.bak
+set wildignore=*.o,*.obj,*~,*.pyc,*.i,*~TMP,*.bak,*.PVS-Studio.*,*.TMP
 if has("win32")
     set wildignore+=.git\*,.hg\*,.svn\*
 else
@@ -231,7 +231,7 @@ let g:ctrlp_custom_ignore={
     \ 'dir':  'CMakeFiles$\|\.git$\|\.hg$\|\.svn$',
     \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$\|\.PVS-Studio' }
 let g:ctrlp_working_path_mode='a'
-let g:ctrlp_clear_cache_on_exit=1
+let g:ctrlp_clear_cache_on_exit=0
 if s:has_python
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 endif
@@ -440,10 +440,10 @@ augroup VimWhitespace
 augroup END
 
 " Toggle Window (t) {{{2
-nmap <Leader>tq :q<CR>
-nmap <Leader>tt :TaskList<CR>
-nmap <Leader>tn :NERDTreeToggle<CR>
-nmap <Leader>tb :TagbarToggle<CR>
+nnoremap <silent> <Leader>tq :q<CR>
+nnoremap <silent> <Leader>tt :TaskList<CR>
+nnoremap <silent> <Leader>tn :NERDTreeToggle<CR>
+nnoremap <silent> <Leader>tb :TagbarToggle<CR>
 
 " EasyMotion (w,s,b) {{{2
 nmap <Leader>w <Leader><Leader>w
@@ -454,39 +454,40 @@ nmap <Leader>b <Leader><Leader>b
 omap <Leader>b <Leader><Leader>b
 
 " Align (a) {{{2
-nnoremap <Leader>a= :Tabularize /=<CR>
-vnoremap <Leader>a= :Tabularize /=<CR>
-nnoremap <Leader>a<Space> :Tabularize /\S\+<CR>
-vnoremap <Leader>a<Space> :Tabularize /\S\+<CR>
+nnoremap <silent> <Leader>a= :Tabularize /=<CR>
+vnoremap <silent> <Leader>a= :Tabularize /=<CR>
+nnoremap <silent> <Leader>a<Space> :Tabularize /\S\+<CR>
+vnoremap <silent> <Leader>a<Space> :Tabularize /\S\+<CR>
 
 " Git (g) {{{2
-nmap <Leader>gs :Gstatus<CR>
-nmap <Leader>gc :Gcommit<CR>
-nmap <Leader>gd :Gdiff<CR>
-nmap <Leader>gp :Gpush<CR>
-nmap <Leader>gu :Gpull<CR>
-nmap <Leader>gl :Glog<CR>
+nnoremap <silent> <Leader>gs :Gstatus<CR>
+nnoremap <silent> <Leader>gc :Gcommit<CR>
+nnoremap <silent> <Leader>gd :Gdiff<CR>
+nnoremap <silent> <Leader>gp :Gpush<CR>
+nnoremap <silent> <Leader>gu :Gpull<CR>
+nnoremap <silent> <Leader>gl :Glog<CR>
 
 " Files (f) {{{2
-nmap <Leader>ff :CtrlP<CR>
-nmap <Leader>fw :w<CR>
-nmap <Leader>fr :CtrlPMRUFiles<CR>
-nmap <Leader>fa :FSHere<CR>
-nmap <Leader>fd <C-]>
+nnoremap <silent> <Leader>ff :CtrlP<CR>
+nnoremap <silent> <Leader>fw :w<CR>
+nnoremap <silent> <Leader>fr :CtrlPMRUFiles<CR>
+nnoremap <silent> <Leader>fa :FSHere<CR>
+nnoremap <silent> <Leader>fd <C-]>
 
-" Build (m) {{{2
-nmap <Leader>m :make<CR>
-nmap <Leader>q :QuickRun<CR>
+" Build (m,q,r) {{{2
+nnoremap <silent> <Leader>m :make<CR>
+nnoremap <silent> <Leader>q :QuickRun<CR>
+nnoremap <silent> <Leader>r :make run<CR>
 
 " Windows (h,j,k,l) {{{2
-nnoremap <C-H> <C-W><
-nnoremap <C-J> <C-W>+
-nnoremap <C-K> <C-W>-
-nnoremap <C-L> <C-W>>
-nnoremap <Leader>h <C-W>h
-nnoremap <Leader>j <C-W>j
-nnoremap <Leader>k <C-W>k
-nnoremap <Leader>l <C-W>l
+nnoremap <silent> <C-H> <C-W><
+nnoremap <silent> <C-J> <C-W>+
+nnoremap <silent> <C-K> <C-W>-
+nnoremap <silent> <C-L> <C-W>>
+nnoremap <silent> <Leader>h <C-W>h
+nnoremap <silent> <Leader>j <C-W>j
+nnoremap <silent> <Leader>k <C-W>k
+nnoremap <silent> <Leader>l <C-W>l
 
 " Surround {{{2
 vmap { S}
@@ -496,7 +497,7 @@ vmap " S"
 vmap ' S'
 
 " Misc {{{2
-nnoremap <silent> <BS> :noh<CR>
+nnoremap <silent> <Esc><Esc> :noh<CR>
 
 " FileType config {{{2
 set cmdheight=3 " Workaround to ignore "compile color_coded" message
@@ -505,7 +506,7 @@ augroup FileTypeConfig
     au!
     au FileType c,cpp let b:easytags_auto_highlight = 0
                    \| setlocal commentstring=//\ %s
-                   \| nnoremap <buffer> <Leader>fd :YcmCompleter Goto<CR>
+                   \| nnoremap <buffer> <Leader>fd :YcmCompleter GoTo<CR>
     au BufNewFile,BufRead *.i set filetype=cpp
     au FileType tasks,make setlocal noexpandtab
     au FileType org setlocal ts=2 sw=2
