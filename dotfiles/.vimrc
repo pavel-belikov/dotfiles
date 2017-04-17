@@ -1,54 +1,32 @@
 " Plugins {{{1
 set nocompatible
 
-let s:has_python = has('python') || has('python3')
-
 call plug#begin()
 " C++ {{{2
-if s:has_python
+if has('python3') && !has('win32')
     Plug 'Valloric/YouCompleteMe', &diff ? { 'on': [] } : {}
 endif
 
-if has('nvim') && s:has_python && !&diff
-    Plug 'arakashic/chromatica.nvim'
-elseif has('lua') && !has('win32') && !&diff
-    Plug 'jeaye/color_coded'
-else
-    Plug 'octol/vim-cpp-enhanced-highlight'
+if has('lua') && !has('win32')
+    Plug 'jeaye/color_coded', &diff ? { 'on': [] } : {}
 endif
 
-if has('nvim') && !has('win32') && has('python')
-    Plug 'critiqjo/lldb.nvim'
-endif
-
-" Python {{{2
-if executable('ctags')
-    Plug 'xolox/vim-misc', { 'for': ['sh', 'python', 'vim'] }
-    Plug 'xolox/vim-easytags', { 'for': ['sh', 'python', 'vim'] }
-endif
-if executable('flake8')
-    Plug 'nvie/vim-flake8', { 'for': 'python' }
-endif
-Plug 'tmhedberg/simpylfold', { 'for': 'python' }
-Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' }
-
-" Haskell {{{2
-if executable('ghc')
-    Plug 'eagletmt/neco-ghc', { 'for': 'haskell' }
+if executable('rc') && executable('rdm')
+    Plug 'lyuts/vim-rtags', { 'for': ['c', 'cpp'] }
 endif
 
 " Project {{{2
-if s:has_python
+if has('python3')
     Plug 'editorconfig/editorconfig-vim'
 endif
 Plug 'thinca/vim-quickrun', { 'on': 'QuickRun' }
 
 " UI {{{2
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-Plug 'vim-scripts/TaskList.vim', { 'on': 'TaskList' }
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'majutsushi/tagbar'
+Plug 'milkypostman/vim-togglelist'
 
 " VCS {{{2
 Plug 'tpope/vim-fugitive'
@@ -66,7 +44,7 @@ Plug 'tpope/vim-repeat'
 
 " Filesystem {{{2
 Plug 'kien/ctrlp.vim'
-if s:has_python
+if has('python3')
     Plug 'felikz/ctrlp-py-matcher'
 endif
 Plug 'derekwyatt/vim-fswitch'
@@ -80,7 +58,7 @@ Plug 'pavel-belikov/vim-qtcreator-tasks'
 Plug 'pprovost/vim-ps1'
 
 " Org {{{2
-if s:has_python
+if has('python3')
     Plug 'jceb/vim-orgmode'
     Plug 'tpope/vim-speeddating', { 'for': 'org' }
 endif
@@ -127,6 +105,7 @@ set linebreak
 set ruler
 set showcmd
 set wildmenu
+set wildmode=longest,full
 set noshowmode
 set number
 set hls
@@ -187,7 +166,7 @@ if &diff
     augroup END
 endif
 
-set tags=~/.tags
+set tags=./.tags,~/.tags
 
 filetype plugin indent on
 syntax on
@@ -208,8 +187,17 @@ let g:ycm_semantic_triggers = {'haskell' : ['.']}
 
 " EasyTags {{{2
 let g:easytags_file='~/.tags'
+let g:easytags_async=1
+let g:easytags_dynamic_files=1
 let g:easytags_updatetime_min=0
 let g:easytags_updatetime_warn=0
+let g:easytags_include_members=1
+let g:easytags_events=['BufReadPost', 'BufWritePost']
+let g:easytags_resolve_links=1
+let g:easytags_suppress_report=1
+
+" Rtags {{{2
+let g:rtagsAutoLaunchRdm=1
 
 " Airline {{{2
 let g:airline_powerline_fonts = 1
@@ -232,7 +220,7 @@ let g:ctrlp_custom_ignore={
     \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$\|\.PVS-Studio' }
 let g:ctrlp_working_path_mode='a'
 let g:ctrlp_clear_cache_on_exit=0
-if s:has_python
+if has('python3')
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 endif
 
@@ -256,6 +244,7 @@ let g:EasyMotion_smartcase=1
 " vim-diffchar {{{2
 let g:DiffColors=0
 let g:DiffUnit="Word1"
+let g:DiffModeSync=0
 
 " Ack {{{2
 if executable('ag')
@@ -276,6 +265,9 @@ let g:pvs_studio_default_sort = ['path', 'line']
 
 " EditorConfig {{{2
 let g:EditorConfig_core_mode = 'python_external'
+
+" togglelist {{{2
+let g:toggle_list_no_mappings = 1
 
 " Key bindings {{{1
 " Leader {{{2
@@ -376,14 +368,14 @@ hi def link whitespaceTab ExtraWhitespace
 hi def link whitespaceSpaceIndent ExtraWhitespace
 hi def link whitespaceTrailing ExtraWhitespace
 
-function s:InitBuffer()
+function! s:InitBuffer()
     if !exists('b:whitespace_enabled')
         let b:whitespace_enabled = g:whitespace_enable_by_default
     endif
     call s:UpdateOptions()
 endfunction
 
-function s:UpdateFileType()
+function! s:UpdateFileType()
     if exists('b:whitespace_enabled') && b:whitespace_enabled
         if index(g:extra_whitespace_ignored_filetypes, &ft) >= 0
             let b:whitespace_enabled = 0
@@ -392,7 +384,7 @@ function s:UpdateFileType()
     endif
 endfunction
 
-function s:UpdateOptions()
+function! s:UpdateOptions()
     if !exists('b:whitespace_enabled')
         return
     endif
@@ -418,7 +410,7 @@ function s:UpdateOptions()
     endif
 endfunction
 
-function s:ToggleMode(mode)
+function! s:ToggleMode(mode)
     if !exists('b:whitespace_enabled') || !b:whitespace_enabled
         return
     endif
@@ -440,10 +432,10 @@ augroup VimWhitespace
 augroup END
 
 " Toggle Window (t) {{{2
-nnoremap <silent> <Leader>tq :q<CR>
-nnoremap <silent> <Leader>tt :TaskList<CR>
 nnoremap <silent> <Leader>tn :NERDTreeToggle<CR>
 nnoremap <silent> <Leader>tb :TagbarToggle<CR>
+nnoremap <silent> <leader>tl :call ToggleLocationList()<CR>
+nnoremap <silent> <leader>tq :call ToggleQuickfixList()<CR>
 
 " EasyMotion (w,s,b) {{{2
 nmap <Leader>w <Leader><Leader>w
@@ -468,16 +460,19 @@ nnoremap <silent> <Leader>gu :Gpull<CR>
 nnoremap <silent> <Leader>gl :Glog<CR>
 
 " Files (f) {{{2
-nnoremap <silent> <Leader>ff :CtrlP<CR>
+nnoremap <silent> <Leader>fq :q<CR>
 nnoremap <silent> <Leader>fw :w<CR>
+nnoremap <silent> <Leader>ff :CtrlP<CR>
 nnoremap <silent> <Leader>fr :CtrlPMRUFiles<CR>
+nnoremap <silent> <Leader>fb :CtrlPBuffer<CR>
+nnoremap <silent> <Leader>ft :CtrlPTag<CR>
 nnoremap <silent> <Leader>fa :FSHere<CR>
 nnoremap <silent> <Leader>fd <C-]>
 
-" Build (m,q,r) {{{2
-nnoremap <silent> <Leader>m :make<CR>
-nnoremap <silent> <Leader>q :QuickRun<CR>
-nnoremap <silent> <Leader>r :make run<CR>
+" Build (m) {{{2
+nnoremap <silent> <Leader>mm :make!<CR>
+nnoremap <silent> <Leader>mq :QuickRun<CR>
+nnoremap <silent> <Leader>mr :make run<CR>
 
 " Windows (h,j,k,l) {{{2
 nnoremap <silent> <C-H> <C-W><
@@ -488,6 +483,17 @@ nnoremap <silent> <Leader>h <C-W>h
 nnoremap <silent> <Leader>j <C-W>j
 nnoremap <silent> <Leader>k <C-W>k
 nnoremap <silent> <Leader>l <C-W>l
+nnoremap <silent> <Leader>H :topleft vsplit<CR>:CtrlP<CR>
+nnoremap <silent> <Leader>J :botright split<CR>:CtrlP<CR>
+nnoremap <silent> <Leader>K :topleft split<CR>:CtrlP<CR>
+nnoremap <silent> <Leader>L :botright vsplit<CR>:CtrlP<CR>
+
+" Vim (v) {{{2
+nnoremap <silent> <Leader>ve :e ~/.vimrc<CR>
+nnoremap <silent> <Leader>vl :source ~/.vimrc<CR>
+nnoremap <silent> <Leader>vu :PlugUpdate<CR>
+nnoremap <silent> <Leader>vi :PlugInstall<CR>
+nnoremap <silent> <Leader>vp :PlugUpgrade<CR>
 
 " Surround {{{2
 vmap { S}
@@ -500,20 +506,18 @@ vmap ' S'
 nnoremap <silent> <Esc><Esc> :noh<CR>
 
 " FileType config {{{2
-set cmdheight=3 " Workaround to ignore "compile color_coded" message
-
 augroup FileTypeConfig
     au!
     au FileType c,cpp let b:easytags_auto_highlight = 0
                    \| setlocal commentstring=//\ %s
                    \| nnoremap <buffer> <Leader>fd :YcmCompleter GoTo<CR>
     au BufNewFile,BufRead *.i set filetype=cpp
+    au BufEnter *.h let b:fswitchdst='cpp,cc,C'
     au FileType tasks,make setlocal noexpandtab
     au FileType org setlocal ts=2 sw=2
     au BufNewFile,BufReadPost *.md set filetype=markdown
     au FileType haskell setlocal omnifunc=necoghc#omnifunc
     au FileType vim setlocal foldmethod=marker
-    au VimEnter * set cmdheight=1
 augroup END
 
 " Local config {{{1

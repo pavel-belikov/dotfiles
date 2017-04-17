@@ -74,7 +74,7 @@ local function fill_calendar(self)
         day = day + 1
     end
 
-    self.calendar_text:set_markup('<span font_desc="Inconsolata LGC 10">' .. res .. '</span>')
+    self.calendar_text:set_markup('<span font_desc="Hack 10">' .. res .. '</span>')
 end
 
 local function set_geometry(self)

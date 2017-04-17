@@ -114,11 +114,13 @@ install_apt_dependencies() {
     gdebi
 
     git gcc g++ clang cmake valgrind gdb lldb
-    vim vim-gtk exuberant-ctags cscope
+    vim vim-gtk neovim exuberant-ctags cscope
     qtcreator
     clang-tidy clang-format doxygen
     python3 python3-pip
     python-dev python3-dev build-essential
+    libclang-dev llvm-dev
+    libxkbfile-dev
 
     scrot numlockx
     lxappearance qt4-qtconfig qt5-style-plugins
@@ -202,15 +204,47 @@ install_vim_config() {
     PLUG_PATH="$1/.vim/autoload/plug.vim"
     if [ ! -f "$PLUG_PATH" ]; then
         url="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+	rm -f "$PLUG_PATH"
         curl -fLo "$PLUG_PATH" --create-dirs "$url"
         vim +PlugInstall +qa
     fi
+
+    install_dotfile "$PLUG_PATH" "$1/.local/share/nvim/site/autoload/plug.vim"  
+    install_dotfile "$1/.vimrc" "$1/.config/nvim/init.vim"
 }
 
 install_local_environment() {
     add_environment "LC_ALL"    "en_US.UTF-8"
     add_environment "LANG"      "en_US.UTF-8"
     add_environment "LANGUAGE"  "en_US.UTF-8"
+}
+
+install_xkb_switch() {
+    if has_binary xkb-switch; then
+        return
+    fi
+
+    mkdir -p build
+    cd build
+    git clone "https://github.com/ierton/xkb-switch.git"
+    cd xkb-switch
+    cmake .
+    make
+    make install
+}
+
+install_rtags() {
+    if has_binary rdm; then
+        return
+    fi
+
+    mkdir -p build
+    cd build
+    git clone --recursive "https://github.com/Andersbakken/rtags.git"
+    cd rtags
+    cmake .
+    make
+    make install
 }
 
 opt() {
@@ -245,6 +279,8 @@ install_as_root() {
     opt dotfiles    install_directory dotfiles "/root" -name '.vimrc'
     opt dotfiles    add_environment "QT_STYLE_OVERRIDE" "gtk"
     opt dotfiles    install_vim_config "/root"
+    opt dotfiles    install_xkb_switch
+    opt dotfiles    install_rtags
     opt awesome     install_autologin
 }
 
