@@ -21,3 +21,5 @@
     path = .gitconfig.local
 [difftool]
     prompt = false
+[credential]
+	helper = cache
