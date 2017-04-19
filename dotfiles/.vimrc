@@ -5,6 +5,7 @@ call plug#begin()
 " C++ {{{2
 if has('python3') && !has('win32')
     Plug 'Valloric/YouCompleteMe', &diff ? { 'on': [] } : {}
+    Plug 'vim-scripts/Conque-GDB', { 'on': ['ConqueGdb', 'ConqueTerm'] }
 endif
 
 if has('lua') && !has('win32')
@@ -269,6 +270,11 @@ let g:EditorConfig_core_mode = 'python_external'
 " togglelist {{{2
 let g:toggle_list_no_mappings = 1
 
+" ConqueGDB {{{2
+let g:ConqueGdb_Leader='<Leader>d'
+let g:ConqueTerm_StartMessages=0
+let g:ConqueGdb_SrcSplit = 'left'
+
 " Key bindings {{{1
 " Leader {{{2
 let mapleader="\<Space>"
@@ -355,7 +361,7 @@ nmap <F4> :FSHere<CR>
 
 " vim-whitespace {{{2
 if !exists('g:extra_whitespace_ignored_filetypes')
-    let g:extra_whitespace_ignored_filetypes = ['help']
+    let g:extra_whitespace_ignored_filetypes = ['help', 'conque_term']
 endif
 
 if !exists('g:whitespace_enable_by_default')
@@ -426,6 +432,7 @@ augroup VimWhitespace
     au!
     au BufRead,BufNew * call s:InitBuffer()
     au FileType * call s:UpdateFileType()
+    au Syntax * call s:UpdateFileType()
     au OptionSet * call s:UpdateOptions()
     au InsertLeave * call s:ToggleMode('n')
     au InsertEnter * call s:ToggleMode('i')
@@ -471,8 +478,10 @@ nnoremap <silent> <Leader>fd <C-]>
 
 " Build (m) {{{2
 nnoremap <silent> <Leader>mm :make!<CR>
+nnoremap <silent> <Leader>mi :make install<CR>
 nnoremap <silent> <Leader>mq :QuickRun<CR>
 nnoremap <silent> <Leader>mr :make run<CR>
+nnoremap <silent> <Leader>md :make!<CR>:ConqueGdb -q<CR><Esc>:set syntax=conque_term<CR>60<C-W>\|<C-W>p
 
 " Windows (h,j,k,l) {{{2
 nnoremap <silent> <C-H> <C-W><
