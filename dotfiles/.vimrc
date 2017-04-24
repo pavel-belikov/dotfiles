@@ -91,7 +91,7 @@ set ruler
 set showcmd
 set wildmenu
 set wildmode=longest,full
-set noshowmode
+set showmode
 set number
 set hls
 set synmaxcol=250
@@ -105,39 +105,26 @@ set ttimeoutlen=50
 
 set shortmess=atToO
 
-function! VimrcStatusline()
-    let modes = {
-        \ 'n': '%#StatusLineNormalMode# Normal%* ',
-        \ 'no': '%#StatusLineNormalMode# Normal Operator%* ',
-        \ 'v': '%#StatusLineVisualMode# Visual %#StatusLineVisualModeSep#%*',
-        \ 'V': '%#StatusLineVisualMode# Visual Line %#StatusLineVisualModeSep#%*',
-        \ '': '%#StatusLineVisualMode# Visual blockwise %#StatusLineVisualModeSep#%*',
-        \ 's': '%#StatusLineVisualMode# Select %#StatusLineVisualModeSep#%*',
-        \ 'S': '%#StatusLineVisualMode# Select Line %#StatusLineVisualModeSep#%*',
-        \ '': '%#StatusLineVisualMode# Select blockwise %#StatusLineVisualModeSep#%*',
-        \ 'i': '%#StatusLineInsertMode# Insert %#StatusLineInsertModeSep#%*',
-        \ 'R': '%#StatusLineInsertMode# Replace %#StatusLineInsertModeSep#%*',
-        \ 'Rv': '%#StatusLineInsertMode# Replace %#StatusLineInsertModeSep#%*',
-        \ 'c': '%#StatusLineNormalMode# Command%*  ',
-        \ 'cv': '%#StatusLineNormalMode# Command%*  ',
-        \ 'ce': '%#StatusLineNormalMode# Command%*  ',
-        \ 'r': '%#StatusLineNormalMode# Command%*  ',
-        \ 'rm': '%#StatusLineNormalMode# Command%*  ',
-        \ 'r?': '%#StatusLineNormalMode# Command%*  ',
-        \ '!': '%#StatusLineNormalMode# Command%*  ',
-        \ }
+function! g:VimrcBranch()
     let branch = exists('g:loaded_fugitive') ? fugitive#head(7) : ''
-    if branch != ''
-        let branch = '  ' . branch . ' '
-    endif
-    return     '%(' . modes[mode()]
-           \ . branch . ' '
-           \ . '%f %h%w%m%r'
-           \ . '%)'
-           \ . '%=%(' . &ft . '  [0x%02B]   %l/%L (%c)%) '
+    return branch != '' ? '  ' . branch . ' ' : ''
 endfunction
 
-set statusline=%!VimrcStatusline()
+function! g:VimrcFlags()
+    let f = ''
+    if &modified
+        let f .= '[+]'
+    endif
+    if &ro || !&ma
+        let f .= ''
+    endif
+    return f
+endfunction
+
+set statusline=%f\ %w%{g:VimrcFlags()}
+set statusline+=%=
+set statusline+=%{&ft}\ %{g:VimrcBranch()}
+set statusline+=\ \ %l/%L\ (%c)
 
 " Filters {{{2
 set wildignore=*.o,*.obj,*~,*.pyc,*.i,*~TMP,*.bak,*.PVS-Studio.*,*.TMP
@@ -163,7 +150,7 @@ set nobackup
 set nowritebackup
 
 set incsearch
-set ignorecase
+set smartcase
 
 set foldenable
 set foldlevel=99
@@ -191,15 +178,15 @@ endif
 " FileType config {{{2
 augroup VimrcFileTypeConfig
     au!
-    au FileType c,cpp let b:easytags_auto_highlight = 0
+    au FileType c,cpp let b:easytags_auto_highlight=0
                    \| setlocal commentstring=//\ %s
     au BufNewFile,BufRead *.i set filetype=cpp
     au BufEnter *.h let b:fswitchdst='cpp,cc,C'
     au FileType tasks,make setlocal noexpandtab
     au FileType org setlocal ts=2 sw=2
     au BufNewFile,BufReadPost *.md set filetype=markdown
-    au FileType haskell setlocal omnifunc=necoghc#omnifunc
     au FileType vim setlocal foldmethod=marker
+    aut FileType qf setlocal statusline=%f%=%{&ft}\ \ \ %l/%L\ (%c)
 augroup END
 
 " Plugins config {{{1
@@ -228,13 +215,11 @@ if has('python3')
 endif
 
 function! g:VimrcCtrlpStatusLine(focus, byfname, regexp, prev, item, next, marked)
-    return '%#StatusLineInsertMode# CtrlP %#StatusLineInsertModeSep#%* '
-        \. '%{getcwd()}%= ' . a:item . ' '
+    return '%#StatusLineInsertMode# ' . a:item . ' %#StatusLineInsertModeSep#'
+        \. '%* %{getcwd()}'
 endfunction
 
-let g:ctrlp_status_func = {
-            \ 'main': 'g:VimrcCtrlpStatusLine',
-            \ }
+let g:ctrlp_status_func = {'main': 'g:VimrcCtrlpStatusLine'}
 
 " EasyMotion {{{2
 let g:EasyMotion_verbose=0
