@@ -1,15 +1,11 @@
 set nocompatible
 
+" Plugins {{{1
 call plug#begin()
 " C++ {{{2
-if has('python3') && !has('win32')
-    Plug 'Valloric/YouCompleteMe', &diff ? { 'on': [] } : {}
-    Plug 'vim-scripts/Conque-GDB', { 'on': ['ConqueGdb', 'ConqueTerm'] }
-endif
-
-if executable('rc') && executable('rdm')
-    Plug 'lyuts/vim-rtags', { 'for': ['c', 'cpp'] }
-endif
+Plug 'Valloric/YouCompleteMe', has('python3') && &diff ? { 'on': [] } : {}
+Plug 'vim-scripts/Conque-GDB', has('python3') && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
+Plug 'lyuts/vim-rtags', executable('rc') && executable('rdm') ? { 'for': ['c', 'cpp'] } : { 'on': [] }
 
 " Project {{{2
 Plug 'tpope/vim-fugitive'
@@ -17,11 +13,9 @@ Plug 'sgur/vim-editorconfig'
 Plug 'kien/ctrlp.vim'
 Plug 'felikz/ctrlp-py-matcher', has('python3') ? {} : { 'on': [] }
 Plug 'derekwyatt/vim-fswitch'
-Plug 'mileszs/ack.vim', { 'on': 'Ack' }
 
 " Text editing {{{2
 Plug 'milkypostman/vim-togglelist'
-Plug 'jiangmiao/auto-pairs'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'easymotion/vim-easymotion'
 Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
@@ -36,75 +30,85 @@ Plug 'tpope/vim-repeat'
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'elzr/vim-json'
 Plug 'pavel-belikov/vim-qdark'
-
-" Org {{{2
-if has('python3')
-    Plug 'jceb/vim-orgmode'
-    Plug 'tpope/vim-speeddating', { 'for': 'org' }
-endif
-
-" Local plugins {{{2
-if filereadable(expand("~/.vimrc.plugins.local"))
-    source ~/.vimrc.plugins.local
-endif
 call plug#end()
 
 " Vim config {{{1
 " GUI {{{2
 if has("win32")
+    augroup VimrcWinGuiAu
+        au!
+        au GUIEnter * simalt ~x
+    augroup END
     set noshelltemp
-    au GUIEnter * simalt ~x
     set guifont=Hack:h11
 else
     set shell=/bin/sh
     set guifont=Hack\ 11
 endif
 
+augroup VimrcGuiAu
+    au!
+    au GUIEnter * set noerrorbells visualbell t_vb=
+    if &diff
+        au FilterWritePre * setlocal wrap<
+    endif
+augroup END
+
 set mouse=a
 set guioptions=ait
-set fileencodings=utf8,cp1251
-set encoding=utf8
-
-let $LANG='en'
-set langmenu=en
 
 " UI {{{2
-try
-    colorscheme qdark
-catch
-    colorscheme desert
-endtry
-
 if $TERM == "xterm" || $TERM == "xterm-256color"
     let &t_SI = "\<Esc>[6 q"
     let &t_SR = "\<Esc>[4 q"
     let &t_EI = "\<Esc>[2 q"
 endif
 
+set fileencodings=utf8,cp1251
+set encoding=utf8
+
+let $LANG='en'
+set langmenu=en
+
+try
+    colorscheme qdark
+catch
+    colorscheme desert
+endtry
+
+set autoread
+set noswapfile
+set nobackup
+set nowritebackup
+
 set scrolloff=3
 set laststatus=2
 set showtabline=1
+
 set lazyredraw
 set ttyfast
+
+set nowrap
 set linebreak
+
+set title
 set ruler
-set showcmd
 set wildmenu
 set wildmode=longest,full
+set showcmd
 set showmode
 set number
-set hls
-set synmaxcol=250
 set nocursorline
 set nocursorcolumn
+set shortmess=atToOc
 
+set switchbuf=useopen
+set ttimeoutlen=50
 set noerrorbells
 set visualbell
 set t_vb=
-set ttimeoutlen=50
 
-set shortmess=atToO
-
+" Statusline {{{2
 function! g:VimrcBranch()
     let branch = exists('g:loaded_fugitive') ? fugitive#head(7) : ''
     return branch != '' ? '  ' . branch . ' ' : ''
@@ -126,15 +130,7 @@ set statusline+=%=
 set statusline+=%{&ft}\ %{g:VimrcBranch()}
 set statusline+=\ \ %l/%L\ (%c)
 
-" Filters {{{2
-set wildignore=*.o,*.obj,*~,*.pyc,*.i,*~TMP,*.bak,*.PVS-Studio.*,*.TMP
-if has("win32")
-    set wildignore+=.git\*,.hg\*,.svn\*
-else
-    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
-endif
-
-" Style {{{2
+" Editing {{{2
 set expandtab
 set shiftwidth=4
 set tabstop=4
@@ -143,25 +139,24 @@ set autoindent
 set smartindent
 set cinoptions=l0,:0
 
-" Misc {{{2
-set autoread
-set noswapfile
-set nobackup
-set nowritebackup
-
-set incsearch
-set smartcase
-
 set foldenable
 set foldlevel=99
 set foldmethod=syntax
 
-set completeopt=
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+if executable('ag')
+    set grepprg=ag\ --nogroup\ --nocolor
+endif
+
+set synmaxcol=250
+set tags=./.tags,~/.tags
+set completeopt=menu,menuone,longest,preview
 set ww=b,s,<,>,[,]
 set iskeyword=@,48-57,_,192-255
 set backspace=2
-
-set tags=./.tags,~/.tags
 
 filetype plugin indent on
 syntax on
@@ -171,13 +166,20 @@ set diffopt=filler,context:1000000,vertical
 if &diff
     augroup VimrcDiffOptions
         au!
-        au FilterWritePre * setlocal wrap<
     augroup END
+endif
+
+set wildignore=*.o,*.obj,*~,*.pyc,*.i,*~TMP,*.bak,*.PVS-Studio.*,*.TMP
+if has("win32")
+    set wildignore+=.git\*,.hg\*,.svn\*
+else
+    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 endif
 
 " FileType config {{{2
 augroup VimrcFileTypeConfig
     au!
+    au BufEnter * syn sync minlines=1000
     au FileType c,cpp let b:easytags_auto_highlight=0
                    \| setlocal commentstring=//\ %s
     au BufNewFile,BufRead *.i set filetype=cpp
@@ -220,25 +222,13 @@ function! g:VimrcCtrlpStatusLine(focus, byfname, regexp, prev, item, next, marke
 endfunction
 
 let g:ctrlp_status_func = {'main': 'g:VimrcCtrlpStatusLine'}
+if executable('ag')
+    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+endif
 
 " EasyMotion {{{2
 let g:EasyMotion_verbose=0
 let g:EasyMotion_smartcase=1
-
-" Ack {{{2
-if executable('ag')
-    let g:ackprg='ag --vimgrep'
-endif
-
-" PVS-Studio {{{2
-let g:pvs_studio_level_glyph = '|'
-let g:pvs_studio_favored_glyph = '●'
-let g:pvs_studio_not_favored_glyph = '○'
-let g:pvs_studio_statusline_glyph = ''
-let g:pvs_studio_default_sort = ['path', 'line']
-
-" EditorConfig {{{2
-let g:EditorConfig_core_mode = 'python_external'
 
 " togglelist {{{2
 let g:toggle_list_no_mappings = 1
@@ -306,6 +296,9 @@ nnoremap <silent> <Leader>md :make!<CR>:ConqueGdb -q<CR><Esc>:set syntax=conque_
 " Debug (d) {{{2
 nnoremap <silent> <Leader>dP :call conque_gdb#print_word(expand("<cWORD>"))<CR>
 vnoremap <silent> <Leader>dp ygv:call conque_gdb#print_word(@")<CR>
+nnoremap <silent> <Leader>dj :call conque_gdb#command("down")<CR>
+nnoremap <silent> <Leader>dk :call conque_gdb#command("up")<CR>
+nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p") . line(" "))
 
 " YouCompleteMe (y) {{{2
 nnoremap <silent> <Leader>yg :YcmCompleter GoTo
@@ -334,6 +327,10 @@ nnoremap <silent> <Leader>vp :PlugUpgrade<CR>
 
 " Misc {{{2
 nnoremap <silent> <Esc><Esc> :noh<CR>
+cnoremap <silent> <C-A> <Home>
+cnoremap <silent> <C-B> <Left>
+cnoremap <silent> <C-E> <End>
+cnoremap <silent> <C-F> <Right>
 
 " Local config {{{1
 if filereadable(expand("~/.vimrc.local"))
