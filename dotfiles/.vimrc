@@ -93,6 +93,7 @@ set linebreak
 
 set title
 set ruler
+set rulerformat=%=%l:%c\ %L
 set wildmenu
 set wildmode=longest,full
 set showcmd
@@ -107,28 +108,6 @@ set ttimeoutlen=50
 set noerrorbells
 set visualbell
 set t_vb=
-
-" Statusline {{{2
-function! g:VimrcBranch()
-    let branch = exists('g:loaded_fugitive') ? fugitive#head(7) : ''
-    return branch != '' ? '  ' . branch . ' ' : ''
-endfunction
-
-function! g:VimrcFlags()
-    let f = ''
-    if &modified
-        let f .= '[+]'
-    endif
-    if &ro || !&ma
-        let f .= ''
-    endif
-    return f
-endfunction
-
-set statusline=%f\ %w%{g:VimrcFlags()}
-set statusline+=%=
-set statusline+=%{&ft}\ %{g:VimrcBranch()}
-set statusline+=\ \ %l/%L\ (%c)
 
 " Editing {{{2
 set expandtab
@@ -217,8 +196,7 @@ if has('python3')
 endif
 
 function! g:VimrcCtrlpStatusLine(focus, byfname, regexp, prev, item, next, marked)
-    return '%#StatusLineInsertMode# ' . a:item . ' %#StatusLineInsertModeSep#'
-        \. '%* %{getcwd()}'
+    return '%#StatusLineInsertMode# ' . a:item . ' %* %{getcwd()}'
 endfunction
 
 let g:ctrlp_status_func = {'main': 'g:VimrcCtrlpStatusLine'}
@@ -298,11 +276,14 @@ nnoremap <silent> <Leader>dP :call conque_gdb#print_word(expand("<cWORD>"))<CR>
 vnoremap <silent> <Leader>dp ygv:call conque_gdb#print_word(@")<CR>
 nnoremap <silent> <Leader>dj :call conque_gdb#command("down")<CR>
 nnoremap <silent> <Leader>dk :call conque_gdb#command("up")<CR>
-nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p") . line(" "))
+nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p") . ":" . line("."))<CR>
+nnoremap <silent> <Leader>dJ :call conque_gdb#command("jump " .  expand("%:p") . ":" . line("."))<CR>
+nmap <silent> <Leader>dg <Leader>dB<Leader>dc
+nmap <silent> <Leader>dm <Leader>dB<Leader>dJ
 
 " YouCompleteMe (y) {{{2
-nnoremap <silent> <Leader>yg :YcmCompleter GoTo
-nnoremap <silent> <Leader>yf :YcmCompleter FixIt
+nnoremap <silent> <Leader>yg :YcmCompleter GoTo<CR>
+nnoremap <silent> <Leader>yf :YcmCompleter FixIt<CR>
 
 " Windows (h,j,k,l) {{{2
 nnoremap <silent> <C-H> <C-W><
@@ -327,10 +308,10 @@ nnoremap <silent> <Leader>vp :PlugUpgrade<CR>
 
 " Misc {{{2
 nnoremap <silent> <Esc><Esc> :noh<CR>
-cnoremap <silent> <C-A> <Home>
-cnoremap <silent> <C-B> <Left>
-cnoremap <silent> <C-E> <End>
-cnoremap <silent> <C-F> <Right>
+cnoremap <silent> <C-A> <Home><C-L>
+cnoremap <silent> <C-B> <Left><C-L>
+cnoremap <silent> <C-E> <End><C-L>
+cnoremap <silent> <C-F> <Right><C-L>
 
 " Local config {{{1
 if filereadable(expand("~/.vimrc.local"))
