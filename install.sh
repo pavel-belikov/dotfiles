@@ -114,11 +114,10 @@ install_apt_dependencies() {
     gdebi
 
     git gcc g++ clang cmake valgrind gdb lldb
-    vim vim-gtk neovim exuberant-ctags cscope
-    qtcreator
+    vim vim-gtk exuberant-ctags cscope
     clang-tidy clang-format doxygen
-    python3 python3-pip
-    python-dev python3-dev build-essential
+    python3 python3-pip python-dev python3-dev
+    build-essential
     libclang-dev llvm-dev
     libxkbfile-dev
 
@@ -209,7 +208,7 @@ install_vim_config() {
         vim +PlugInstall +qa
     fi
 
-    install_dotfile "$PLUG_PATH" "$1/.local/share/nvim/site/autoload/plug.vim"  
+    install_dotfile "$PLUG_PATH" "$1/.local/share/nvim/site/autoload/plug.vim"
     install_dotfile "$1/.vimrc" "$1/.config/nvim/init.vim"
 }
 

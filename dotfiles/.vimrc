@@ -10,7 +10,7 @@ Plug 'lyuts/vim-rtags', executable('rc') && executable('rdm') ? { 'for': ['c', '
 " Project {{{2
 Plug 'tpope/vim-fugitive'
 Plug 'sgur/vim-editorconfig'
-Plug 'ctrlpvim/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPMRUFiles', 'CtrlPTag'] }
 Plug 'felikz/ctrlp-py-matcher', has('python3') ? {} : { 'on': [] }
 Plug 'derekwyatt/vim-fswitch'
 
@@ -22,15 +22,23 @@ Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
+Plug 'cohama/lexima.vim', { 'on': [] }
 
 " Syntax {{{2
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'elzr/vim-json'
 Plug 'pavel-belikov/vim-qdark'
 call plug#end()
+
+" Autoload {{{2
+augroup VimrcPluginsInsert
+    au!
+    au InsertEnter * call plug#load('lexima.vim')
+                  \| call g:VimrcLexima()
+                  \| au! VimrcPluginsInsert
+augroup END
 
 " Vim config {{{1
 " GUI {{{2
@@ -210,6 +218,23 @@ let g:toggle_list_no_mappings = 1
 " Rtags {{{2
 let g:rtagsAutoLaunchRdm=1
 
+" lexima {{{2
+function! g:VimrcLexima()
+    " c, cpp
+    call lexima#add_rule({'at': '^\s*\(struct\|class\|union\).*\%#', 'char': '{', 'input': '{};<Left><Left>', 'filetype': ['c', 'cpp']})
+    call lexima#add_rule({'at': 'template\s*\%#', 'char': '<', 'input': '<><Left>', 'filetype': ['cpp']})
+    call lexima#add_rule({'at': 'template\s*\%#', 'char': '<', 'input': '<><Left>', 'filetype': ['cpp']})
+    call lexima#add_rule({'at': 'template\s*<.*\%#>', 'char': '>', 'input': '<Right>', 'filetype': ['cpp']})
+    call lexima#add_rule({'at': '^\s*#\s*\(if\|ifdef\|ifndef\)\?.*\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>#endif', 'filetype': ['cpp']})
+
+    " cmake
+    call lexima#add_rule({'at': '^\s*if(.*)\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>endif()', 'filetype': ['cmake']})
+    call lexima#add_rule({'at': '^\s*if\s\+(.*)\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>endif ()', 'filetype': ['cmake']})
+    call lexima#add_rule({'at': '^\s*foreach(.*)\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>endforeach()', 'filetype': ['cmake']})
+    call lexima#add_rule({'at': '^\s*foreach\s\+(.*)\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>endforeach ()', 'filetype': ['cmake']})
+endfunction
+let g:lexima_map_escape=''
+
 " Key bindings {{{1
 " Leader {{{2
 let mapleader="\<Space>"
@@ -221,15 +246,9 @@ nnoremap <silent> <leader>tq :call ToggleQuickfixList()<CR>
 nnoremap <silent> <leader>tp :pclose<CR>
 
 " EasyMotion (w,s,b) {{{2
-nmap <Leader>w <Leader><Leader>w
-nmap <Leader>s <Leader><Leader>s
-nmap <Leader>b <Leader><Leader>b
-
-" Align (a) {{{2
-nnoremap <silent> <Leader>a= :Tabularize /=<CR>
-vnoremap <silent> <Leader>a= :Tabularize /=<CR>
-nnoremap <silent> <Leader>a<Space> :Tabularize /\S\+<CR>
-vnoremap <silent> <Leader>a<Space> :Tabularize /\S\+<CR>
+map <Leader>w <Leader><Leader>w
+map <Leader>s <Leader><Leader>s
+map <Leader>b <Leader><Leader>b
 
 " Git (g) {{{2
 nnoremap <silent> <Leader>gs :Gstatus<CR>
@@ -243,13 +262,13 @@ nnoremap <silent> <Leader>gl :Glog<CR>
 nnoremap <silent> <Leader>ff :CtrlP<CR>
 nnoremap <silent> <Leader>fr :CtrlPMRUFiles<CR>
 nnoremap <silent> <Leader>fb :CtrlPBuffer<CR>
-nnoremap <silent> <Leader>ft :CtrlPTag<CR>
 nnoremap <silent> <Leader>fa :FSHere<CR>
 
 " Build (m) {{{2
 nnoremap <silent> <Leader>mm :make!<CR>
 nnoremap <silent> <Leader>mi :make install<CR>
 nnoremap <silent> <Leader>mr :make run<CR>
+nnoremap <silent> <Leader>mt :make test<CR>
 nnoremap <silent> <Leader>md :make!<CR>:ConqueGdb -q<CR><Esc>60<C-W>\|<C-W>p
 
 " Debug (d) {{{2
@@ -261,6 +280,9 @@ nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p")
 nnoremap <silent> <Leader>dJ :call conque_gdb#command("jump " .  expand("%:p") . ":" . line("."))<CR>
 nmap <silent> <Leader>dg <Leader>dB<Leader>dc
 nmap <silent> <Leader>dm <Leader>dB<Leader>dJ
+nmap <silent> <F10> <Leader>dn
+nmap <silent> <F11> <Leader>ds
+nmap <silent> <S-F11> <Leader>df
 
 " YouCompleteMe (y) {{{2
 nnoremap <silent> <Leader>yg :YcmCompleter GoTo<CR>
@@ -277,14 +299,16 @@ nnoremap <silent> <Leader>k <C-W>k
 nnoremap <silent> <Leader>l <C-W>l
 
 " Vim (v) {{{2
-nnoremap <silent> <Leader>ve :e ~/.vimrc<CR>
-nnoremap <silent> <Leader>vl :source ~/.vimrc<CR>
+nnoremap <silent> <Leader>ve :e $MYVIMRC<CR>
+nnoremap <silent> <Leader>vl :source $MYVIMRC<CR>
 nnoremap <silent> <Leader>vu :PlugUpdate<CR>
 nnoremap <silent> <Leader>vi :PlugInstall<CR>
 nnoremap <silent> <Leader>vp :PlugUpgrade<CR>
 
 " Misc {{{2
 nnoremap <silent> <Esc><Esc> :noh<CR>
+vnoremap <silent> . :norm .<CR>
+xnoremap <silent> @ :<C-u>echo "@" . getcmdline() \| exe ":'<,'>normal @" . nr2char(getchar())<CR>
 
 " Local config {{{1
 if filereadable(expand("~/.vimrc.local"))
