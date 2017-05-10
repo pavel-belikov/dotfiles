@@ -24,21 +24,12 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
-Plug 'cohama/lexima.vim', { 'on': [] }
 
 " Syntax {{{2
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'elzr/vim-json'
 Plug 'pavel-belikov/vim-qdark'
 call plug#end()
-
-" Autoload {{{2
-augroup VimrcPluginsInsert
-    au!
-    au InsertEnter * call plug#load('lexima.vim')
-                  \| call g:VimrcLexima()
-                  \| au! VimrcPluginsInsert
-augroup END
 
 " Vim config {{{1
 " GUI {{{2
@@ -217,23 +208,6 @@ let g:toggle_list_no_mappings = 1
 
 " Rtags {{{2
 let g:rtagsAutoLaunchRdm=1
-
-" lexima {{{2
-function! g:VimrcLexima()
-    " c, cpp
-    call lexima#add_rule({'at': '^\s*\(struct\|class\|union\).*\%#', 'char': '{', 'input': '{};<Left><Left>', 'filetype': ['c', 'cpp']})
-    call lexima#add_rule({'at': 'template\s*\%#', 'char': '<', 'input': '<><Left>', 'filetype': ['cpp']})
-    call lexima#add_rule({'at': 'template\s*\%#', 'char': '<', 'input': '<><Left>', 'filetype': ['cpp']})
-    call lexima#add_rule({'at': 'template\s*<.*\%#>', 'char': '>', 'input': '<Right>', 'filetype': ['cpp']})
-    call lexima#add_rule({'at': '^\s*#\s*\(if\|ifdef\|ifndef\)\?.*\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>#endif', 'filetype': ['cpp']})
-
-    " cmake
-    call lexima#add_rule({'at': '^\s*if(.*)\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>endif()', 'filetype': ['cmake']})
-    call lexima#add_rule({'at': '^\s*if\s\+(.*)\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>endif ()', 'filetype': ['cmake']})
-    call lexima#add_rule({'at': '^\s*foreach(.*)\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>endforeach()', 'filetype': ['cmake']})
-    call lexima#add_rule({'at': '^\s*foreach\s\+(.*)\%#$', 'char': '<CR>', 'input': '<CR>', 'input_after': '<CR>endforeach ()', 'filetype': ['cmake']})
-endfunction
-let g:lexima_map_escape=''
 
 " Key bindings {{{1
 " Leader {{{2
