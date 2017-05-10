@@ -45,7 +45,7 @@ augroup VimrcGuiAu
     au!
     au GUIEnter * set noerrorbells visualbell t_vb=
     if &diff
-        au FilterWritePre * setlocal wrap<
+        au FilterWritePre * setlocal wrap
     endif
 augroup END
 
@@ -115,7 +115,7 @@ set cinoptions=l0,:0
 
 set foldenable
 set foldlevel=99
-set foldmethod=syntax
+set foldmethod=indent
 
 set hlsearch
 set incsearch
