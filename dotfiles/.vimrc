@@ -88,7 +88,7 @@ set linebreak
 
 set title
 set ruler
-set rulerformat=%=%l:%c\ %L
+set rulerformat=%30(%=[%{&enc}]\ [%{&ff}]\ %l:%c\ %L%)
 set wildmenu
 set wildmode=longest,full
 set showcmd
@@ -149,8 +149,10 @@ augroup VimrcFileTypeConfig
     au!
     au BufEnter * syn sync minlines=1000
     au FileType c,cpp setlocal commentstring=//\ %s
+    au FileType dosini,cmake setlocal commentstring=#\ %s
     au BufNewFile,BufRead *.i set filetype=cpp
     au BufEnter *.h let b:fswitchdst='cpp,cc,C'
+    au BufEnter *.cc let b:fswitchdst='h,hh,hpp'
     au FileType tasks,make setlocal noexpandtab
     au BufNewFile,BufReadPost *.md set filetype=markdown
     au FileType vim setlocal foldmethod=marker
@@ -240,9 +242,9 @@ nnoremap <silent> <Leader>fa :FSHere<CR>
 
 " Build (m) {{{2
 nnoremap <silent> <Leader>mm :make!<CR>
-nnoremap <silent> <Leader>mi :make install<CR>
-nnoremap <silent> <Leader>mr :make run<CR>
-nnoremap <silent> <Leader>mt :make test<CR>
+nnoremap <silent> <Leader>mi :make! install<CR>
+nnoremap <silent> <Leader>mr :make! run<CR>
+nnoremap <silent> <Leader>mt :make! test<CR>
 nnoremap <silent> <Leader>md :make!<CR>:ConqueGdb -q<CR><Esc>60<C-W>\|<C-W>p
 
 " Debug (d) {{{2
