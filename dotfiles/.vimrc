@@ -49,7 +49,7 @@ augroup VimrcGuiAu
     endif
 augroup END
 
-set mouse=a
+set mouse=
 set guioptions=ait
 
 " UI {{{2
@@ -88,7 +88,7 @@ set linebreak
 
 set title
 set ruler
-set rulerformat=%30(%=[%{&enc}]\ [%{&ff}]\ %l:%c\ %L%)
+set rulerformat=%30(%=[%{&fenc?&fenc:&enc}]\ [%{&ff}]\ %l:%c\ %L%)
 set wildmenu
 set wildmode=longest,full
 set showcmd
@@ -256,9 +256,10 @@ nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p")
 nnoremap <silent> <Leader>dJ :call conque_gdb#command("jump " .  expand("%:p") . ":" . line("."))<CR>
 nmap <silent> <Leader>dg <Leader>dB<Leader>dc
 nmap <silent> <Leader>dm <Leader>dB<Leader>dJ
+nmap <silent> <F5> <Leader>dc
 nmap <silent> <F10> <Leader>dn
 nmap <silent> <F11> <Leader>ds
-nmap <silent> <S-F11> <Leader>df
+nmap <silent> <F12> <Leader>df
 
 " YouCompleteMe (y) {{{2
 nnoremap <silent> <Leader>yg :YcmCompleter GoTo<CR>
