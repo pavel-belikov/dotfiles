@@ -8,15 +8,12 @@ Plug 'vim-scripts/Conque-GDB', has('python3') && executable('gdb') ? { 'on': ['C
 Plug 'lyuts/vim-rtags', executable('rc') && executable('rdm') ? { 'for': ['c', 'cpp'] } : { 'on': [] }
 
 " Project {{{2
-Plug 'tpope/vim-fugitive'
 Plug 'sgur/vim-editorconfig'
 Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPMRUFiles', 'CtrlPTag'] }
 Plug 'felikz/ctrlp-py-matcher', has('python3') ? {} : { 'on': [] }
 Plug 'derekwyatt/vim-fswitch'
 
 " Text editing {{{2
-Plug 'milkypostman/vim-togglelist'
-Plug 'ntpeters/vim-better-whitespace'
 Plug 'easymotion/vim-easymotion'
 Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
 Plug 'michaeljsmith/vim-indent-object'
@@ -29,16 +26,21 @@ Plug 'tpope/vim-repeat'
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'elzr/vim-json'
 Plug 'pavel-belikov/vim-qdark'
+
+" Local config {{{2
+if filereadable(expand("~/.vimrc.plugins.local"))
+    source ~/.vimrc.plugins.local
+endif
 call plug#end()
 
 " Vim config {{{1
 " GUI {{{2
 if has("win32")
     set noshelltemp
-    set guifont=Hack:h11
+    set guifont=Hack:h9
 else
     set shell=/bin/sh
-    set guifont=Hack\ 11
+    set guifont=Hack\ 9
 endif
 
 augroup VimrcGuiAu
@@ -111,7 +113,7 @@ set tabstop=4
 set smarttab
 set autoindent
 set smartindent
-set cinoptions=l0,:0
+set cinoptions=l0,:0,(0
 
 set foldenable
 set foldlevel=99
@@ -121,9 +123,12 @@ set hlsearch
 set incsearch
 set ignorecase
 set smartcase
-if executable('ag')
+if executable('ag') && !has('win32')
     set grepprg=ag\ --nogroup\ --nocolor
 endif
+
+set list
+set listchars=trail:·,tab:»»
 
 set synmaxcol=250
 set tags=./.tags,~/.tags
@@ -150,12 +155,13 @@ augroup VimrcFileTypeConfig
     au BufEnter * syn sync minlines=1000
     au FileType c,cpp setlocal commentstring=//\ %s
     au FileType dosini,cmake setlocal commentstring=#\ %s
+    au FileType qf setlocal wrap
+    au FileType tasks,make setlocal noexpandtab
+    au FileType vim setlocal foldmethod=marker
     au BufNewFile,BufRead *.i set filetype=cpp
     au BufEnter *.h let b:fswitchdst='cpp,cc,C'
     au BufEnter *.cc let b:fswitchdst='h,hh,hpp'
-    au FileType tasks,make setlocal noexpandtab
     au BufNewFile,BufReadPost *.md set filetype=markdown
-    au FileType vim setlocal foldmethod=marker
 augroup END
 
 " Plugins config {{{1
@@ -177,16 +183,16 @@ let g:ycm_autoclose_preview_window_after_insertion=1
 let g:ctrlp_working_path_mode='a'
 let g:ctrlp_clear_cache_on_exit=0
 if has('python3')
-    let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+    let g:ctrlp_match_func={ 'match': 'pymatcher#PyMatch' }
 endif
 
 function! g:VimrcCtrlpStatusLine(focus, byfname, regexp, prev, item, next, marked)
     return '%#StatusLineInsertMode# ' . a:item . ' %* %{getcwd()}'
 endfunction
 
-let g:ctrlp_status_func = {'main': 'g:VimrcCtrlpStatusLine'}
-if executable('ag')
-    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+let g:ctrlp_status_func={'main': 'g:VimrcCtrlpStatusLine'}
+if executable('ag') && !has('win32')
+    let g:ctrlp_user_command='ag %s -l --nocolor -g ""'
 endif
 
 " ConqueGDB {{{2
@@ -217,22 +223,14 @@ let mapleader="\<Space>"
 let maplocalleader="\\"
 
 " Toggle Window (t) {{{2
-nnoremap <silent> <leader>tl :call ToggleLocationList()<CR>
-nnoremap <silent> <leader>tq :call ToggleQuickfixList()<CR>
+nnoremap <silent> <leader>tl :lclose<CR>
+nnoremap <silent> <leader>tq :cclose<CR>
 nnoremap <silent> <leader>tp :pclose<CR>
 
 " EasyMotion (w,s,b) {{{2
 map <Leader>w <Leader><Leader>w
 map <Leader>s <Leader><Leader>s
 map <Leader>b <Leader><Leader>b
-
-" Git (g) {{{2
-nnoremap <silent> <Leader>gs :Gstatus<CR>
-nnoremap <silent> <Leader>gc :Gcommit<CR>
-nnoremap <silent> <Leader>gd :Gdiff<CR>
-nnoremap <silent> <Leader>gp :Gpush<CR>
-nnoremap <silent> <Leader>gu :Gpull<CR>
-nnoremap <silent> <Leader>gl :Glog<CR>
 
 " Files (f) {{{2
 nnoremap <silent> <Leader>ff :CtrlP<CR>
@@ -241,11 +239,11 @@ nnoremap <silent> <Leader>fb :CtrlPBuffer<CR>
 nnoremap <silent> <Leader>fa :FSHere<CR>
 
 " Build (m) {{{2
-nnoremap <silent> <Leader>mm :make!<CR>
-nnoremap <silent> <Leader>mi :make! install<CR>
-nnoremap <silent> <Leader>mr :make! run<CR>
-nnoremap <silent> <Leader>mt :make! test<CR>
-nnoremap <silent> <Leader>md :make!<CR>:ConqueGdb -q<CR><Esc>60<C-W>\|<C-W>p
+nnoremap <silent> <Leader>mm :make!<CR><CR>
+nnoremap <silent> <Leader>mi :make! install<CR><CR>
+nnoremap <silent> <Leader>mr :make! run<CR><CR>
+nnoremap <silent> <Leader>mt :make! test<CR><CR>
+nnoremap <silent> <Leader>md :make!<CR>:ConqueGdb -q<CR><Esc>80<C-W>\|<C-W>p
 
 " Debug (d) {{{2
 nnoremap <silent> <Leader>dP :call conque_gdb#print_word(expand("<cWORD>"))<CR>

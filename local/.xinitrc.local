@@ -1,4 +1,4 @@
-setxkbmap -layout us,ru -option grp:win_space_toggle,grp_led:scroll,compose:ralt,caps:escape
+setxkbmap -layout us,ru -option grp:win_space_toggle,grp_led:scroll,compose:ralt,caps:escape,altwin:swap_lalt_lwin
 xkbcomp $DISPLAY - | egrep -v "group . = AltGr;" | xkbcomp - $DISPLAY
 
 xrandr --output DVI-D-0 --auto --pos 0x0 --primary
