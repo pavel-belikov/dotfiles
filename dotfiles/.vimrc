@@ -15,8 +15,6 @@ Plug 'derekwyatt/vim-fswitch'
 
 " Text editing {{{2
 Plug 'easymotion/vim-easymotion'
-Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
-Plug 'michaeljsmith/vim-indent-object'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
@@ -61,12 +59,6 @@ if $TERM == "xterm" || $TERM == "xterm-256color"
     let &t_EI = "\<Esc>[2 q"
 endif
 
-set fileencodings=utf8,cp1251
-set encoding=utf8
-
-let $LANG='en'
-set langmenu=en
-
 try
     colorscheme qdark
 catch
@@ -79,7 +71,7 @@ set nobackup
 set nowritebackup
 
 set scrolloff=5
-set laststatus=2
+set laststatus=0
 set showtabline=1
 
 set lazyredraw
@@ -90,7 +82,7 @@ set linebreak
 
 set title
 set ruler
-set rulerformat=%30(%=[%{&fenc?&fenc:&enc}]\ [%{&ff}]\ %l:%c\ %L%)
+set rulerformat=%30(%=[%{empty(&fenc)?&enc:&fenc}]\ [%{&ff}]\ %l:%c\ %L%)
 set wildmenu
 set wildmode=longest,full
 set showcmd
@@ -128,7 +120,7 @@ if executable('ag') && !has('win32')
 endif
 
 set list
-set listchars=trail:·,tab:»»
+set listchars=tab:\ \ ,trail:·
 
 set synmaxcol=250
 set tags=./.tags,~/.tags
@@ -154,9 +146,10 @@ augroup VimrcFileTypeConfig
     au!
     au BufEnter * syn sync minlines=1000
     au FileType c,cpp setlocal commentstring=//\ %s
-    au FileType dosini,cmake setlocal commentstring=#\ %s
+    au FileType dosini,cmake,cfg setlocal commentstring=#\ %s
     au FileType qf setlocal wrap
     au FileType tasks,make setlocal noexpandtab
+    au FileType conque_term,help,plug,conque_gdb setlocal nolist
     au FileType vim setlocal foldmethod=marker
     au BufNewFile,BufRead *.i set filetype=cpp
     au BufEnter *.h let b:fswitchdst='cpp,cc,C'
@@ -186,11 +179,6 @@ if has('python3')
     let g:ctrlp_match_func={ 'match': 'pymatcher#PyMatch' }
 endif
 
-function! g:VimrcCtrlpStatusLine(focus, byfname, regexp, prev, item, next, marked)
-    return '%#StatusLineInsertMode# ' . a:item . ' %* %{getcwd()}'
-endfunction
-
-let g:ctrlp_status_func={'main': 'g:VimrcCtrlpStatusLine'}
 if executable('ag') && !has('win32')
     let g:ctrlp_user_command='ag %s -l --nocolor -g ""'
 endif
@@ -207,12 +195,6 @@ let g:ConqueTerm_Color=2
 " EasyMotion {{{2
 let g:EasyMotion_verbose=0
 let g:EasyMotion_smartcase=1
-
-" vim-better-whitespace {{{2
-let g:better_whitespace_filetypes_blacklist=['help', 'conque_term', 'conque_gdb', 'vim-plug']
-
-" togglelist {{{2
-let g:toggle_list_no_mappings = 1
 
 " Rtags {{{2
 let g:rtagsAutoLaunchRdm=1
@@ -239,10 +221,8 @@ nnoremap <silent> <Leader>fb :CtrlPBuffer<CR>
 nnoremap <silent> <Leader>fa :FSHere<CR>
 
 " Build (m) {{{2
-nnoremap <silent> <Leader>mm :make!<CR><CR>
-nnoremap <silent> <Leader>mi :make! install<CR><CR>
-nnoremap <silent> <Leader>mr :make! run<CR><CR>
-nnoremap <silent> <Leader>mt :make! test<CR><CR>
+nnoremap <silent> <Leader>mm :make!<CR>
+nnoremap <silent> <Leader>mr :make! run<CR>
 nnoremap <silent> <Leader>md :make!<CR>:ConqueGdb -q<CR><Esc>80<C-W>\|<C-W>p
 
 " Debug (d) {{{2
@@ -252,22 +232,12 @@ nnoremap <silent> <Leader>dj :call conque_gdb#command("down")<CR>
 nnoremap <silent> <Leader>dk :call conque_gdb#command("up")<CR>
 nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p") . ":" . line("."))<CR>
 nnoremap <silent> <Leader>dJ :call conque_gdb#command("jump " .  expand("%:p") . ":" . line("."))<CR>
-nmap <silent> <Leader>dg <Leader>dB<Leader>dc
 nmap <silent> <Leader>dm <Leader>dB<Leader>dJ
-nmap <silent> <F5> <Leader>dc
 nmap <silent> <F10> <Leader>dn
 nmap <silent> <F11> <Leader>ds
 nmap <silent> <F12> <Leader>df
 
-" YouCompleteMe (y) {{{2
-nnoremap <silent> <Leader>yg :YcmCompleter GoTo<CR>
-nnoremap <silent> <Leader>yf :YcmCompleter FixIt<CR>
-
 " Windows (h,j,k,l) {{{2
-nnoremap <silent> <C-H> <C-W><
-nnoremap <silent> <C-J> <C-W>+
-nnoremap <silent> <C-K> <C-W>-
-nnoremap <silent> <C-L> <C-W>>
 nnoremap <silent> <Leader>h <C-W>h
 nnoremap <silent> <Leader>j <C-W>j
 nnoremap <silent> <Leader>k <C-W>k
@@ -276,9 +246,6 @@ nnoremap <silent> <Leader>l <C-W>l
 " Vim (v) {{{2
 nnoremap <silent> <Leader>ve :e $MYVIMRC<CR>
 nnoremap <silent> <Leader>vl :source $MYVIMRC<CR>
-nnoremap <silent> <Leader>vu :PlugUpdate<CR>
-nnoremap <silent> <Leader>vi :PlugInstall<CR>
-nnoremap <silent> <Leader>vp :PlugUpgrade<CR>
 
 " Misc {{{2
 nnoremap <silent> <Esc><Esc> :noh<CR>
