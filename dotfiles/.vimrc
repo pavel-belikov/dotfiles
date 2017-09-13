@@ -128,6 +128,7 @@ set completeopt=menu,menuone,longest,preview
 set ww=b,s,<,>,[,]
 set iskeyword=@,48-57,_,192-255
 set backspace=2
+set fileencodings=utf8,cp1251
 
 set diffopt=filler,context:1000000,vertical
 
@@ -151,7 +152,6 @@ augroup VimrcFileTypeConfig
     au FileType tasks,make setlocal noexpandtab
     au FileType conque_term,help,plug,conque_gdb setlocal nolist
     au FileType vim setlocal foldmethod=marker
-    au BufNewFile,BufRead *.i set filetype=cpp
     au BufEnter *.h let b:fswitchdst='cpp,cc,C'
     au BufEnter *.cc let b:fswitchdst='h,hh,hpp'
     au BufNewFile,BufReadPost *.md set filetype=markdown
@@ -204,11 +204,6 @@ let g:rtagsAutoLaunchRdm=1
 let mapleader="\<Space>"
 let maplocalleader="\\"
 
-" Toggle Window (t) {{{2
-nnoremap <silent> <leader>tl :lclose<CR>
-nnoremap <silent> <leader>tq :cclose<CR>
-nnoremap <silent> <leader>tp :pclose<CR>
-
 " EasyMotion (w,s,b) {{{2
 map <Leader>w <Leader><Leader>w
 map <Leader>s <Leader><Leader>s
@@ -233,9 +228,6 @@ nnoremap <silent> <Leader>dk :call conque_gdb#command("up")<CR>
 nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p") . ":" . line("."))<CR>
 nnoremap <silent> <Leader>dJ :call conque_gdb#command("jump " .  expand("%:p") . ":" . line("."))<CR>
 nmap <silent> <Leader>dm <Leader>dB<Leader>dJ
-nmap <silent> <F10> <Leader>dn
-nmap <silent> <F11> <Leader>ds
-nmap <silent> <F12> <Leader>df
 
 " Windows (h,j,k,l) {{{2
 nnoremap <silent> <Leader>h <C-W>h
@@ -243,14 +235,9 @@ nnoremap <silent> <Leader>j <C-W>j
 nnoremap <silent> <Leader>k <C-W>k
 nnoremap <silent> <Leader>l <C-W>l
 
-" Vim (v) {{{2
-nnoremap <silent> <Leader>ve :e $MYVIMRC<CR>
-nnoremap <silent> <Leader>vl :source $MYVIMRC<CR>
-
 " Misc {{{2
 nnoremap <silent> <Esc><Esc> :noh<CR>
-vnoremap <silent> . :norm .<CR>
-xnoremap <silent> @ :<C-u>echo "@" . getcmdline() \| exe ":'<,'>normal @" . nr2char(getchar())<CR>
+nnoremap <silent> <Leader>yd :YcmCompleter GetDoc<CR>
 
 " Local config {{{1
 if filereadable(expand("~/.vimrc.local"))
