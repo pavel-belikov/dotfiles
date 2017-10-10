@@ -1,11 +1,23 @@
 set nocompatible
 
 " Plugins {{{1
+try
 call plug#begin()
 " C++ {{{2
 Plug 'Valloric/YouCompleteMe', has('python3') && &diff ? { 'on': [] } : {}
 Plug 'vim-scripts/Conque-GDB', has('python3') && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
 Plug 'lyuts/vim-rtags', executable('rc') && executable('rdm') ? { 'for': ['c', 'cpp'] } : { 'on': [] }
+
+" Java {{{2
+Plug 'artur-shaik/vim-javacomplete2', { 'for': ['java'] }
+Plug 'mikelue/vim-maven-plugin', { 'for': ['java'] }
+
+" Python {{{2
+Plug 'nvie/vim-flake8', { 'for': ['python'] }
+Plug 'michaeljsmith/vim-indent-object', { 'for': ['python'] }
+
+" Haskell {{{2
+Plug 'eagletmt/neco-ghc', { 'for': ['haskell'] }
 
 " Project {{{2
 Plug 'sgur/vim-editorconfig'
@@ -19,6 +31,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
+Plug 'godlygeek/tabular', { 'on': ['Tab', 'Tabularize'] }
 
 " Syntax {{{2
 Plug 'octol/vim-cpp-enhanced-highlight'
@@ -29,7 +42,10 @@ Plug 'pavel-belikov/vim-qdark'
 if filereadable(expand("~/.vimrc.plugins.local"))
     source ~/.vimrc.plugins.local
 endif
+" }}}2
 call plug#end()
+catch
+endtry
 
 " Vim config {{{1
 " GUI {{{2
@@ -105,7 +121,7 @@ set tabstop=4
 set smarttab
 set autoindent
 set smartindent
-set cinoptions=l0,:0,(0
+set cinoptions=l0,:0,(0,Ls,g0
 
 set foldenable
 set foldlevel=99
@@ -146,6 +162,8 @@ syntax on
 augroup VimrcFileTypeConfig
     au!
     au BufEnter * syn sync minlines=1000
+    au FileType qf setlocal nonumber wrap
+    au FileType java setlocal omnifunc=javacomplete#Complete
     au FileType c,cpp setlocal commentstring=//\ %s
     au FileType dosini,cmake,cfg setlocal commentstring=#\ %s
     au FileType qf setlocal wrap
