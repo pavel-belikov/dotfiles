@@ -3,45 +3,18 @@ set nocompatible
 " Plugins {{{1
 try
 call plug#begin()
-" C++ {{{2
 Plug 'Valloric/YouCompleteMe', has('python3') && &diff ? { 'on': [] } : {}
 Plug 'vim-scripts/Conque-GDB', has('python3') && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
-Plug 'lyuts/vim-rtags', executable('rc') && executable('rdm') ? { 'for': ['c', 'cpp'] } : { 'on': [] }
-
-" Java {{{2
-Plug 'artur-shaik/vim-javacomplete2', { 'for': ['java'] }
-Plug 'mikelue/vim-maven-plugin', { 'for': ['java'] }
-
-" Python {{{2
-Plug 'nvie/vim-flake8', { 'for': ['python'] }
-Plug 'michaeljsmith/vim-indent-object', { 'for': ['python'] }
-
-" Haskell {{{2
-Plug 'eagletmt/neco-ghc', { 'for': ['haskell'] }
-
-" Project {{{2
 Plug 'sgur/vim-editorconfig'
 Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPMRUFiles', 'CtrlPTag'] }
 Plug 'felikz/ctrlp-py-matcher', has('python3') ? {} : { 'on': [] }
 Plug 'derekwyatt/vim-fswitch'
-
-" Text editing {{{2
 Plug 'easymotion/vim-easymotion'
-Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
-Plug 'godlygeek/tabular', { 'on': ['Tab', 'Tabularize'] }
-
-" Syntax {{{2
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'elzr/vim-json'
 Plug 'pavel-belikov/vim-qdark'
-
-" Local config {{{2
-if filereadable(expand("~/.vimrc.plugins.local"))
-    source ~/.vimrc.plugins.local
-endif
 " }}}2
 call plug#end()
 catch
@@ -60,8 +33,8 @@ endif
 augroup VimrcGuiAu
     au!
     au GUIEnter * set noerrorbells visualbell t_vb=
-    if &diff
-        au FilterWritePre * setlocal wrap
+    if has("win32")
+        au GUIEnter * simalt ~x
     endif
 augroup END
 
@@ -135,18 +108,19 @@ if executable('ag') && !has('win32')
     set grepprg=ag\ --nogroup\ --nocolor
 endif
 
+set encoding=utf8
+set fileencodings=utf8,cp1251
+
 set list
 set listchars=tab:\ \ ,trail:·
 
 set synmaxcol=250
-set tags=./.tags,~/.tags
 set completeopt=menu,menuone,longest,preview
 set ww=b,s,<,>,[,]
 set iskeyword=@,48-57,_,192-255
 set backspace=2
-set fileencodings=utf8,cp1251
 
-set diffopt=filler,context:1000000,vertical
+set diffopt=filler,context:1000000
 
 set wildignore=*.o,*.obj,*~,*.pyc,*.i,*~TMP,*.bak,*.PVS-Studio.*,*.TMP
 if has("win32")
@@ -176,13 +150,6 @@ augroup VimrcFileTypeConfig
 augroup END
 
 " Plugins config {{{1
-" Netrw {{{
-let g:netrw_menu=0
-let g:netrw_liststyle=2
-let g:netrw_sizestyle='H'
-let g:netrw_menu=0
-let g:netrw_banner=0
-
 " YouCompleteMe {{{2
 let g:ycm_confirm_extra_conf=0
 let g:ycm_disable_for_files_larger_than_kb=2048
@@ -214,48 +181,30 @@ let g:ConqueTerm_Color=2
 let g:EasyMotion_verbose=0
 let g:EasyMotion_smartcase=1
 
-" Rtags {{{2
-let g:rtagsAutoLaunchRdm=1
-
 " Key bindings {{{1
-" Leader {{{2
+" Bindings {{{2
 let mapleader="\<Space>"
 let maplocalleader="\\"
 
-" EasyMotion (w,s,b) {{{2
 map <Leader>w <Leader><Leader>w
 map <Leader>s <Leader><Leader>s
 map <Leader>b <Leader><Leader>b
-
-" Files (f) {{{2
-nnoremap <silent> <Leader>ff :CtrlP<CR>
-nnoremap <silent> <Leader>fr :CtrlPMRUFiles<CR>
-nnoremap <silent> <Leader>fb :CtrlPBuffer<CR>
-nnoremap <silent> <Leader>fa :FSHere<CR>
-
-" Build (m) {{{2
-nnoremap <silent> <Leader>mm :make!<CR>
-nnoremap <silent> <Leader>mr :make! run<CR>
-nnoremap <silent> <Leader>md :make!<CR>:ConqueGdb -q<CR><Esc>80<C-W>\|<C-W>p
-
-" Debug (d) {{{2
+nnoremap <silent> <Leader>f :CtrlP<CR>
+nnoremap <silent> <Leader>a :FSHere<CR>
+nnoremap <silent> <Leader>m :make!<CR><CR>
+nnoremap <silent> <Leader>dd :make!<CR>:ConqueGdb -q<CR><Esc>80<C-W>\|<C-W>p
 nnoremap <silent> <Leader>dP :call conque_gdb#print_word(expand("<cWORD>"))<CR>
 vnoremap <silent> <Leader>dp ygv:call conque_gdb#print_word(@")<CR>
 nnoremap <silent> <Leader>dj :call conque_gdb#command("down")<CR>
 nnoremap <silent> <Leader>dk :call conque_gdb#command("up")<CR>
 nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p") . ":" . line("."))<CR>
 nnoremap <silent> <Leader>dJ :call conque_gdb#command("jump " .  expand("%:p") . ":" . line("."))<CR>
-nmap <silent> <Leader>dm <Leader>dB<Leader>dJ
-
-" Windows (h,j,k,l) {{{2
+nmap     <silent> <Leader>dm <Leader>dB<Leader>dJ
 nnoremap <silent> <Leader>h <C-W>h
 nnoremap <silent> <Leader>j <C-W>j
 nnoremap <silent> <Leader>k <C-W>k
 nnoremap <silent> <Leader>l <C-W>l
-
-" Misc {{{2
 nnoremap <silent> <Esc><Esc> :noh<CR>
-nnoremap <silent> <Leader>yd :YcmCompleter GetDoc<CR>
 
 " Local config {{{1
 if filereadable(expand("~/.vimrc.local"))
