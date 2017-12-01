@@ -5,15 +5,14 @@ try
 call plug#begin()
 Plug 'Valloric/YouCompleteMe', has('python3') && &diff ? { 'on': [] } : {}
 Plug 'vim-scripts/Conque-GDB', has('python3') && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
+Plug 'artur-shaik/vim-javacomplete2', { 'for': ['java'] }
 Plug 'sgur/vim-editorconfig'
 Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPMRUFiles', 'CtrlPTag'] }
 Plug 'felikz/ctrlp-py-matcher', has('python3') ? {} : { 'on': [] }
 Plug 'derekwyatt/vim-fswitch'
 Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
 Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'elzr/vim-json'
 Plug 'pavel-belikov/vim-qdark'
 " }}}2
 call plug#end()
@@ -24,10 +23,10 @@ endtry
 " GUI {{{2
 if has("win32")
     set noshelltemp
-    set guifont=Hack:h9
+    set guifont=Hack:h8
 else
     set shell=/bin/sh
-    set guifont=Hack\ 9
+    set guifont=Hack\ 8
 endif
 
 augroup VimrcGuiAu
@@ -119,8 +118,6 @@ set completeopt=menu,menuone,longest,preview
 set ww=b,s,<,>,[,]
 set iskeyword=@,48-57,_,192-255
 set backspace=2
-
-set diffopt=filler,context:1000000
 
 set wildignore=*.o,*.obj,*~,*.pyc,*.i,*~TMP,*.bak,*.PVS-Studio.*,*.TMP
 if has("win32")
