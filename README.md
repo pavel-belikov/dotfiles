@@ -15,9 +15,3 @@ cd dotfiles
 ./install.sh -wdp
 ```
 
-### Windows
-
-```
-Set-ExecutionPolicy RemoteSigned
-.\install.ps1
-```

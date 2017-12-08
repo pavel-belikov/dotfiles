@@ -218,34 +218,6 @@ install_local_environment() {
     add_environment "LANGUAGE"  "en_US.UTF-8"
 }
 
-install_xkb_switch() {
-    if has_binary xkb-switch; then
-        return
-    fi
-
-    mkdir -p build
-    cd build
-    git clone "https://github.com/ierton/xkb-switch.git"
-    cd xkb-switch
-    cmake .
-    make
-    make install
-}
-
-install_rtags() {
-    if has_binary rdm; then
-        return
-    fi
-
-    mkdir -p build
-    cd build
-    git clone --recursive "https://github.com/Andersbakken/rtags.git"
-    cd rtags
-    cmake .
-    make
-    make install
-}
-
 opt() {
     cd "$ROOT"
     if has_install_option "$1"; then
@@ -278,8 +250,6 @@ install_as_root() {
     opt dotfiles    install_directory dotfiles "/root" -name '.vimrc'
     opt dotfiles    add_environment "QT_STYLE_OVERRIDE" "gtk"
     opt dotfiles    install_vim_config "/root"
-    opt dotfiles    install_xkb_switch
-    opt dotfiles    install_rtags
     opt awesome     install_autologin
 }
 
