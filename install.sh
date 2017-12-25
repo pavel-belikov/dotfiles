@@ -42,14 +42,18 @@ if [ "$DOTFILES_USER" = "" ]; then
 fi
 
 if [ "$DOTFILES_OPTIONS" = "" -o "$DOTFILES_HELP" = "yes" ]; then
-    echo "Usage: ./install.sh  [options]"
-    echo "Options:"
-    echo "  -w  Awesome options"
-    echo "  -d  Dotfiles"
-    echo "  -l  Local git options"
-    echo "  -p  Packages"
-    echo "  -v  Virtual Box guest additions"
-    exit 1
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        DOTFILES_OPTIONS="$DOTFILES_OPTIONS dotfiles"
+    else
+        echo "Usage: ./install.sh  [options]"
+        echo "Options:"
+        echo "  -w  Awesome options"
+        echo "  -d  Dotfiles"
+        echo "  -l  Local git options"
+        echo "  -p  Packages"
+        echo "  -v  Virtual Box guest additions"
+        exit 1
+    fi
 fi
 
 if [ "$DOTFILES_PROFILE" = "" ]; then
@@ -86,7 +90,7 @@ install_dotfile() {
         rm -f "$link"
         mkdir -p "$(dirname "$link")"
         ln -s "$target" "$link"
-        echo "  \\e[93mCreate link: \\e[92m$link\\e[0m → \\e[96m${target#$ROOT/}\\e[0m"
+        echo "  \x1B[93mCreate link: \x1B[92m$link\x1B[0m → \x1B[96m${target#$ROOT/}\x1B[0m"
     fi
 }
 
@@ -222,7 +226,7 @@ opt() {
     cd "$ROOT"
     if has_install_option "$1"; then
         shift
-        echo "\\e[93m${@}\\e[0m"
+        echo "\x1B[93m${@}\x1B[0m"
         ${@}
     fi
 }
@@ -253,9 +257,14 @@ install_as_root() {
     opt awesome     install_autologin
 }
 
-case "$DOTFILES_PROFILE" in
-    "")     install_wrapper "${@}" ;;
-    user)   install_as_user "${@}" ;;
-    root)   install_as_root "${@}" ;;
-esac
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    install_directory dotfiles "$HOME" -name '.vimrc' -or -name '.bash_profile'
+    install_vim_config "$HOME"
+else
+    case "$DOTFILES_PROFILE" in
+        "")     install_wrapper "${@}" ;;
+        user)   install_as_user "${@}" ;;
+        root)   install_as_root "${@}" ;;
+    esac
+fi
 

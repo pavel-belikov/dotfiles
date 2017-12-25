@@ -1,33 +1,26 @@
 set nocompatible
 
 try
+let g:has_python = has('python3') || has('python')
 call plug#begin()
-Plug 'Valloric/YouCompleteMe', has('python3') && &diff ? { 'on': [] } : {}
-Plug 'vim-scripts/Conque-GDB', has('python3') && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
+Plug 'Valloric/YouCompleteMe', g:has_python && &diff ? { 'on': [] } : {}
+Plug 'vim-scripts/Conque-GDB', g:has_python && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
 Plug 'sgur/vim-editorconfig'
 Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPMRUFiles', 'CtrlPTag'] }
-Plug 'felikz/ctrlp-py-matcher', has('python3') ? {} : { 'on': [] }
 Plug 'derekwyatt/vim-fswitch'
-Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-surround'
-Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'pavel-belikov/vim-qdark'
 call plug#end()
 catch
 endtry
 
-if has("win32")
+if has('win32')
     set noshelltemp
     set guifont=Hack:h8
 else
     set shell=/bin/sh
     set guifont=Hack\ 8
 endif
-
-augroup VimrcGuiAu
-    au!
-    au GUIEnter * set noerrorbells visualbell t_vb=
-augroup END
 
 set mouse=
 set guioptions=ait
@@ -94,7 +87,8 @@ set incsearch
 set ignorecase
 set smartcase
 if executable('ag') && !has('win32')
-    set grepprg=ag\ --nogroup\ --nocolor
+    set grepprg=ag\ --nogroup\ --nocolor\ --column\ --ignore-case\ --vimgrep
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
 set encoding=utf8
@@ -105,11 +99,8 @@ set listchars=tab:\ \ ,trail:·
 
 set synmaxcol=250
 set completeopt=menu,menuone,longest,preview
-set ww=b,s,<,>,[,]
-set iskeyword=@,48-57,_,192-255
-set backspace=2
 
-set wildignore=*.o,*.obj,*~,*.pyc,*.i,*~TMP,*.bak,*.PVS-Studio.*,*.TMP
+set wildignore=*.o,*.obj,*~,*.pyc,*~TMP,*.bak,*.PVS-Studio.*,*.TMP
 if has("win32")
     set wildignore+=.git\*,.hg\*,.svn\*
 else
@@ -117,10 +108,11 @@ else
 endif
 
 filetype plugin indent on
-syntax on
+syntax off
 
-augroup VimrcFileTypeConfig
+augroup VimrcAuConfig
     au!
+    au GUIEnter * set noerrorbells visualbell t_vb=
     au BufEnter * syn sync minlines=1000
     au FileType c,cpp setlocal commentstring=//\ %s
     au FileType dosini,cmake,cfg setlocal commentstring=#\ %s
@@ -140,9 +132,6 @@ let g:ycm_autoclose_preview_window_after_insertion=1
 
 let g:ctrlp_working_path_mode='a'
 let g:ctrlp_clear_cache_on_exit=0
-if has('python3')
-    let g:ctrlp_match_func={ 'match': 'pymatcher#PyMatch' }
-endif
 
 if executable('ag') && !has('win32')
     let g:ctrlp_user_command='ag %s -l --nocolor -g ""'
@@ -155,9 +144,6 @@ let g:ConqueTerm_ReadUnfocused=1
 let g:ConqueTerm_InsertOnEnter=1
 let g:ConqueTerm_CloseOnEnd=1
 let g:ConqueTerm_Color=2
-
-let g:EasyMotion_verbose=0
-let g:EasyMotion_smartcase=1
 
 let mapleader="\<Space>"
 let maplocalleader="\\"
