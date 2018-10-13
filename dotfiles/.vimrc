@@ -6,10 +6,12 @@ call plug#begin()
 Plug 'Valloric/YouCompleteMe', g:has_python && &diff ? { 'on': [] } : {}
 Plug 'vim-scripts/Conque-GDB', g:has_python && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
 Plug 'sgur/vim-editorconfig'
-Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPMRUFiles', 'CtrlPTag'] }
+Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPBuffer', 'CtrlPTag'] }
+Plug 'lyuts/vim-rtags'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'tpope/vim-surround'
 Plug 'pavel-belikov/vim-qdark'
+Plug 'rhysd/vim-clang-format', { 'on': ['ClangFormat'] }
 call plug#end()
 catch
 endtry
@@ -17,12 +19,15 @@ endtry
 if has('win32')
     set noshelltemp
     set guifont=Hack:h8
+elseif has('gui_macvim')
+    set shell=/bin/sh
+    set guifont=Monaco:h10
 else
     set shell=/bin/sh
     set guifont=Hack\ 8
 endif
 
-set mouse=
+set mouse=a
 set guioptions=ait
 
 if $TERM == "xterm" || $TERM == "xterm-256color"
@@ -100,6 +105,9 @@ set listchars=tab:\ \ ,trail:·
 set synmaxcol=250
 set completeopt=menu,menuone,longest,preview
 
+set errorformat+=%f\	%l\	%*[a-z]\	%m
+set errorformat+=[ERROR]\ %f:[%l\\,%v]\ %m
+
 set wildignore=*.o,*.obj,*~,*.pyc,*~TMP,*.bak,*.PVS-Studio.*,*.TMP
 if has("win32")
     set wildignore+=.git\*,.hg\*,.svn\*
@@ -113,6 +121,7 @@ syntax off
 augroup VimrcAuConfig
     au!
     au GUIEnter * set noerrorbells visualbell t_vb=
+    au GUIEnter * syntax off
     au BufEnter * syn sync minlines=1000
     au FileType c,cpp setlocal commentstring=//\ %s
     au FileType dosini,cmake,cfg setlocal commentstring=#\ %s
@@ -126,9 +135,10 @@ augroup END
 
 let g:ycm_confirm_extra_conf=0
 let g:ycm_disable_for_files_larger_than_kb=2048
-let g:ycm_semantic_triggers={'haskell' : ['.']}
+let g:ycm_semantic_triggers={'haskell' : ['.'], 'java': ['.', '::']}
 let g:ycm_add_preview_to_completeopt=1
 let g:ycm_autoclose_preview_window_after_insertion=1
+let g:ycm_key_invoke_completion = '<C-U>'
 
 let g:ctrlp_working_path_mode='a'
 let g:ctrlp_clear_cache_on_exit=0
@@ -145,13 +155,20 @@ let g:ConqueTerm_InsertOnEnter=1
 let g:ConqueTerm_CloseOnEnd=1
 let g:ConqueTerm_Color=2
 
+let g:rtagsAutoLaunchRdm=1
+
 let mapleader="\<Space>"
 let maplocalleader="\\"
 
 map <Leader>w <Leader><Leader>w
 map <Leader>s <Leader><Leader>s
 map <Leader>b <Leader><Leader>b
+nnoremap <silent> <Leader>gd :YcmCompleter GoToDefinition<CR>
+nnoremap <silent> <Leader>gt :YcmCompleter GoTo<CR>
+nnoremap <silent> <Leader>gc :YcmCompleter GetDoc<CR>
+nnoremap <silent> <Leader>gf :YcmCompleter FixIt<CR>
 nnoremap <silent> <Leader>f :CtrlP<CR>
+nnoremap <silent> <Leader>r :CtrlPBuffer<CR>
 nnoremap <silent> <Leader>a :FSHere<CR>
 nnoremap <silent> <Leader>m :make!<CR><CR>
 nnoremap <silent> <Leader>dd :make!<CR>:ConqueGdb -q<CR><Esc>80<C-W>\|<C-W>p
@@ -163,4 +180,6 @@ nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p")
 nnoremap <silent> <Leader>dJ :call conque_gdb#command("jump " .  expand("%:p") . ":" . line("."))<CR>
 nmap     <silent> <Leader>dm <Leader>dB<Leader>dJ
 nnoremap <silent> <Esc><Esc> :noh<CR>
+nnoremap <silent> <Leader>c :<C-u>ClangFormat<CR>
+vnoremap <silent> <Leader>c :ClangFormat<CR>
 
