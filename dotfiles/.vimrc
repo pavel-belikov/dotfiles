@@ -7,9 +7,8 @@ Plug 'Valloric/YouCompleteMe', g:has_python && &diff ? { 'on': [] } : {}
 Plug 'vim-scripts/Conque-GDB', g:has_python && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
 Plug 'sgur/vim-editorconfig'
 Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPBuffer', 'CtrlPTag'] }
-Plug 'lyuts/vim-rtags'
+Plug 'lyuts/vim-rtags', executable('rc') && executable('rdm') ? {} : { 'on': [] }
 Plug 'derekwyatt/vim-fswitch'
-Plug 'tpope/vim-surround'
 Plug 'pavel-belikov/vim-qdark'
 Plug 'rhysd/vim-clang-format', { 'on': ['ClangFormat'] }
 call plug#end()
