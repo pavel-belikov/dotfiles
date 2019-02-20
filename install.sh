@@ -259,6 +259,7 @@ install_as_root() {
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     install_directory dotfiles "$HOME" -name '.vimrc' -or -name '.bash_profile'
+    install_dotfile "$ROOT/dotfiles/.iterm" "$HOME/.iterm"
     install_vim_config "$HOME"
 else
     case "$DOTFILES_PROFILE" in
