@@ -23,6 +23,7 @@ do
             for c in `printf "%s\n" "${opt#-}" | sed 's/./& /g' | xargs`
             do
                 case "$c" in
+                    L) DOTFILES_OPTIONS="$DOTFILES_OPTIONS lightweight" ;;
                     l) DOTFILES_OPTIONS="$DOTFILES_OPTIONS local" ;;
                     d) DOTFILES_OPTIONS="$DOTFILES_OPTIONS dotfiles" ;;
                     p) DOTFILES_OPTIONS="$DOTFILES_OPTIONS deps" ;;
@@ -43,10 +44,11 @@ fi
 
 if [ "$DOTFILES_OPTIONS" = "" -o "$DOTFILES_HELP" = "yes" ]; then
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        DOTFILES_OPTIONS="$DOTFILES_OPTIONS dotfiles"
+        DOTFILES_OPTIONS="$DOTFILES_OPTIONS dotfiles deps"
     else
         echo "Usage: ./install.sh  [options]"
         echo "Options:"
+        echo "  -L  Lightweight install (vim + bash)"
         echo "  -w  Awesome options"
         echo "  -d  Dotfiles"
         echo "  -l  Local git options"
@@ -54,6 +56,10 @@ if [ "$DOTFILES_OPTIONS" = "" -o "$DOTFILES_HELP" = "yes" ]; then
         echo "  -v  Virtual Box guest additions"
         exit 1
     fi
+fi
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    DOTFILES_OPTIONS="$DOTFILES_OPTIONS mac"
 fi
 
 if [ "$DOTFILES_PROFILE" = "" ]; then
@@ -163,8 +169,22 @@ install_apt_dependencies() {
     apt clean
 }
 
+install_brew() {
+    if ! has_binary brew; then
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
+
+    brew install bash-completion cloc doxygen gdb python3 ruby cmake htop conan lua neovim qt boost cppcheck \
+                 flake8 valgrind cscope ninja perl subversion vim clang-format ctags gcc lcov rsync swig \
+                 bash dos2unix python the_silver_searcher
+
+    brew cask install macvim qt-creator
+}
+
 install_dependencies() {
-    if has_binary apt; then
+    if has_install_option mac; then
+        install_brew
+    elif has_binary apt; then
         install_apt_dependencies
     fi
 }
@@ -207,7 +227,7 @@ install_vim_config() {
     PLUG_PATH="$1/.vim/autoload/plug.vim"
     if [ ! -f "$PLUG_PATH" ]; then
         url="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
-	rm -f "$PLUG_PATH"
+        rm -f "$PLUG_PATH"
         curl -fLo "$PLUG_PATH" --create-dirs "$url"
         vim +PlugInstall +qa
     fi
@@ -257,10 +277,16 @@ install_as_root() {
     opt awesome     install_autologin
 }
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    install_directory dotfiles "$HOME" -name '.vimrc' -or -name '.bash_profile'
-    install_dotfile "$ROOT/dotfiles/.iterm" "$HOME/.iterm"
-    install_vim_config "$HOME"
+if has_install_option mac; then
+    opt deps        install_dependencies
+    opt dotfiles    install_dotfile "$ROOT/dotfiles/.iterm" "$HOME/.iterm"
+    opt dotfiles    install_dotfile "$ROOT/dotfiles/.vimrc" "$HOME/.vimrc"
+    opt dotfiles    install_dotfile "$ROOT/dotfiles/.bash_profile" "$HOME/.bash_profile"
+    opt dotfiles    install_vim_config "$HOME"
+elif has_install_option lightweight; then
+    opt lightweight install_dotfile "$ROOT/dotfiles/.vimrc" "$HOME/.vimrc"
+    opt lightweight install_dotfile "$ROOT/dotfiles/.bash_profile" "$HOME/.bash_profile"
+    opt lightweight install_vim_config "$HOME"
 else
     case "$DOTFILES_PROFILE" in
         "")     install_wrapper "${@}" ;;
