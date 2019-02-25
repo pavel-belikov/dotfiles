@@ -1,29 +1,36 @@
 set nocompatible
 
-try
-let g:has_python = has('python3') || has('python')
-call plug#begin()
-Plug 'Valloric/YouCompleteMe', g:has_python && &diff ? { 'on': [] } : {}
-Plug 'vim-scripts/Conque-GDB', g:has_python && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
-Plug 'sgur/vim-editorconfig'
-Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPBuffer', 'CtrlPTag'] }
-Plug 'lyuts/vim-rtags', executable('rc') && executable('rdm') ? {} : { 'on': [] }
-Plug 'derekwyatt/vim-fswitch'
-Plug 'pavel-belikov/vim-qdark'
-Plug 'rhysd/vim-clang-format', { 'on': ['ClangFormat'] }
-call plug#end()
-catch
-endtry
+let g:use_plugins = 1
+
+if filereadable(expand("$HOME/.vimrc.local"))
+    source $HOME/.vimrc.local
+endif
+
+if g:use_plugins
+    try
+        let g:has_python = has('python3') || has('python')
+        call plug#begin()
+        Plug 'Valloric/YouCompleteMe', g:has_python && &diff ? { 'on': [] } : {}
+        Plug 'vim-scripts/Conque-GDB', g:has_python && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
+        Plug 'sgur/vim-editorconfig'
+        Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPBuffer', 'CtrlPTag'] }
+        Plug 'derekwyatt/vim-fswitch'
+        Plug 'pavel-belikov/vim-qdark'
+        Plug 'rhysd/vim-clang-format', { 'on': ['ClangFormat'] }
+        call plug#end()
+    catch
+    endtry
+endif
 
 if has('win32')
     set noshelltemp
-    set guifont=Hack:h8
+    set guifont=Consolas:h8
 elseif has('gui_macvim')
     set shell=/bin/sh
     set guifont=Monaco:h10
 else
     set shell=/bin/sh
-    set guifont=Hack\ 8
+    set guifont=monospace\ 8
 endif
 
 set mouse=a
@@ -154,8 +161,6 @@ let g:ConqueTerm_InsertOnEnter=1
 let g:ConqueTerm_CloseOnEnd=1
 let g:ConqueTerm_Color=2
 
-let g:rtagsAutoLaunchRdm=1
-
 let mapleader="\<Space>"
 let maplocalleader="\\"
 
@@ -169,7 +174,7 @@ nnoremap <silent> <Leader>gf :YcmCompleter FixIt<CR>
 nnoremap <silent> <Leader>f :CtrlP<CR>
 nnoremap <silent> <Leader>r :CtrlPBuffer<CR>
 nnoremap <silent> <Leader>a :FSHere<CR>
-nnoremap <silent> <Leader>m :make!<CR><CR>
+nnoremap <silent> <Leader>m :make!<CR><CR>:cope<CR>
 nnoremap <silent> <Leader>dd :make!<CR>:ConqueGdb -q<CR><Esc>80<C-W>\|<C-W>p
 nnoremap <silent> <Leader>dP :call conque_gdb#print_word(expand("<cWORD>"))<CR>
 vnoremap <silent> <Leader>dp ygv:call conque_gdb#print_word(@")<CR>
