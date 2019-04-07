@@ -1,26 +1,20 @@
 set nocompatible
 
-let g:use_plugins = 1
-
 if filereadable(expand("$HOME/.vimrc.local"))
     source $HOME/.vimrc.local
 endif
 
-if g:use_plugins
-    try
-        let g:has_python = has('python3') || has('python')
-        call plug#begin()
-        Plug 'Valloric/YouCompleteMe', g:has_python && &diff ? { 'on': [] } : {}
-        Plug 'vim-scripts/Conque-GDB', g:has_python && executable('gdb') ? { 'on': ['ConqueGdb', 'ConqueTerm'] } : { 'on': [] }
-        Plug 'sgur/vim-editorconfig'
-        Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPBuffer', 'CtrlPTag'] }
-        Plug 'derekwyatt/vim-fswitch'
-        Plug 'pavel-belikov/vim-qdark'
-        Plug 'rhysd/vim-clang-format', { 'on': ['ClangFormat'] }
-        call plug#end()
-    catch
-    endtry
-endif
+try
+    let g:has_python = has('python3') || has('python')
+    call plug#begin()
+    Plug 'Valloric/YouCompleteMe', g:has_python && &diff ? { 'on': [] } : {}
+    Plug 'sgur/vim-editorconfig'
+    Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRUFiles', 'CtrlPBuffer', 'CtrlPTag'] }
+    Plug 'derekwyatt/vim-fswitch'
+    Plug 'pavel-belikov/vim-qdark'
+    call plug#end()
+catch
+endtry
 
 if has('win32')
     set noshelltemp
@@ -33,7 +27,7 @@ else
     set guifont=monospace\ 8
 endif
 
-set mouse=a
+set mouse=
 set guioptions=ait
 
 if $TERM == "xterm" || $TERM == "xterm-256color"
@@ -133,13 +127,14 @@ augroup VimrcAuConfig
     au FileType dosini,cmake,cfg setlocal commentstring=#\ %s
     au FileType qf setlocal wrap
     au FileType tasks,make setlocal noexpandtab
-    au FileType conque_term,help,plug,conque_gdb setlocal nolist
+    au FileType help,plug setlocal nolist
     au BufEnter *.h let b:fswitchdst='cpp,cc,C'
     au BufEnter *.cc let b:fswitchdst='h,hh,hpp'
     au BufNewFile,BufReadPost *.md set filetype=markdown
 augroup END
 
-let g:ycm_confirm_extra_conf=0
+let g:ycm_extra_conf_globlist = ['!~/*']
+let g:ycm_confirm_extra_conf=1
 let g:ycm_disable_for_files_larger_than_kb=2048
 let g:ycm_semantic_triggers={'haskell' : ['.'], 'java': ['.', '::']}
 let g:ycm_add_preview_to_completeopt=1
@@ -152,14 +147,6 @@ let g:ctrlp_clear_cache_on_exit=0
 if executable('ag') && !has('win32')
     let g:ctrlp_user_command='ag %s -l --nocolor -g ""'
 endif
-
-let g:ConqueGdb_Leader='<Leader>d'
-let g:ConqueTerm_StartMessages=0
-let g:ConqueGdb_SrcSplit='left'
-let g:ConqueTerm_ReadUnfocused=1
-let g:ConqueTerm_InsertOnEnter=1
-let g:ConqueTerm_CloseOnEnd=1
-let g:ConqueTerm_Color=2
 
 let mapleader="\<Space>"
 let maplocalleader="\\"
@@ -175,15 +162,6 @@ nnoremap <silent> <Leader>f :CtrlP<CR>
 nnoremap <silent> <Leader>r :CtrlPBuffer<CR>
 nnoremap <silent> <Leader>a :FSHere<CR>
 nnoremap <silent> <Leader>m :make!<CR><CR>:cope<CR>
-nnoremap <silent> <Leader>dd :make!<CR>:ConqueGdb -q<CR><Esc>80<C-W>\|<C-W>p
-nnoremap <silent> <Leader>dP :call conque_gdb#print_word(expand("<cWORD>"))<CR>
-vnoremap <silent> <Leader>dp ygv:call conque_gdb#print_word(@")<CR>
-nnoremap <silent> <Leader>dj :call conque_gdb#command("down")<CR>
-nnoremap <silent> <Leader>dk :call conque_gdb#command("up")<CR>
-nnoremap <silent> <Leader>dB :call conque_gdb#command("tbreak " .  expand("%:p") . ":" . line("."))<CR>
-nnoremap <silent> <Leader>dJ :call conque_gdb#command("jump " .  expand("%:p") . ":" . line("."))<CR>
 nmap     <silent> <Leader>dm <Leader>dB<Leader>dJ
 nnoremap <silent> <Esc><Esc> :noh<CR>
-nnoremap <silent> <Leader>c :<C-u>ClangFormat<CR>
-vnoremap <silent> <Leader>c :ClangFormat<CR>
 

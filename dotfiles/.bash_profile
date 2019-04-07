@@ -3,6 +3,8 @@ if [ -z "$PS1" ]; then
    return
 fi
 
+export EDITOR=vim
+
 parse_git_branch() {
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
@@ -14,5 +16,5 @@ shopt -s checkwinsize
 
 [ -r "/etc/bashrc_$TERM_PROGRAM" ] && . "/etc/bashrc_$TERM_PROGRAM"
 [ -f "/usr/local/etc/bash_completion" ] && . "/usr/local/etc/bash_completion"
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
-export EDITOR=vim
