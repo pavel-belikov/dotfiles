@@ -4,31 +4,18 @@ set -e
 
 ROOT="$(pwd)"
 
-DOTFILES_USER="$USER"
 DOTFILES_OPTIONS=""
 DOTFILES_HELP="no"
-DOTFILES_PROFILE=""
 for opt in "${@}"
 do
     case "$opt" in
-        -R*)
-            DOTFILES_PROFILE="root"
-            DOTFILES_USER="${opt#-R}"
-            ;;
-        -U*)
-            DOTFILES_PROFILE="user"
-            DOTFILES_USER="${opt#-U}"
-            ;;
         -*)
             for c in `printf "%s\n" "${opt#-}" | sed 's/./& /g' | xargs`
             do
                 case "$c" in
-                    L) DOTFILES_OPTIONS="$DOTFILES_OPTIONS lightweight" ;;
                     l) DOTFILES_OPTIONS="$DOTFILES_OPTIONS local" ;;
                     d) DOTFILES_OPTIONS="$DOTFILES_OPTIONS dotfiles" ;;
                     p) DOTFILES_OPTIONS="$DOTFILES_OPTIONS deps" ;;
-                    w) DOTFILES_OPTIONS="$DOTFILES_OPTIONS awesome" ;;
-                    v) DOTFILES_OPTIONS="$DOTFILES_OPTIONS virtualbox" ;;
                     *) DOTFILES_HELP="yes" ;;
                 esac
             done
@@ -37,34 +24,24 @@ do
     esac
 done
 
-if [ "$DOTFILES_USER" = "" ]; then
-    echo "Fatal Error: Couldn't get username"
-    exit 1
-fi
-
 if [ "$DOTFILES_OPTIONS" = "" -o "$DOTFILES_HELP" = "yes" ]; then
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        DOTFILES_OPTIONS="$DOTFILES_OPTIONS dotfiles deps"
-    else
         echo "Usage: ./install.sh  [options]"
         echo "Options:"
-        echo "  -L  Lightweight install (vim + bash)"
-        echo "  -w  Awesome options"
         echo "  -d  Dotfiles"
-        echo "  -l  Local git options"
+        echo "  -l  Local dotfiles"
         echo "  -p  Packages"
-        echo "  -v  Virtual Box guest additions"
         exit 1
     fi
 fi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     DOTFILES_OPTIONS="$DOTFILES_OPTIONS mac"
+else
+    DOTFILES_OPTIONS="$DOTFILES_OPTIONS linux"
 fi
 
-if [ "$DOTFILES_PROFILE" = "" ]; then
-    echo "Options:$DOTFILES_OPTIONS"
-fi
+echo "Options:$DOTFILES_OPTIONS"
 
 has_install_option() {
     for arg in $DOTFILES_OPTIONS
@@ -81,12 +58,6 @@ has_binary() {
         return 0
     fi
     return 1
-}
-
-dir() {
-    rm -rf "$1"
-    mkdir -p "$1"
-    cd "$1"
 }
 
 install_dotfile() {
@@ -120,7 +91,6 @@ install_apt_dependencies() {
     sudo htop ntp gparted curl wget strace
     ack silversearcher-ag
     unzip p7zip-full xarchiver pcmanfm mc
-    pulseaudio alsa-tools alsa-utils pavucontrol
     gdebi
 
     git gcc g++ clang cmake valgrind gdb lldb
@@ -137,36 +107,10 @@ install_apt_dependencies() {
     gnome-themes-standard adwaita-icon-theme
     fonts-hack-ttf
 
-    firefox thunderbird keepassx
-
-    xorg
+    keepassx
     "
 
-    dependencies_awesome="
-    awesome dbus
-    "
-
-    dependencies_local=""
-    dependencies_vbox="virtualbox-guest-utils"
-
-    if has_install_option awesome; then
-        dependencies="$dependencies $dependencies_awesome"
-    fi
-
-    if has_install_option local; then
-        dependencies="$dependencies $dependencies_local"
-    fi
-
-    if has_install_option virtualbox; then
-        dependencies="$dependencies $dependencies_vbox"
-    fi
-
-    dpkg --add-architecture i386
-    apt -yq update
-    apt -yq upgrade
-    apt -yq dist-upgrade
-    apt -yq install $dependencies
-    apt clean
+    su -c "apt -yq update && apt -yq upgrade && apt -yq dist-upgrade && apt -yq install $dependencies && apt clean"
 }
 
 install_brew() {
@@ -176,9 +120,9 @@ install_brew() {
 
     brew install bash-completion cloc doxygen gdb python3 ruby cmake htop conan lua neovim qt boost cppcheck \
                  flake8 valgrind cscope ninja perl subversion vim clang-format ctags gcc lcov rsync swig \
-                 bash dos2unix python the_silver_searcher
+                 bash dos2unix python the_silver_searcher tree
 
-    brew cask install macvim qt-creator
+    brew cask install macvim
 }
 
 install_dependencies() {
@@ -186,40 +130,6 @@ install_dependencies() {
         install_brew
     elif has_binary apt; then
         install_apt_dependencies
-    fi
-}
-
-install_user_groups() {
-    adduser "$DOTFILES_USER" sudo
-
-    if has_install_option virtualbox; then
-        usermod -aG vboxsf "$DOTFILES_USER"
-    fi
-
-    if ! grep "^$DOTFILES_USER" /etc/sudoers > /dev/null 2>&1; then
-        echo "$DOTFILES_USER ALL= NOPASSWD: /sbin/poweroff, /sbin/reboot, /usr/bin/mount, /usr/bin/umount" >> /etc/sudoers
-    fi
-}
-
-add_environment() {
-    if ! grep "$1=" /etc/environment > /dev/null 2>&1; then
-        echo "export $1=$2" >> /etc/environment
-    fi
-}
-
-install_autologin() {
-    if has_binary systemctl; then
-        DIR="/etc/systemd/system/getty@tty1.service.d"
-        FILE="$DIR/override.conf"
-        if [ -d "$DIR" ]; then
-            return 0
-        fi
-        EXEC="-/sbin/agetty --autologin $DOTFILES_USER --noclear %I \$TERM"
-        mkdir -p "$DIR" -m755
-        echo "[Service]\nExecStart=\nExecStart=$EXEC" > "$FILE"
-        chmod 644 "$FILE"
-        systemctl enable getty@tty1.service
-        systemctl daemon-reload
     fi
 }
 
@@ -236,62 +146,30 @@ install_vim_config() {
     install_dotfile "$1/.vimrc" "$1/.config/nvim/init.vim"
 }
 
-install_local_environment() {
-    add_environment "LC_ALL"    "en_US.UTF-8"
-    add_environment "LANG"      "en_US.UTF-8"
-    add_environment "LANGUAGE"  "en_US.UTF-8"
+install_local_gitconfig() {
+    if ! test -f "$HOME/.gitconfig.local"; then
+        printf "[user]\n    email = $(git log -1 --pretty=format:'%ae')\n    name = $(git log -1 --pretty=format:'%an')\n" > "$HOME/.gitconfig.local"
+    fi
 }
 
 opt() {
     cd "$ROOT"
-    if has_install_option "$1"; then
-        shift
-        echo "\x1B[93m${@}\x1B[0m"
-        ${@}
-    fi
+    for i in $(echo "$1" | tr "+" "\n")
+    do
+        if ! has_install_option "$i"; then
+            return
+        fi
+    done
+
+    shift
+    echo "\x1B[93m${@}\x1B[0m"
+    ${@}
 }
 
-install_wrapper() {
-    if has_binary sudo; then
-        sudo "$0" "-R$DOTFILES_USER" "${@}"
-    else
-        su -c "$0 -R$DOTFILES_USER ${@}"
-    fi
-    "$0" "-U$DOTFILES_USER" "${@}"
-}
-
-install_as_user() {
-    opt local       install_directory local "$HOME"
-    opt dotfiles    install_directory dotfiles "$HOME"
-    opt dotfiles    install_vim_config "$HOME"
-}
-
-install_as_root() {
-    opt deps        install_dependencies
-    opt deps        install_user_groups
-    opt local       install_directory local "/root" -name '.vimrc'
-    opt local       install_local_environment
-    opt dotfiles    install_directory dotfiles "/root" -name '.vimrc'
-    opt dotfiles    add_environment "QT_STYLE_OVERRIDE" "gtk"
-    opt dotfiles    install_vim_config "/root"
-    opt awesome     install_autologin
-}
-
-if has_install_option mac; then
-    opt deps        install_dependencies
-    opt dotfiles    install_dotfile "$ROOT/dotfiles/.iterm" "$HOME/.iterm"
-    opt dotfiles    install_dotfile "$ROOT/dotfiles/.vimrc" "$HOME/.vimrc"
-    opt dotfiles    install_dotfile "$ROOT/dotfiles/.bash_profile" "$HOME/.bash_profile"
-    opt dotfiles    install_vim_config "$HOME"
-elif has_install_option lightweight; then
-    opt lightweight install_dotfile "$ROOT/dotfiles/.vimrc" "$HOME/.vimrc"
-    opt lightweight install_dotfile "$ROOT/dotfiles/.bash_profile" "$HOME/.bash_profile"
-    opt lightweight install_vim_config "$HOME"
-else
-    case "$DOTFILES_PROFILE" in
-        "")     install_wrapper "${@}" ;;
-        user)   install_as_user "${@}" ;;
-        root)   install_as_root "${@}" ;;
-    esac
-fi
+opt deps                install_dependencies
+opt dotfiles            install_directory dotfiles "$HOME" -not -path './.iterm/*'
+opt dotfiles+mac        install_dotfile "$ROOT/dotfiles/.iterm" "$HOME/.iterm"
+opt local               install_directory local "$HOME"
+opt local               install_local_gitconfig
+opt dotfiles            install_vim_config "$HOME"
 
