@@ -25,14 +25,12 @@ do
 done
 
 if [ "$DOTFILES_OPTIONS" = "" -o "$DOTFILES_HELP" = "yes" ]; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "Usage: ./install.sh  [options]"
-        echo "Options:"
-        echo "  -d  Dotfiles"
-        echo "  -l  Local dotfiles"
-        echo "  -p  Packages"
-        exit 1
-    fi
+    echo "Usage: ./install.sh  [options]"
+    echo "Options:"
+    echo "  -d  Dotfiles"
+    echo "  -l  Local dotfiles"
+    echo "  -p  Packages"
+    exit 1
 fi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then

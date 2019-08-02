@@ -5,12 +5,12 @@ import json
 def FindCompilationDatabase():
     path = os.getcwd()
     patterns = ('build/compile_commands.json', '.ycm/compile_commands.json')
-    for _ in range(10):
+    for _ in range(20):
         for pattern in patterns:
             json_path = os.path.join(path, pattern)
             if os.path.exists(json_path):
                 return json_path
-            path = os.path.abspath(os.path.join(path, os.pardir))
+        path = os.path.abspath(os.path.join(path, os.pardir))
     return None
 
 
