@@ -133,7 +133,8 @@ augroup VimrcAuConfig
     au BufNewFile,BufReadPost *.md set filetype=markdown
 augroup END
 
-let g:ycm_extra_conf_globlist = ['!~/*']
+let g:ycm_use_clangd=0
+let g:ycm_extra_conf_globlist=['~/.ycm_extra_conf.py', '!~/*']
 let g:ycm_confirm_extra_conf=1
 let g:ycm_disable_for_files_larger_than_kb=2048
 let g:ycm_semantic_triggers={'haskell' : ['.'], 'java': ['.', '::']}
